@@ -6,13 +6,12 @@ async function customGetFetch(path: string, headers?: any) {
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      withCredentials: true,
       ...headers
     },
-  })
-    .catch(err => {
-      throw new Error(err)
-    })
+    credentials: 'include',
+  }).catch(err => {
+    throw new Error(err)
+  }) as Response
   const data = await res.json()
   return data
 }
@@ -24,13 +23,27 @@ async function customPostFetch(path: string, body?: any) {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
+    credentials: 'include',
     body: JSON.stringify(body)
-  })
-    .catch(err => {
-      throw new Error(err)
-    })
+  }).catch(err => {
+    throw new Error(err)
+  }) as Response
   const data = await res.json()
   return data
 }
 
-export { customGetFetch, customPostFetch }
+async function customDeleteFetch(path: string, body?: any) {
+  await fetch(domain + path, {
+    method: 'post',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(body)
+  }).catch(err => {
+    throw new Error(err)
+  }) as Response
+}
+
+export { customGetFetch, customPostFetch, customDeleteFetch }

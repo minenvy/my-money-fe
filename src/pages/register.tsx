@@ -1,22 +1,24 @@
 import { useState } from 'react'
-import { Form, Link, redirect } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import CustomElement from '@/elements'
-
-export async function action({ request }: any) {
-	const formData = await request.formData()
-	const body = Object.fromEntries(formData)
-	console.log(body)
-	return body
-	redirect('/')
-}
+import { useAuth } from '@/contexts/use-auth'
+import { register as registerApi } from '@/api/user'
+import { Spin, message } from 'antd'
+import { LoadingOutlined } from '@ant-design/icons'
+import { useErrorBoundary } from 'react-error-boundary'
 
 function Register() {
+	const navigate = useNavigate()
+	const [messageApi, contextHolder] = message.useMessage()
+	const {showBoundary} = useErrorBoundary()
+	const { register } = useAuth()
 	const [registerInformation, setRegisterInformation] = useState({
-		account: '',
 		username: '',
 		password: '',
+		repassword: '',
 	})
+	const [isLoading, setIsLoading] = useState(false)
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setRegisterInformation({
@@ -24,38 +26,70 @@ function Register() {
 			[e.target.name]: e.target.value,
 		})
 	}
+	const handleRegister = async () => {
+		if (registerInformation.password !== registerInformation.repassword) {
+			messageApi.warning('Mật khẩu không trùng khớp!')
+			return
+		}
+
+		const user = await registerApi({ ...registerInformation }).catch(err => {
+			showBoundary(err)
+		})
+		if (!user) {
+			messageApi.warning('Tên tài khoản đã được sử dụng!')
+			return
+		}
+
+		register(user)
+		navigate('/')
+	}
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+
+		if (isLoading) return
+		setIsLoading(true)
+		await handleRegister()
+		setIsLoading(false)
+	}
 
 	return (
-		<StyledForm method="post">
-			<h1>Register</h1>
-			<StyledLink to={'/login'}>Have an account?</StyledLink>
-			<CustomElement.Input
-				value={registerInformation.account}
-				onChange={handleChange}
-				name="account"
-				type="text"
-				placeholder="Account"
-			/>
+		<Form onSubmit={handleSubmit} aria-disabled={isLoading}>
+			{contextHolder}
+			<h1>Đăng ký</h1>
+			<StyledLink to={'/login'}>Bạn đã có tài khoản?</StyledLink>
 			<CustomElement.Input
 				value={registerInformation.username}
 				onChange={handleChange}
 				name="username"
 				type="text"
-				placeholder="Username"
+				placeholder="Tài khoản"
 			/>
 			<CustomElement.Input
 				value={registerInformation.password}
 				onChange={handleChange}
 				name="password"
 				type="password"
-				placeholder="Password"
+				placeholder="Mật khẩu"
 			/>
-			<StyledButton type="submit">Register</StyledButton>
-		</StyledForm>
+			<CustomElement.Input
+				value={registerInformation.repassword}
+				onChange={handleChange}
+				name="repassword"
+				type="password"
+				placeholder="Nhập lại mật khẩu"
+			/>
+			<StyledButton type="submit">
+				{isLoading ? (
+					<Spin indicator={<StyledLoadingOutlined spin />} />
+				) : (
+					'Đăng ký'
+				)}
+			</StyledButton>
+		</Form>
 	)
 }
 
-const StyledForm = styled(Form)`
+const Form = styled.form`
 	max-width: 540px;
 	display: flex;
 	flex-direction: column;
@@ -68,7 +102,11 @@ const StyledLink = styled(Link)`
 `
 const StyledButton = styled(CustomElement.Button)`
 	align-self: flex-end;
-  margin-right: 5%;
+	margin-right: 5%;
+`
+const StyledLoadingOutlined = styled(LoadingOutlined)`
+	font-size: 1.5rem;
+	color: #fff;
 `
 
 export default Register

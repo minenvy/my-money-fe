@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import CustomElement from '@/elements'
 import { login as loginApi } from '@/api/user'
 import { useAuth } from '@/contexts/use-auth'
 import { message, Spin } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { useErrorBoundary } from 'react-error-boundary'
+import { useErrorBoundary } from '@/contexts/error-fetch-boundary'
+import Button from '@/pages/login-register/no-icon-button'
+import Input from '@/pages/login-register/input'
 
 function Login() {
 	const navigate = useNavigate()
@@ -27,12 +28,12 @@ function Login() {
 	}
 	const handleLogin = async () => {
 		const user = await loginApi({ ...loginInformation }).catch((err) => {
-			showBoundary(err)
+			// showBoundary(err)
 		})
-		if (!user) {
-			messageApi.warning('Tài khoản hoặc mật khẩu không chính xác!')
-			return
-		}
+		// if (!user) {
+		// 	messageApi.warning('Tài khoản hoặc mật khẩu không chính xác!')
+		// 	return
+		// }
 
 		login(user)
 		navigate('/')
@@ -51,14 +52,14 @@ function Login() {
 			{contextHolder}
 			<h1>Đăng nhập</h1>
 			<StyledLink to={'/register'}>Bạn chưa có tài khoản?</StyledLink>
-			<CustomElement.Input
+			<Input
 				value={loginInformation.username}
 				onChange={handleChange}
 				name="username"
 				type="text"
 				placeholder="Tài khoản"
 			/>
-			<CustomElement.Input
+			<Input
 				value={loginInformation.password}
 				onChange={handleChange}
 				name="password"
@@ -87,7 +88,7 @@ const Form = styled.form`
 const StyledLink = styled(Link)`
 	margin-top: 1rem;
 `
-const StyledButton = styled(CustomElement.Button)`
+const StyledButton = styled(Button)`
 	align-self: flex-end;
 	margin-right: 5%;
 `

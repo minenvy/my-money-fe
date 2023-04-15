@@ -1,7 +1,13 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { IUserInfo } from '@/interfaces'
 import { getUserByToken } from '@/api/user'
 import { setLoginState } from '@/utilities/check-login'
+
+interface IUserInfo {
+	username: string
+	image?: string
+	friend?: Array<string>
+	chattedWith?: Array<string>
+}
 
 interface IAuthContext {
 	user: IUserInfo
@@ -21,7 +27,7 @@ interface IAuthProviderProps {
 
 export default function AuthProvider({ children }: IAuthProviderProps) {
 	const [user, setUser] = useState<IUserInfo>({
-		username: '',
+		username: 'Minh',
 	})
 
 	function changeUserInfo(newUser: any) {

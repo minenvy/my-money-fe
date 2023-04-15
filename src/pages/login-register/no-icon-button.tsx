@@ -6,11 +6,11 @@ function Button(props: ButtonHTMLAttributes<HTMLButtonElement>) {
 }
 
 const StyledButton = styled.button`
-	font-size: 1.5rem;
+	font-size: 1rem;
 	font-family: inherit;
 	border-radius: 4px;
 	padding: 0.75rem 1.5rem;
-	line-height: 1.5;
+	line-height: 1.25;
 	margin-top: 1.5rem;
 	color: #fff;
 	background-color: #1677ff;

@@ -1,17 +1,18 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import CustomElement from '@/elements'
 import { useAuth } from '@/contexts/use-auth'
 import { register as registerApi } from '@/api/user'
 import { Spin, message } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'
-import { useErrorBoundary } from 'react-error-boundary'
+import { useErrorBoundary } from '@/contexts/error-fetch-boundary'
+import Input from '@/pages/login-register/input'
+import Button from '@/pages/login-register/no-icon-button'
 
 function Register() {
 	const navigate = useNavigate()
 	const [messageApi, contextHolder] = message.useMessage()
-	const {showBoundary} = useErrorBoundary()
+	const { showBoundary } = useErrorBoundary()
 	const { register } = useAuth()
 	const [registerInformation, setRegisterInformation] = useState({
 		username: '',
@@ -32,7 +33,7 @@ function Register() {
 			return
 		}
 
-		const user = await registerApi({ ...registerInformation }).catch(err => {
+		const user = await registerApi({ ...registerInformation }).catch((err) => {
 			showBoundary(err)
 		})
 		if (!user) {
@@ -57,21 +58,21 @@ function Register() {
 			{contextHolder}
 			<h1>Đăng ký</h1>
 			<StyledLink to={'/login'}>Bạn đã có tài khoản?</StyledLink>
-			<CustomElement.Input
+			<Input
 				value={registerInformation.username}
 				onChange={handleChange}
 				name="username"
 				type="text"
 				placeholder="Tài khoản"
 			/>
-			<CustomElement.Input
+			<Input
 				value={registerInformation.password}
 				onChange={handleChange}
 				name="password"
 				type="password"
 				placeholder="Mật khẩu"
 			/>
-			<CustomElement.Input
+			<Input
 				value={registerInformation.repassword}
 				onChange={handleChange}
 				name="repassword"
@@ -100,7 +101,7 @@ const Form = styled.form`
 const StyledLink = styled(Link)`
 	margin-top: 1rem;
 `
-const StyledButton = styled(CustomElement.Button)`
+const StyledButton = styled(Button)`
 	align-self: flex-end;
 	margin-right: 5%;
 `

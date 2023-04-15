@@ -9,8 +9,6 @@ async function customGetFetch(path: string, headers?: any) {
       ...headers
     },
     credentials: 'include',
-  }).catch(err => {
-    throw new Error(err)
   }) as Response
   const data = await res.json()
   return data
@@ -25,8 +23,6 @@ async function customPostFetch(path: string, body?: any) {
     },
     credentials: 'include',
     body: JSON.stringify(body)
-  }).catch(err => {
-    throw new Error(err)
   }) as Response
   const data = await res.json()
   return data
@@ -41,8 +37,6 @@ async function customDeleteFetch(path: string, body?: any) {
     },
     credentials: 'include',
     body: JSON.stringify(body)
-  }).catch(err => {
-    throw new Error(err)
   }) as Response
 }
 

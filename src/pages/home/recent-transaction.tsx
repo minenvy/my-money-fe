@@ -1,13 +1,38 @@
 import InOutDetail from '@/components/in-out-detail'
 import TitleOfPartContent from './title-of-part-content'
+import ShadowBox from '@/components/shadow-box'
 
 function RecentTransaction() {
+	const hasData = true
+
 	return (
 		<>
-			<TitleOfPartContent title="Giao dịch gần đây" />
-			<InOutDetail type="luong" money={2_000} />
-			<InOutDetail type="hoadon" money={2_000} />
-			<InOutDetail type="anuong" money={4_000} />
+			{hasData && (
+				<ShadowBox>
+					<TitleOfPartContent title="Giao dịch gần đây" />
+					<InOutDetail
+						id="abc"
+						title="Ăn uống"
+						icon=""
+						subTitle="30/4/2022"
+						rightNumber={20000}
+					/>
+					<InOutDetail
+						id="abc"
+						title="Ăn uống"
+						icon=""
+						subTitle="30/4/2022"
+						rightNumber={20000}
+					/>
+					<InOutDetail
+						id="abc"
+						title="Ăn uống"
+						icon=""
+						subTitle="30/4/2022"
+						rightNumber={20000}
+					/>
+				</ShadowBox>
+			)}
 		</>
 	)
 }

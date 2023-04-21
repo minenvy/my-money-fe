@@ -22,18 +22,20 @@ function Sidebar(props: ISidebarProps) {
 	const labels = [
 		'Tổng quan',
 		'Tài khoản',
-		isInMobile ? '' : 'Thu chi mới',
+		isInMobile ? '' : 'Thu chi',
 		'Thống kê',
 		'Cá nhân',
 	].filter((label) => (isInMobile ? true : label))
 	const icons = [
 		<HomeOutlined />,
 		<WalletOutlined />,
-		<PlusCircleOutlined style={{ fontSize: '1.5rem' }} />,
+		<PlusCircleOutlined
+			style={{ fontSize: isInMobile ? '1.1rem' : '1.3rem' }}
+		/>,
 		<LineChartOutlined />,
 		<UserOutlined />,
 	].filter((icon) => !!icon)
-	const routes = ['/', '/wallet', '/new-transaction', '/report', '/profile']
+	const routes = ['/', '/wallet', '/transaction', '/report', '/profile']
 
 	return (
 		<>
@@ -66,21 +68,23 @@ function SidebarInMobile(props: {
 	}
 
 	return (
-		<MobileWrapper>
-			{icons.map((icon, index) => {
-				const label = labels[index]
-				const isActive = activeButtonId === index && !!label
-				return (
-					<MobileButton
-						isActive={isActive}
-						icon={icon}
-						label={label}
-						key={label}
-						onClick={() => handleClick(index)}
-					/>
-				)
-			})}
-		</MobileWrapper>
+		<FixedPositionInMobile>
+			<MobileWrapper>
+				{icons.map((icon, index) => {
+					const label = labels[index]
+					const isActive = activeButtonId === index && !!label
+					return (
+						<MobileButton
+							isActive={isActive}
+							icon={icon}
+							label={label}
+							key={label}
+							onClick={() => handleClick(index)}
+						/>
+					)
+				})}
+			</MobileWrapper>
+		</FixedPositionInMobile>
 	)
 }
 
@@ -103,14 +107,14 @@ function SidebarInDesktop(props: {
 		<FixedPosition>
 			<DesktopWrapper>
 				{icons.map((icon, index) => {
-					const label = labels[index]
+					const label = isShowedCategories ? labels[index] : ''
 					const isActive = activeButtonId === index
 					return isShowedCategories ? (
 						<DesktopButton
 							isActive={isActive}
 							icon={icon}
 							label={label}
-							key={label}
+							key={index}
 							onClick={() => handleClick(index)}
 						/>
 					) : (
@@ -118,7 +122,7 @@ function SidebarInDesktop(props: {
 							isActive={isActive}
 							icon={icon}
 							label={label}
-							key={label}
+							key={index}
 							onClick={() => handleClick(index)}
 						/>
 					)
@@ -131,7 +135,7 @@ function SidebarInDesktop(props: {
 function DesktopButton(props: {
 	icon: React.ReactNode
 	label: string
-	isActive: boolean
+	isActive?: boolean
 	onClick: Function
 }) {
 	const { icon, label, isActive, onClick } = props
@@ -143,15 +147,19 @@ function DesktopButton(props: {
 	)
 }
 
-function MobileButton(props: {
+export function MobileButton(props: {
 	icon: React.ReactNode
 	label: string
-	isActive: boolean
+	isActive?: boolean
 	onClick: Function
 }) {
 	const { icon, label, isActive, onClick } = props
 	return (
-		<CustomMobileButton data-focus-info={isActive} onClick={() => onClick()}>
+		<CustomMobileButton
+			data-focus-info={isActive}
+			data-mini-info={!label}
+			onClick={() => onClick()}
+		>
 			{icon}
 			{label && (
 				<StyledSpan style={{ fontSize: '0.75rem' }}>{label}</StyledSpan>
@@ -160,7 +168,13 @@ function MobileButton(props: {
 	)
 }
 
-const FixedPosition = styled.div`
+const FixedPositionInMobile = styled.aside`
+	position: -webkit-sticky;
+	position: sticky;
+	bottom: 0;
+	z-index: 3;
+`
+const FixedPosition = styled.aside`
 	position: -webkit-sticky;
 	position: sticky;
 	top: 0;
@@ -176,6 +190,7 @@ const MobileWrapper = styled(Wrapper)`
 	bottom: 0;
 	width: 100vw;
 	justify-content: center;
+	background-color: #f9f9f9;
 `
 const DesktopWrapper = styled(Wrapper)`
 	flex-direction: column;
@@ -190,14 +205,20 @@ const CustomButton = styled.div`
 	border-radius: 0.75rem;
 	cursor: pointer;
 	&:hover {
-		background-color: #e6e6e6;
-	}
-	&[data-focus-info='true'] {
-		color: #1890ff;
 		background-color: #d5d5d5;
 	}
 	& span {
 		font-size: 1.1rem;
+	}
+	&[data-focus-info='true'] {
+		color: #1890ff;
+		background-color: #e6e6e6;
+	}
+	&[data-mini-info='true'] {
+		padding: 0.75rem;
+		& span {
+			font-size: 1.5rem;
+		}
 	}
 `
 const CustomDesktopButton = styled(CustomButton)`

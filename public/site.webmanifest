@@ -2,6 +2,7 @@
 	"name": "My Money",
 	"short_name": "My Money",
 	"start_url": "/",
+	"scope": "/",
 	"icons": [
 		{
 			"src": "/android-chrome-192x192.png",

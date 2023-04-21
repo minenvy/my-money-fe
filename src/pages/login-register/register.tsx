@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import { useAuth } from '@/contexts/use-auth'
+import { useAuth } from '@/contexts/auth'
 import { register as registerApi } from '@/api/user'
 import { Spin, message } from 'antd'
 import { LoadingOutlined } from '@ant-design/icons'

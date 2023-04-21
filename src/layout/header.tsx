@@ -1,4 +1,4 @@
-import { useAuth } from '@/contexts/use-auth'
+import { useAuth } from '@/contexts/auth'
 import { BellOutlined, MenuOutlined } from '@ant-design/icons'
 import { Avatar, Badge, Button } from 'antd'
 import { useState } from 'react'
@@ -52,7 +52,7 @@ function LogoImage() {
 	)
 }
 
-const Wrapper = styled.div`
+const Wrapper = styled.header`
 	display: flex;
 	align-items: center;
 	justify-content: space-between;

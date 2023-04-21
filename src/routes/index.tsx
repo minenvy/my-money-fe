@@ -4,15 +4,13 @@ import {
 	Route,
 	redirect,
 } from 'react-router-dom'
-import App from '@/App'
-import Home from '@/pages/home'
-import Login from '@/pages/login-register/login'
-import Register from '@/pages/login-register/register'
 import { getLoginState } from '@/utilities/check-login'
 import DefaultLayout from '@/layout/default-layout'
 import NotExistPageError from '@/components/not-exist-page-error'
-import Wallet from '@/pages/wallet'
-import NewTransaction from '@/pages/new-transaction'
+import Login from '@/pages/login-register/login'
+import Register from '@/pages/login-register/register'
+import { App, Home, Wallet, Transaction, Report } from './lazy-page'
+import Profile from '@/pages/profile'
 
 const privateRouteLoader = () => {
 	const loggedInState = getLoginState()
@@ -42,8 +40,10 @@ const router = createBrowserRouter(
 			<Route path="/" element={<DefaultLayout />} loader={privateRouteLoader}>
 				<Route path="/" element={<Home />} />
 				<Route path="/wallet" element={<Wallet />} />
-				<Route path="/new-transaction" element={<NewTransaction />} />
-				//report, profile
+				<Route path="/transaction/:id" element={<Transaction />} />
+				<Route path="/transaction" element={<Transaction />} />
+				<Route path="/report" element={<Report />} />
+				<Route path="/profile" element={<Profile />} />
 			</Route>
 		</Route>
 	)

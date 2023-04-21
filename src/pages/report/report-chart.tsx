@@ -1,0 +1,83 @@
+import BarChart from '@/components/bar-chart'
+import LineChart from '@/components/line-chart'
+import formatMoney from '@/utilities/money-format'
+import { Typography } from 'antd'
+import styled from 'styled-components'
+
+interface IQuickReport {
+	title: string
+	moneyIn?: number
+	moneyOut?: number
+}
+interface IChartProps {
+	chartType: string
+	report: Array<IQuickReport>
+}
+
+function ChartComponent(props: IChartProps) {
+	const { chartType, report } = props
+	if (chartType.includes('bar')) {
+		const labels = report.map((item) => item.title)
+		const moneyIn = report.map((item) =>
+			item.moneyIn ? round(item.moneyIn) : 0
+		)
+		const moneyOut = report.map((item) =>
+			item.moneyOut ? round(item.moneyOut) : 0
+		)
+		return (
+			<BarChart
+				labels={labels}
+				moneyIn={moneyIn}
+				moneyOut={moneyOut}
+				unit="triệu"
+			/>
+		)
+	}
+	if (chartType.includes('line')) {
+		const labels = report.map((item) => item.title)
+		const type = chartType.split('-')[1] as 'in' | 'out'
+		const money = report.map((item) => {
+			const money = type === 'in' ? item.moneyIn : item.moneyOut
+			return money ? round(money) : 0
+		})
+		const totalMoney = money.reduce((total, item) => total + item, 0) * 1e6
+		return (
+			<Wrapper>
+				<LineChart labels={labels} money={money} type={type} unit="triệu" />
+				<FlexBox>
+					<Typography.Text type="secondary">
+						Tổng tiền {type === 'in' ? 'thu nhập' : 'chi tiêu'}
+					</Typography.Text>
+					<Typography.Text>{formatMoney(totalMoney)}</Typography.Text>
+				</FlexBox>
+				<FlexBox>
+					<Typography.Text type="secondary">
+						Trung bình/{labels.length === 12 ? 'tháng' : 'năm'}
+					</Typography.Text>
+					<Typography.Text>
+						{formatMoney(totalMoney / labels.length)}
+					</Typography.Text>
+				</FlexBox>
+			</Wrapper>
+		)
+	}
+
+	return <h1>oke</h1>
+}
+
+const Wrapper = styled.div`
+	width: 100%;
+	height: 100%;
+`
+const FlexBox = styled.div`
+	display: flex;
+	justify-content: space-between;
+	max-width: 20rem;
+	margin-top: 0.5rem;
+`
+
+function round(money: number) {
+	return Math.round((money / 1e6) * 1000) / 1000
+}
+
+export default ChartComponent

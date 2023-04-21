@@ -9,18 +9,25 @@ import {
 	CategoryScale,
 	LinearScale,
 	BarElement,
+	PointElement,
+	LineElement,
 	Title,
 	Tooltip,
 	Legend,
 	ArcElement,
+	Filler,
 } from 'chart.js'
+import DraftTransactionProvider from '@/contexts/draft-transaction'
 
 ChartJS.register(
 	CategoryScale,
 	LinearScale,
 	BarElement,
+	PointElement,
+	LineElement,
 	Title,
 	Tooltip,
+	Filler,
 	Legend,
 	ArcElement
 )
@@ -36,7 +43,7 @@ function DefaultLayout() {
 	}, [])
 
 	return (
-		<>
+		<DraftTransactionProvider>
 			<Header toggleCategories={toggleCategories} />
 			<Main data-mode-info={mode}>
 				<Sidebar isShowedCategories={isShowedCategories} />
@@ -44,11 +51,11 @@ function DefaultLayout() {
 					<Outlet />
 				</Content>
 			</Main>
-		</>
+		</DraftTransactionProvider>
 	)
 }
 
-const Main = styled.div`
+const Main = styled.main`
 	display: flex;
 	flex-direction: row;
 	&[data-mode-info='mobile'] {

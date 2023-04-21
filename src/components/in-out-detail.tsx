@@ -1,61 +1,54 @@
+import { icons } from '@/constants/money-type'
 import useWindowSize from '@/hooks/use-window-size'
+import generateBackgroundColor from '@/utilities/generate-color'
 import formatMoney from '@/utilities/money-format'
-import { Avatar, Modal, Typography } from 'antd'
+import { Avatar, Typography } from 'antd'
+import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
 interface IInOutDetailProps {
-	type: string
-	money: number
+	id: string
+	icon: string
+	title: string
+	subTitle: Date | string
+	description?: string
+	rightNumber?: string | number
 	mode?: string
-	detail?: string
-	percent?: string
 }
 
 function InOutDetail(props: IInOutDetailProps) {
-	const { type, money, mode = '', percent = '' } = props
+	const { id, icon, title, subTitle, description, rightNumber, mode } = props
+	const location = useLocation()
 	const windowSize = useWindowSize()
-	const [modalApi, contextHolder] = Modal.useModal()
 
 	const typeMoney = 'in'
 	const isInMobile = windowSize < 768
-	const name = 'Ăn uống'
-	const detail = 'ga bo lon rau nuoc muc bat dua chao xoong noi'
-
-	const showDetail = () => {
-		const modal = modalApi.info({
-			title: name,
-			centered: true,
-			content: (
-				<>
-					<Typography.Text>{formatMoney(money)}</Typography.Text>
-					<br></br>
-					<Typography.Text>{detail}</Typography.Text>
-				</>
-			),
-			onOk: () => modal.destroy(),
-		})
-	}
 
 	return (
 		<>
-			{contextHolder}
 			<Wrapper
-				onClick={mode === 'mini' || isInMobile ? showDetail : () => {}}
 				data-mini-mode-info={mode === 'mini' || isInMobile}
 			>
-				<Avatar src={''} alt="icon" />
+				<Avatar
+					src={icon}
+					style={{ backgroundColor: generateBackgroundColor() }}
+				>
+					{typeof subTitle === 'string' ? subTitle : subTitle.getMonth() + 1}
+				</Avatar>
 				<NameAndMoney>
 					<Name>
-						<Typography.Text strong>{name}</Typography.Text>
-						{detail && mode !== 'mini' && !isInMobile && (
-							<StyledText ellipsis>{detail}</StyledText>
+						<Typography.Text strong>{title}</Typography.Text>
+						{description && mode !== 'mini' && !isInMobile && (
+							<StyledText ellipsis>{description}</StyledText>
 						)}
 						<Percent data-type-info={typeMoney}>
-							{percent ? percent : formatMoney(money)}
+							{typeof rightNumber === 'number'
+								? formatMoney(rightNumber)
+								: rightNumber}
 						</Percent>
 					</Name>
 					<Typography.Text type="secondary">
-						{percent ? formatMoney(money) : ''}
+						{subTitle.toLocaleString()}
 					</Typography.Text>
 				</NameAndMoney>
 			</Wrapper>

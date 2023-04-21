@@ -1,4 +1,6 @@
+import { Typography } from 'antd'
 import { Bar } from 'react-chartjs-2'
+import styled from 'styled-components'
 
 const chartOptions = {
 	responsive: true,
@@ -6,36 +8,65 @@ const chartOptions = {
 		legend: {
 			position: 'top' as const,
 		},
-		title: {
-			display: true,
-			text: 'Chart.js Bar Chart',
-		},
 	},
 }
-const labels = ['Hôm nay']
 
-function BarChart() {
+interface IProps {
+	labels: Array<string | number>
+	moneyIn: Array<number>
+	moneyOut: Array<number>
+	type?: 'horizontal' | 'stacked'
+	unit: 'nghìn' | 'triệu'
+}
+
+function BarChart(props: IProps) {
+	const { labels, moneyIn, moneyOut, type = 'horizontal', unit } = props
+	const options =
+		type === 'horizontal'
+			? chartOptions
+			: {
+					...chartOptions,
+					scales: {
+						x: {
+							stacked: true,
+						},
+						y: {
+							stacked: true,
+						},
+					},
+			  }
+
 	const data = {
 		labels,
 		datasets: [
 			{
 				label: 'Chi',
-				data: labels.map(() => 1000_000_000),
+				data: moneyOut,
 				backgroundColor: 'rgba(255, 99, 132, 0.2)',
 				borderColor: 'rgb(255, 99, 132)',
 				borderWidth: 1,
 			},
 			{
 				label: 'Thu',
-				data: labels.map(() => 80_000),
-				backgroundColor: 'rgba(75, 192, 192, 0.2)',
-				borderColor: 'rgb(75, 192, 192)',
+				data: moneyIn,
+				backgroundColor: 'rgba(82, 196, 26, 0.2)',
+				borderColor: 'rgb(82, 196, 26)',
 				borderWidth: 1,
 			},
 		],
 	}
 
-	return <Bar options={chartOptions} data={data} />
+	return (
+		<Wrapper>
+			<Typography.Text type="secondary">{`(Đơn vị: ${unit} đồng)`}</Typography.Text>
+			<Bar options={options} data={data} />
+		</Wrapper>
+	)
 }
+
+const Wrapper = styled.div`
+	width: 100%;
+	height: 100%;
+`
 
 export default BarChart

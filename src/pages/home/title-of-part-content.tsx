@@ -11,7 +11,7 @@ function TitleOfPartContent(props: IProps) {
 	return (
 		<TitleFlexBox>
 			<Typography.Title level={5}>{title}</Typography.Title>
-			<StyledViewMoreTitle level={5} type="success">
+			<StyledViewMoreTitle level={5}>
 				Xem tất cả
 			</StyledViewMoreTitle>
 		</TitleFlexBox>
@@ -24,6 +24,7 @@ const TitleFlexBox = styled.div`
 	justify-content: space-between;
 `
 const StyledViewMoreTitle = styled(Typography.Title)`
+	margin-top: 0 !important;
 	cursor: pointer;
 `
 

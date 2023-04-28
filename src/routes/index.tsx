@@ -5,7 +5,7 @@ import {
 	redirect,
 } from 'react-router-dom'
 import { getLoginState } from '@/utilities/check-login'
-import DefaultLayout from '@/layout/default-layout'
+import MainLayout from '@/layout/main-layout'
 import NotExistPageError from '@/components/not-exist-page-error'
 import Login from '@/pages/login-register/login'
 import Register from '@/pages/login-register/register'
@@ -37,7 +37,7 @@ const router = createBrowserRouter(
 				element={<Register />}
 				loader={loggedInCantAccessLoader}
 			/>
-			<Route path="/" element={<DefaultLayout />} loader={privateRouteLoader}>
+			<Route path="/" element={<MainLayout />} loader={privateRouteLoader}>
 				<Route path="/" element={<Home />} />
 				<Route path="/wallet" element={<Wallet />} />
 				<Route path="/transaction/:id" element={<Transaction />} />

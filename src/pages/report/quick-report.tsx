@@ -1,5 +1,4 @@
 import DoughnutChart from '@/components/doughnut-chart'
-import useWindowSize from '@/hooks/use-window-size'
 import generateBackgroundColor from '@/utilities/generate-color'
 import formatMoney from '@/utilities/money-format'
 import { Avatar, Divider, Modal, Typography } from 'antd'
@@ -13,13 +12,9 @@ interface IProps {
 
 function QuickReport(props: IProps) {
 	const { title, moneyIn, moneyOut } = props
-	const windowSize = useWindowSize()
-	const [modalApi, contextHolder] = Modal.useModal()
-
-	const isInMobile = windowSize <= 768
 
 	const handleClick = () => {
-		const modal = modalApi.info({
+		const modal = Modal.info({
 			icon: (
 				<Avatar style={{ backgroundColor: generateBackgroundColor() }}>
 					{title}
@@ -75,10 +70,7 @@ function QuickReport(props: IProps) {
 
 	return (
 		<>
-			<FlexBox
-				data-mode-info={isInMobile ? 'mobile' : 'desktop'}
-				onClick={handleClick}
-			>
+			<FlexBox onClick={handleClick}>
 				<Typography.Title level={5}>{title}</Typography.Title>
 				<Money>
 					<Typography.Text type="success" ellipsis>
@@ -97,7 +89,6 @@ function QuickReport(props: IProps) {
 					)}
 				</Money>
 			</FlexBox>
-			{contextHolder}
 		</>
 	)
 }
@@ -119,15 +110,14 @@ function ModalContent(props: {
 const FlexBox = styled.div`
 	display: flex;
 	justify-content: space-between;
-	width: 19rem;
+	width: 18rem;
 	border-radius: 0.25rem;
 	padding: 0.5rem;
 	margin: 1rem 0;
 	border: 1px solid #ddd;
 	box-shadow: 0 2px 8px #ddd;
 	cursor: pointer;
-	&[data-mode-info='mobile'] {
-		width: 17rem;
+	@media screen and (max-width: 768px) {
 		margin: 1rem auto;
 	}
 `

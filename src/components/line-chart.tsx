@@ -15,11 +15,11 @@ interface IProps {
 	labels: Array<string | number>
 	money: Array<number>
 	type: 'in' | 'out'
-	unit: 'nghìn' | 'triệu'
+	unit: string
 }
 
 function LineChart(props: IProps) {
-	const { labels, money, type, unit } = props
+	const { labels, money, type, unit = 'nghìn' } = props
 
 	const dataset =
 		type === 'out'

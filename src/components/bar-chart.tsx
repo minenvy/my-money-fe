@@ -16,11 +16,11 @@ interface IProps {
 	moneyIn: Array<number>
 	moneyOut: Array<number>
 	type?: 'horizontal' | 'stacked'
-	unit: 'nghìn' | 'triệu'
+	unit?: string
 }
 
 function BarChart(props: IProps) {
-	const { labels, moneyIn, moneyOut, type = 'horizontal', unit } = props
+	const { labels, moneyIn, moneyOut, type = 'horizontal', unit = 'nghìn' } = props
 	const options =
 		type === 'horizontal'
 			? chartOptions
@@ -67,6 +67,9 @@ function BarChart(props: IProps) {
 const Wrapper = styled.div`
 	width: 100%;
 	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 `
 
 export default BarChart

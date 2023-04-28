@@ -3,7 +3,6 @@ import useWindowSize from '@/hooks/use-window-size'
 import generateBackgroundColor from '@/utilities/generate-color'
 import formatMoney from '@/utilities/money-format'
 import { Avatar, Typography } from 'antd'
-import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
 interface IInOutDetailProps {
@@ -12,47 +11,50 @@ interface IInOutDetailProps {
 	title: string
 	subTitle: Date | string
 	description?: string
-	rightNumber?: string | number
+	rightPart?: React.ReactNode
+	type?: 'in' | 'out'
 	mode?: string
 }
 
 function InOutDetail(props: IInOutDetailProps) {
-	const { id, icon, title, subTitle, description, rightNumber, mode } = props
-	const location = useLocation()
+	const {
+		id,
+		icon,
+		title,
+		subTitle,
+		description,
+		rightPart,
+		type = 'in',
+		mode,
+	} = props
 	const windowSize = useWindowSize()
 
-	const typeMoney = 'in'
 	const isInMobile = windowSize < 768
 
 	return (
-		<>
-			<Wrapper
-				data-mini-mode-info={mode === 'mini' || isInMobile}
-			>
-				<Avatar
-					src={icon}
-					style={{ backgroundColor: generateBackgroundColor() }}
-				>
-					{typeof subTitle === 'string' ? subTitle : subTitle.getMonth() + 1}
-				</Avatar>
-				<NameAndMoney>
-					<Name>
-						<Typography.Text strong>{title}</Typography.Text>
-						{description && mode !== 'mini' && !isInMobile && (
-							<StyledText ellipsis>{description}</StyledText>
-						)}
-						<Percent data-type-info={typeMoney}>
-							{typeof rightNumber === 'number'
-								? formatMoney(rightNumber)
-								: rightNumber}
-						</Percent>
-					</Name>
-					<Typography.Text type="secondary">
-						{subTitle.toLocaleString()}
+		<Wrapper data-mini-mode-info={mode === 'mini' || isInMobile}>
+			<Avatar src={icon} style={{ backgroundColor: generateBackgroundColor() }}>
+				{typeof subTitle === 'string' ? subTitle : subTitle.getMonth() + 1}
+			</Avatar>
+			<NameAndMoney>
+				<Name>
+					<Typography.Text
+						style={{ width: mode !== 'mini' && !isInMobile ? '20%' : 'unset' }}
+					>
+						{title}
 					</Typography.Text>
-				</NameAndMoney>
-			</Wrapper>
-		</>
+					{description && mode !== 'mini' && !isInMobile && (
+						<Description>
+							<StyledText ellipsis>{description}</StyledText>
+						</Description>
+					)}
+					<Percent data-type-info={type}>{rightPart}</Percent>
+				</Name>
+				<Typography.Text type="secondary">
+					{subTitle.toLocaleString()}
+				</Typography.Text>
+			</NameAndMoney>
+		</Wrapper>
 	)
 }
 
@@ -60,7 +62,7 @@ const Wrapper = styled.div`
 	display: flex;
 	align-items: center;
 	gap: 1rem;
-	margin-top: 1rem;
+	margin: 0.5rem 0;
 	&[data-mini-mode-info='true'] {
 		cursor: pointer;
 	}
@@ -75,11 +77,18 @@ const Name = styled.div`
 	align-items: center;
 	justify-content: space-between;
 `
+const Description = styled.div`
+	width: 60%;
+	text-align: center;
+	text-overflow: ellipsis;
+`
 const StyledText = styled(Typography.Text)`
 	max-width: 40vw !important;
 `
 const Percent = styled.span`
-	color: red;
+	&[data-type-info='out'] {
+		color: red;
+	}
 	&[data-type-info='in'] {
 		color: #27dc27;
 	}

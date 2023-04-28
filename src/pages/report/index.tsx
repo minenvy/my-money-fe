@@ -56,18 +56,21 @@ const labels = [
 	'Phân tích thu',
 	'Ngân sách',
 ]
+function Title(props: { backToHome: Function; title: string }) {
+	const { backToHome, title } = props
+	return (
+		<HeaderWrapper>
+			<Button
+				type="dashed"
+				icon={<LeftOutlined />}
+				onClick={() => backToHome()}
+			/>
+			<HeaderTitle>{title}</HeaderTitle>
+		</HeaderWrapper>
+	)
+}
 function ReportInMobile() {
 	const [pageId, setPageId] = useState(-1)
-
-	const Title = (props: { backToHome: Function; title: string }) => {
-		const { backToHome, title } = props
-		return (
-			<HeaderWrapper onClick={() => backToHome()}>
-				<Button type="dashed" icon={<LeftOutlined />} />
-				<HeaderTitle>{title}</HeaderTitle>
-			</HeaderWrapper>
-		)
-	}
 
 	return (
 		<>

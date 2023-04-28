@@ -130,5 +130,13 @@ for (const type in moneyTypes) {
   typeOptions.push(option)
 }
 
-export { icons, typeOptions }
+const moneyOutTypes = moneyTypes['Chi tiêu'].map((item: any) => item.value)
+const moneyInTypes = moneyTypes['Khoản thu'].map((item: any) => item.value)
+const valueToLabel = function (value: string) {
+  return (
+    moneyTypes['Khoản thu'].find((item: any) => item.value === value) || moneyTypes['Chi tiêu'].find((item: any) => item.value === value)
+  ).label
+}
+
+export { icons, typeOptions, moneyOutTypes, moneyInTypes, valueToLabel }
 export default moneyTypes

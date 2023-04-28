@@ -5,32 +5,19 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
-interface IHeaderProps {
-	toggleCategories: Function
-}
-
-function Header(props: IHeaderProps) {
+function Header() {
 	const { user } = useAuth()
 	const [isHaveNotification, setIsHaveNotification] = useState(true)
-	const { toggleCategories } = props
 
 	return (
 		<Wrapper>
-			<LogoWrapper>
-				<StyledButton
-					type="text"
-					shape="circle"
-					icon={<MenuOutlined />}
-					onClick={() => toggleCategories()}
-				/>
-				<LogoImage />
-			</LogoWrapper>
+			<LogoImage />
 			<RightContent>
 				<Badge dot={isHaveNotification} offset={[-21, 5]}>
 					<MarginButton type="text" shape="circle" icon={<BellOutlined />} />
 				</Badge>
-				<StyledAvatar src={user?.image} alt="avatar" size="large">
-					{user.username[0].toUpperCase() || 'M'}
+				<StyledAvatar src={user?.image || ''} size="large">
+					{(user.username[0] || '').toUpperCase()}
 				</StyledAvatar>
 			</RightContent>
 		</Wrapper>
@@ -58,12 +45,6 @@ const Wrapper = styled.header`
 	justify-content: space-between;
 	padding: 0.5rem 1rem;
 `
-const LogoWrapper = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: space-around;
-	gap: 0.75rem;
-`
 const LogoImageWrapper = styled.div`
 	display: flex;
 	align-items: center;
@@ -73,12 +54,6 @@ const LogoImageWrapper = styled.div`
 const StyledText = styled.b`
 	min-width: fit-content;
 	margin-left: 0.25rem;
-
-	@media screen and (max-width: 768px) {
-		display: none;
-	}
-`
-const StyledButton = styled(Button)`
 	@media screen and (max-width: 768px) {
 		display: none;
 	}

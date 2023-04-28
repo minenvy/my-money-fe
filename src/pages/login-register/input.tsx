@@ -2,7 +2,7 @@ import { InputHTMLAttributes } from 'react'
 import styled from 'styled-components'
 
 function Input(props: InputHTMLAttributes<HTMLInputElement>) {
-	return <StyledInput {...props} />
+	return <StyledInput required {...props} />
 }
 
 const StyledInput = styled.input`

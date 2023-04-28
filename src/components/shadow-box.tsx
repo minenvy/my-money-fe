@@ -1,4 +1,3 @@
-import useWindowSize from '@/hooks/use-window-size'
 import styled from 'styled-components'
 
 interface IProps {
@@ -9,13 +8,10 @@ interface IProps {
 
 function ShadowBox(props: IProps) {
 	const { children, mode, style } = props
-	const windowSize = useWindowSize()
-	const isInMobile = windowSize < 768
 
 	return (
 		<Wrapper
 			data-mode-info={mode}
-			data-device-info={isInMobile ? 'mobile' : 'desktop'}
 			style={style}
 		>
 			{children}
@@ -33,7 +29,7 @@ const Wrapper = styled.div`
 	&[data-mode-info='mini'] {
 		width: 19rem;
 	}
-	&[data-device-info='mobile'] {
+	@media screen and (max-width: 768px) {
 		margin: 0.5rem auto;
 	}
 `

@@ -18,7 +18,7 @@ function DoughnutChart(props: IProps) {
 		labels,
 		datasets: [
 			{
-				label: '% ',
+				// label: '% ',
 				data: dataOfDataset,
 				backgroundColor,
 				borderColor,

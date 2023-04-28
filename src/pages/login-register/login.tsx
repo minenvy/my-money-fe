@@ -3,15 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { login as loginApi } from '@/api/user'
 import { useAuth } from '@/contexts/auth'
-import { message, Spin } from 'antd'
-import { LoadingOutlined } from '@ant-design/icons'
+import { message, Button } from 'antd'
 import { useErrorBoundary } from '@/contexts/error-fetch-boundary'
-import Button from '@/pages/login-register/no-icon-button'
 import Input from '@/pages/login-register/input'
 
 function Login() {
 	const navigate = useNavigate()
-	const [messageApi, contextHolder] = message.useMessage()
 	const { showBoundary } = useErrorBoundary()
 	const { login } = useAuth()
 	const [loginInformation, setLoginInformation] = useState({
@@ -27,20 +24,19 @@ function Login() {
 		})
 	}
 	const handleLogin = async () => {
-		const user = await loginApi({ ...loginInformation }).catch((err) => {
-			// showBoundary(err)
-		})
-		// if (!user) {
-		// 	messageApi.warning('Tài khoản hoặc mật khẩu không chính xác!')
-		// 	return
-		// }
+		const res = (await loginApi({ ...loginInformation }).catch((err) => {
+			showBoundary(err)
+		})) as Response
+		const user = await res.json()
+		if (Object.keys(user).length === 0) {
+			message.warning('Tài khoản hoặc mật khẩu không chính xác!')
+			return
+		}
 
 		login(user)
 		navigate('/')
 	}
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
-
+	const handleSubmit = async () => {
 		if (isLoading) return
 		setIsLoading(true)
 		await handleLogin()
@@ -48,8 +44,7 @@ function Login() {
 	}
 
 	return (
-		<Form onSubmit={handleSubmit}>
-			{contextHolder}
+		<Form>
 			<h1>Đăng nhập</h1>
 			<StyledLink to={'/register'}>Bạn chưa có tài khoản?</StyledLink>
 			<Input
@@ -66,12 +61,13 @@ function Login() {
 				type="password"
 				placeholder="Mật khẩu"
 			/>
-			<StyledButton type="submit">
-				{isLoading ? (
-					<Spin indicator={<StyledLoadingOutlined spin />} />
-				) : (
-					'Đăng nhập'
-				)}
+			<StyledButton
+				type="primary"
+				size="large"
+				loading={isLoading}
+				onClick={handleSubmit}
+			>
+				Đăng nhập
 			</StyledButton>
 		</Form>
 	)
@@ -83,7 +79,7 @@ const Form = styled.form`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	margin: 3rem auto 0;
+	margin: 8rem auto 0;
 `
 const StyledLink = styled(Link)`
 	margin-top: 1rem;
@@ -91,10 +87,7 @@ const StyledLink = styled(Link)`
 const StyledButton = styled(Button)`
 	align-self: flex-end;
 	margin-right: 5%;
-`
-const StyledLoadingOutlined = styled(LoadingOutlined)`
-	font-size: 1.5rem;
-	color: #fff;
+	margin-top: 1.5rem;
 `
 
 export default Login

@@ -3,7 +3,6 @@ import { DatePicker, DatePickerProps, Select } from 'antd'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import styled from 'styled-components'
-import useWindowSize from '@/hooks/use-window-size'
 import QuickReport from './quick-report'
 import ChartComponent from './report-chart'
 
@@ -24,11 +23,9 @@ interface IProps {
 
 function MoneyReportLayout(props: IProps) {
 	const { chartType } = props
-	const windowSize = useWindowSize()
 	const [selectedOption, setSelectedOption] = useState(filterOptions[0].value)
 	const [year, setYear] = useState(today.getFullYear())
 
-	const isInMobile = windowSize <= 768
 	const report: Array<IQuickReport> = [
 		{
 			title: '1',
@@ -117,11 +114,11 @@ function MoneyReportLayout(props: IProps) {
 				onChange={handleChangeYear}
 			/>
 			<ShadowBox>
-				<FlexBox data-mode-info={isInMobile ? 'mobile' : 'desktop'}>
-					<Chart data-mode-info={isInMobile ? 'mobile' : 'desktop'}>
+				<FlexBox>
+					<Chart>
 						<ChartComponent chartType={chartType} report={report} />
 					</Chart>
-					<Report data-mode-info={isInMobile ? 'mobile' : 'desktop'}>
+					<Report>
 						{report.map((quickReport) => {
 							const { title, moneyIn, moneyOut } = quickReport
 							const unitInTitle = selectedOption === 'month' ? 'Tháng' : 'Năm'
@@ -129,7 +126,7 @@ function MoneyReportLayout(props: IProps) {
 								<QuickReport
 									title={unitInTitle + ' ' + title}
 									moneyIn={moneyIn}
-									moneyOut={moneyOut}
+									// moneyOut={moneyOut}
 									key={title}
 								/>
 							)
@@ -150,7 +147,7 @@ const FlexBox = styled.div`
 	align-items: center;
 	justify-content: space-between;
 	gap: 2rem;
-	&[data-mode-info='mobile'] {
+	@media screen and (max-width: 768px) {
 		flex-direction: column;
 	}
 `
@@ -161,7 +158,7 @@ const Chart = styled.div`
 	align-items: center;
 	justify-content: center;
 	overflow: scroll;
-	&[data-mode-info='mobile'] {
+	@media screen and (max-width: 768px) {
 		width: 17rem;
 		min-height: unset;
 	}
@@ -170,7 +167,7 @@ const Report = styled.div`
 	max-height: 28rem;
 	width: 20rem;
 	overflow: auto;
-	&[data-mode-info='mobile'] {
+	@media screen and (max-width: 768px) {
 		width: 100%;
 		::-webkit-scrollbar {
 			display: none;

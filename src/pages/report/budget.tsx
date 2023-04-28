@@ -4,7 +4,7 @@ import ShadowBox from '@/components/shadow-box'
 import getRemainingDays from '@/utilities/get-remaining-days-in-month'
 import formatMoney from '@/utilities/money-format'
 import { PlusOutlined } from '@ant-design/icons'
-import { Avatar, FloatButton, Modal, Tooltip, Typography } from 'antd'
+import { Avatar, FloatButton, Modal, Typography } from 'antd'
 import styled from 'styled-components'
 import BudgetModalContent from './budget-modal-content'
 import useWindowSize from '@/hooks/use-window-size'
@@ -50,7 +50,6 @@ interface IDetailProps {
 
 function BudgetDetail(props: IDetailProps) {
 	const { id, icon, title, subTitle, totalMoney, usedMoney } = props
-	const [modalApi, contextHolder] = Modal.useModal()
 	const windowSize = useWindowSize()
 
 	const isInMobile = windowSize <= 768
@@ -59,12 +58,12 @@ function BudgetDetail(props: IDetailProps) {
 	const remainingDays = getRemainingDays(subTitle)
 
 	const handleClick = () => {
-		const modal = modalApi.info({
+		const modal = Modal.info({
 			title,
 			icon: <Avatar src={icon} />,
 			content: <BudgetModalContent id={id} />,
 			centered: true,
-			width: isInMobile ? '100%' : '50rem',
+			width: isInMobile ? '100%' : '40rem',
 			okButtonProps: { type: 'default' },
 			onOk: () => modal.destroy(),
 		})
@@ -79,7 +78,7 @@ function BudgetDetail(props: IDetailProps) {
 						title={title}
 						icon={icon}
 						subTitle={subTitle}
-						rightNumber={totalMoney}
+						rightPart={totalMoney}
 						mode="mini"
 					/>
 					<TotalLine>
@@ -105,7 +104,6 @@ function BudgetDetail(props: IDetailProps) {
 					</DueDate>
 				</ShadowBox>
 			</DetailWrapper>
-			{contextHolder}
 		</>
 	)
 }

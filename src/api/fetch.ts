@@ -1,43 +1,41 @@
 import { domain } from "@/constants/env"
 
-async function customGetFetch(path: string, headers?: any) {
-  const res = await fetch(domain + path, {
+function getFetch(path: string, signal?: any) {
+  return fetch(domain + path, {
     method: 'get',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      ...headers
     },
     credentials: 'include',
-  }) as Response
-  const data = await res.json()
-  return data
+    signal
+  })
 }
 
-async function customPostFetch(path: string, body?: any) {
-  const res = await fetch(domain + path, {
+function postFetch(path: string, body: any, signal?: any) {
+  return fetch(domain + path, {
     method: 'post',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     credentials: 'include',
-    body: JSON.stringify(body)
-  }) as Response
-  const data = await res.json()
-  return data
+    body: JSON.stringify(body),
+    signal
+  })
 }
 
-async function customDeleteFetch(path: string, body?: any) {
-  await fetch(domain + path, {
+function deleteFetch(path: string, body: any, signal?: any) {
+  return fetch(domain + path, {
     method: 'post',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     credentials: 'include',
-    body: JSON.stringify(body)
-  }) as Response
+    body: JSON.stringify(body),
+    signal
+  })
 }
 
-export { customGetFetch, customPostFetch, customDeleteFetch }
+export { getFetch, postFetch, deleteFetch }

@@ -3,15 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { useAuth } from '@/contexts/auth'
 import { register as registerApi } from '@/api/user'
-import { Spin, message } from 'antd'
-import { LoadingOutlined } from '@ant-design/icons'
+import { message, Button } from 'antd'
 import { useErrorBoundary } from '@/contexts/error-fetch-boundary'
 import Input from '@/pages/login-register/input'
-import Button from '@/pages/login-register/no-icon-button'
 
 function Register() {
 	const navigate = useNavigate()
-	const [messageApi, contextHolder] = message.useMessage()
 	const { showBoundary } = useErrorBoundary()
 	const { register } = useAuth()
 	const [registerInformation, setRegisterInformation] = useState({
@@ -29,24 +26,23 @@ function Register() {
 	}
 	const handleRegister = async () => {
 		if (registerInformation.password !== registerInformation.repassword) {
-			messageApi.warning('Mật khẩu không trùng khớp!')
+			message.warning('Mật khẩu không trùng khớp!')
 			return
 		}
 
-		const user = await registerApi({ ...registerInformation }).catch((err) => {
+		const res = (await registerApi({ ...registerInformation }).catch((err) => {
 			showBoundary(err)
-		})
-		if (!user) {
-			messageApi.warning('Tên tài khoản đã được sử dụng!')
+		})) as Response
+		const user = await res.json()
+		if (Object.keys(user).length === 0) {
+			message.warning('Tên tài khoản đã được sử dụng!')
 			return
 		}
 
 		register(user)
 		navigate('/')
 	}
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
-
+	const handleSubmit = async () => {
 		if (isLoading) return
 		setIsLoading(true)
 		await handleRegister()
@@ -54,8 +50,7 @@ function Register() {
 	}
 
 	return (
-		<Form onSubmit={handleSubmit} aria-disabled={isLoading}>
-			{contextHolder}
+		<Form>
 			<h1>Đăng ký</h1>
 			<StyledLink to={'/login'}>Bạn đã có tài khoản?</StyledLink>
 			<Input
@@ -79,12 +74,13 @@ function Register() {
 				type="password"
 				placeholder="Nhập lại mật khẩu"
 			/>
-			<StyledButton type="submit">
-				{isLoading ? (
-					<Spin indicator={<StyledLoadingOutlined spin />} />
-				) : (
-					'Đăng ký'
-				)}
+			<StyledButton
+				type="primary"
+				size="large"
+				loading={isLoading}
+				onClick={handleSubmit}
+			>
+				Đăng ký
 			</StyledButton>
 		</Form>
 	)
@@ -96,7 +92,7 @@ const Form = styled.form`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	margin: 1.5rem auto 0;
+	margin: 8rem auto 0;
 `
 const StyledLink = styled(Link)`
 	margin-top: 1rem;
@@ -104,10 +100,7 @@ const StyledLink = styled(Link)`
 const StyledButton = styled(Button)`
 	align-self: flex-end;
 	margin-right: 5%;
-`
-const StyledLoadingOutlined = styled(LoadingOutlined)`
-	font-size: 1.5rem;
-	color: #fff;
+	margin-top: 1.5rem;
 `
 
 export default Register

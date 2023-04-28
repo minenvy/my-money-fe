@@ -1,11 +1,15 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { getUserByToken } from '@/api/user'
-import { setLoginState } from '@/utilities/check-login'
+import { removeLoginState, setLoginState } from '@/utilities/check-login'
+import useFetch from '@/hooks/use-fetch'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 interface IUserInfo {
 	username: string
+	money: number
 	image?: string
+	bio?: string
 	friend?: Array<string>
+	block?: Array<string>
 	chattedWith?: Array<string>
 }
 
@@ -13,6 +17,8 @@ interface IAuthContext {
 	user: IUserInfo
 	login: Function
 	register: Function
+	logout: Function
+	changeInfo: Function
 }
 
 const AuthContext = createContext<IAuthContext | null>(null)
@@ -26,27 +32,50 @@ interface IAuthProviderProps {
 }
 
 export default function AuthProvider({ children }: IAuthProviderProps) {
+	const { data } = useFetch('/user/get-by-token')
 	const [user, setUser] = useState<IUserInfo>({
-		username: 'Minh',
+		username: '',
+		money: 0,
 	})
-
-	function changeUserInfo(newUser: any) {
-		setLoginState()
-		setUser({ ...user, ...newUser })
-	}
+	const navigate = useNavigate()
+	const location = useLocation()
 
 	useEffect(() => {
-		;(async () => {
-			const user = await getUserByToken()
-			if (!user) return
+		;(() => {
+			if (!data) return
+			if (Object.keys(data).length === 0) {
+				removeLoginState()
+				navigate('/login')
+				return
+			}
+			const isInNotLoggedInPage =
+				location.pathname.includes('login') ||
+				location.pathname.includes('register')
+			if (isInNotLoggedInPage) navigate('/')
 			setLoginState()
-			changeUserInfo(user)
+			changeUserInfo(data)
 		})()
-	}, [])
+	}, [data])
+
+	function changeUserInfo(newUser: any) {
+		setUser({ ...user, ...newUser })
+	}
+	function login(newUser: any) {
+		setLoginState()
+		changeUserInfo(newUser)
+	}
+	function register(newUser: any) {
+		setLoginState()
+		changeUserInfo(newUser)
+	}
+	function logout() {
+		removeLoginState()
+		changeUserInfo(null)
+	}
 
 	return (
 		<AuthContext.Provider
-			value={{ user, login: changeUserInfo, register: changeUserInfo }}
+			value={{ user, login, register, logout, changeInfo: changeUserInfo }}
 		>
 			{children}
 		</AuthContext.Provider>

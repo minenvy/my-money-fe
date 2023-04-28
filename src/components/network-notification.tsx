@@ -5,21 +5,20 @@ import { WifiOutlined } from '@ant-design/icons'
 
 function NetWorkNotification() {
 	const isOnline = useNetworkState()
-	const [notificationApi, contextHolder] = notification.useNotification()
 	const [previousNetworkState, setPreviousNetworkState] = useState(isOnline)
 
 	useEffect(() => {
 		if (!isOnline || isOnline !== previousNetworkState) {
-			notificationApi.destroy()
+			notification.destroy()
 			isOnline
-				? notificationApi.info({
+				? notification.info({
 						message: 'Network notification',
 						description: 'Your Internet connection was restored.',
 						icon: <WifiOutlined style={{ color: 'green' }} />,
 						duration: 0,
 						placement: 'bottomLeft',
 				  })
-				: notificationApi.warning({
+				: notification.warning({
 						message: 'Network notification',
 						description: 'You are offline!',
 						icon: <WifiOutlined />,
@@ -30,7 +29,7 @@ function NetWorkNotification() {
 		}
 	}, [isOnline])
 
-	return <>{contextHolder}</>
+	return <></>
 }
 
 export default NetWorkNotification

@@ -6,18 +6,29 @@ import {
 	UserOutlined,
 	WalletOutlined,
 } from '@ant-design/icons'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
-interface ISidebarProps {
-	isShowedCategories: boolean
-}
+const page = ['', 'wallet', 'transaction', 'report', 'profile']
+const routes = ['/', '/wallet', '/transaction', '/report', '/profile']
 
-function Sidebar(props: ISidebarProps) {
+function Sidebar() {
+	const navigate = useNavigate()
+	const location = useLocation()
 	const windowWidth = useWindowSize()
+	const [activeButtonId, setActiveButtonId] = useState(
+		page.indexOf(location.pathname.split('/')[1])
+	)
 
-	const { isShowedCategories } = props
+	const handleClick = (index: number) => {
+		setActiveButtonId(index)
+		navigate(routes[index])
+	}
+	useEffect(() => {
+		setActiveButtonId(page.indexOf(location.pathname.split('/')[1]))
+	}, [location])
+
 	const isInMobile = windowWidth <= 768
 	const labels = [
 		'Tổng quan',
@@ -35,18 +46,22 @@ function Sidebar(props: ISidebarProps) {
 		<LineChartOutlined />,
 		<UserOutlined />,
 	].filter((icon) => !!icon)
-	const routes = ['/', '/wallet', '/transaction', '/report', '/profile']
 
 	return (
 		<>
 			{isInMobile ? (
-				<SidebarInMobile icons={icons} labels={labels} routes={routes} />
+				<SidebarInMobile
+					icons={icons}
+					labels={labels}
+					activeButtonId={activeButtonId}
+					onClick={handleClick}
+				/>
 			) : (
 				<SidebarInDesktop
 					icons={icons}
 					labels={labels}
-					routes={routes}
-					isShowedCategories={isShowedCategories}
+					activeButtonId={activeButtonId}
+					onClick={handleClick}
 				/>
 			)}
 		</>
@@ -56,16 +71,10 @@ function Sidebar(props: ISidebarProps) {
 function SidebarInMobile(props: {
 	icons: Array<React.ReactNode>
 	labels: Array<string>
-	routes: Array<string>
+	activeButtonId: number
+	onClick: Function
 }) {
-	const { icons, labels, routes } = props
-	const navigate = useNavigate()
-	const [activeButtonId, setActiveButtonId] = useState(0)
-
-	const handleClick = (index: number) => {
-		setActiveButtonId(index)
-		navigate(routes[index])
-	}
+	const { icons, labels, activeButtonId, onClick } = props
 
 	return (
 		<FixedPositionInMobile>
@@ -79,7 +88,7 @@ function SidebarInMobile(props: {
 							icon={icon}
 							label={label}
 							key={label}
-							onClick={() => handleClick(index)}
+							onClick={() => onClick(index)}
 						/>
 					)
 				})}
@@ -89,41 +98,35 @@ function SidebarInMobile(props: {
 }
 
 function SidebarInDesktop(props: {
-	isShowedCategories: boolean
 	icons: Array<React.ReactNode>
 	labels: Array<string>
-	routes: Array<string>
+	activeButtonId: number
+	onClick: Function
 }) {
-	const { icons, labels, routes, isShowedCategories } = props
-	const navigate = useNavigate()
-	const [activeButtonId, setActiveButtonId] = useState(0)
-
-	const handleClick = (index: number) => {
-		setActiveButtonId(index)
-		navigate(routes[index])
-	}
+	const { icons, labels, activeButtonId, onClick } = props
+	const windowSize = useWindowSize()
+	const isInLaptop = windowSize < 1200
 
 	return (
 		<FixedPosition>
 			<DesktopWrapper>
 				{icons.map((icon, index) => {
-					const label = isShowedCategories ? labels[index] : ''
+					const label = labels[index]
 					const isActive = activeButtonId === index
-					return isShowedCategories ? (
+					return isInLaptop ? (
+						<MobileButton
+							isActive={isActive}
+							icon={icon}
+							label={''}
+							onClick={() => onClick(index)}
+						/>
+					) : (
 						<DesktopButton
 							isActive={isActive}
 							icon={icon}
 							label={label}
 							key={index}
-							onClick={() => handleClick(index)}
-						/>
-					) : (
-						<MobileButton
-							isActive={isActive}
-							icon={icon}
-							label={label}
-							key={index}
-							onClick={() => handleClick(index)}
+							onClick={() => onClick(index)}
 						/>
 					)
 				})}
@@ -194,10 +197,6 @@ const MobileWrapper = styled(Wrapper)`
 `
 const DesktopWrapper = styled(Wrapper)`
 	flex-direction: column;
-	&[data-mode-info='small'] {
-		width: 14.5rem;
-		padding: 1rem;
-	}
 `
 const CustomButton = styled.div`
 	display: flex;

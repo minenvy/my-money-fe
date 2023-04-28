@@ -7,226 +7,149 @@ import dayjs from 'dayjs'
 import { useState } from 'react'
 import styled from 'styled-components'
 import QuickReport from './quick-report'
-import useWindowSize from '@/hooks/use-window-size'
 import NoData from '@/components/empty'
+import useFetch from '@/hooks/use-fetch'
+import { icons, moneyInTypes, valueToLabel } from '@/constants/money-type'
+import { useNavigate } from 'react-router-dom'
 
 const monthFormat = 'MM/YYYY'
 const today = new Date()
 
+interface ITransaction {
+	id: string
+	type: string
+	money: number
+	day: number
+	month: number
+	year: number
+	note?: string
+}
+
 function Wallet() {
-	const windowSize = useWindowSize()
+	const navigate = useNavigate()
 	const [month, setMonth] = useState(today.getMonth() + 1)
+	const [year, setYear] = useState(today.getFullYear())
+	const { data, isLoading } = useFetch(
+		`/transaction/get-in-month/${month}/${year}`,
+		[month, year]
+	)
 
-	const hasData = true
-	const isInMobile = windowSize <= 768
-	const money = 5_000_000
-
-	const changeMonth: DatePickerProps['onChange'] = (_, dateString) => {
-		setMonth(Number(dateString.split('-')[1]))
+	const changeMonth = (dateString: string) => {
+		const dateInfo = dateString.split('/')
+		setMonth(Number(dateInfo[0]))
+		setYear(Number(dateInfo[1]))
 	}
+	const redirectToTransaction = (id: string) => navigate('/transaction/' + id)
+
+	const hasData = data && data.length > 0
+	const money = 5_000_000
+	if (!hasData) {
+		return (
+			<>
+				<TotalMoneyTitle money={money} />
+				<MonthPicker onChange={changeMonth} />
+				<ShadowBox>
+					<NoData />
+				</ShadowBox>
+			</>
+		)
+	}
+
+	const monthStatist: Array<Array<ITransaction>> = []
+	const dayInMonth: Array<number> = []
+	data.forEach((item: ITransaction) => {
+		const day = item.day
+		if (!dayInMonth.includes(day)) {
+			dayInMonth.push(day)
+			monthStatist.push([item])
+		} else monthStatist[dayInMonth.indexOf(day)].push(item)
+	})
 
 	return (
 		<>
-			<TotalMoney>
-				<StyledText type="secondary">Số dư</StyledText>
-				<StyledText strong>{formatMoney(money)}</StyledText>
-			</TotalMoney>
+			<TotalMoneyTitle money={0} />
+			<MonthPicker onChange={changeMonth} />
 
-			<StyledDatePicker
-				defaultValue={dayjs(dayjs(today), monthFormat)}
-				format={monthFormat}
-				picker="month"
-				onChange={changeMonth}
-			/>
+			<Layout>
+				<QuickReport
+					quickMoneyReport={[-200_000, 500_000, -100_000, 200_000]}
+				/>
+				<SeparatePart>
+					{monthStatist.map((dayStatis, index) => {
+						const totalMoney = dayStatis.reduce(
+							(total, item) =>
+								moneyInTypes.includes(item.type)
+									? total + item.money
+									: total - item.money,
+							0
+						)
 
-			{hasData ? (
-				<Layout data-mode-info={isInMobile ? 'mobile' : 'desktop'}>
-					<QuickReport
-						quickMoneyReport={[-200_000, 500_000, -100_000, 200_000]}
-					/>
-					<SeparatePart data-mode-info={isInMobile ? 'mobile' : 'desktop'}>
-						<ShadowBox mode="mini">
-							<FlexBox>
-								<TitleInOutDetail time={new Date()} money={3_000_000} />
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={2_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={2_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={4_000}
-									mode="mini"
-								/>
-							</FlexBox>
-						</ShadowBox>
-						<ShadowBox mode="mini">
-							<FlexBox>
-								<TitleInOutDetail time={new Date()} money={3_000_000} />
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={2_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={4_000}
-									mode="mini"
-								/>
-							</FlexBox>
-						</ShadowBox>
-						<ShadowBox mode="mini">
-							<FlexBox>
-								<TitleInOutDetail time={new Date()} money={3_000_000} />
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={2_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={2_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={4_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={4_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={4_000}
-									mode="mini"
-								/>
-							</FlexBox>
-						</ShadowBox>
-						<ShadowBox mode="mini">
-							<FlexBox>
-								<TitleInOutDetail time={new Date()} money={3_000_000} />
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={2_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={2_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={4_000}
-									mode="mini"
-								/>
-							</FlexBox>
-						</ShadowBox>
-						<ShadowBox mode="mini">
-							<FlexBox>
-								<TitleInOutDetail time={new Date()} money={3_000_000} />
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={2_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={2_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={4_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={4_000}
-									mode="mini"
-								/>
-								<InOutDetail
-									id="abc"
-									icon=""
-									title="Ăn uống"
-									subTitle={new Date()}
-									rightNumber={4_000}
-									mode="mini"
-								/>
-							</FlexBox>
-						</ShadowBox>
-					</SeparatePart>
-				</Layout>
-			) : (
-				<ShadowBox>
-					<NoData hasButton />
-				</ShadowBox>
-			)}
+						return (
+							<ShadowBox mode="mini" key={index}>
+								<FlexBox>
+									<TitleInOutDetail
+										time={new Date(year, month, dayInMonth[index])}
+										money={totalMoney}
+									/>
+									{dayStatis.map((item: ITransaction) => {
+										const icon = icons.find(
+											(ic) => ic.value === item.type
+										)?.icon
+										const title = valueToLabel(item.type)
+										const date = new Date(item.year, item.month, item.day)
+											.toLocaleString()
+											.split(',')[0]
+										const money = formatMoney(item.money)
+										const type = moneyInTypes.includes(item.type) ? 'in' : 'out'
+										return (
+											<div key={item.id} onClick={() => redirectToTransaction(item.id)}>
+												<InOutDetail
+													id={item.id}
+													icon={icon}
+													title={title}
+													subTitle={date}
+													rightPart={money}
+													mode="mini"
+													type={type}
+												/>
+											</div>
+										)
+									})}
+								</FlexBox>
+							</ShadowBox>
+						)
+					})}
+				</SeparatePart>
+			</Layout>
 		</>
+	)
+}
+
+function TotalMoneyTitle(props: { money: number }) {
+	const { money } = props
+	return (
+		<TotalMoney>
+			<StyledText type="secondary">Số dư</StyledText>
+			<StyledText strong>{formatMoney(money)}</StyledText>
+		</TotalMoney>
+	)
+}
+function MonthPicker(props: { onChange: Function }) {
+	const { onChange } = props
+
+	return (
+		<StyledDatePicker
+			defaultValue={dayjs(dayjs(today), monthFormat)}
+			format={monthFormat}
+			picker="month"
+			onChange={(_, dateString) => onChange(dateString)}
+		/>
 	)
 }
 
 const StyledText = styled(Typography.Text)`
 	text-align: center;
+	font-size: 1.25rem;
 `
 const TotalMoney = styled.div`
 	display: flex;
@@ -241,7 +164,7 @@ const Layout = styled.div`
 	flex-direction: row;
 	justify-content: space-evenly;
 	gap: 2rem;
-	&[data-mode-info='mobile'] {
+	@media screen and (max-width: 768px) {
 		flex-direction: column;
 		gap: 0;
 	}
@@ -256,8 +179,8 @@ const SeparatePart = styled.div`
 	justify-content: space-between;
 	flex-wrap: wrap;
 	overflow: auto;
-	&[data-mode-info='mobile'] {
-		max-width: 18rem;
+	@media screen and (max-width: 768px) {
+		max-width: 19rem;
 	}
 `
 const FlexBox = styled.div`

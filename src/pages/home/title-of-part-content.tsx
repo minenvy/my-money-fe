@@ -3,15 +3,16 @@ import styled from 'styled-components'
 
 interface IProps {
 	title: string
+	onClick: Function
 }
 
 function TitleOfPartContent(props: IProps) {
-	const { title } = props
+	const { title, onClick } = props
 
 	return (
 		<TitleFlexBox>
 			<Typography.Title level={5}>{title}</Typography.Title>
-			<StyledViewMoreTitle level={5}>
+			<StyledViewMoreTitle level={5} onClick={() => onClick()}>
 				Xem tất cả
 			</StyledViewMoreTitle>
 		</TitleFlexBox>

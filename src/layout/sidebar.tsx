@@ -1,3 +1,4 @@
+import { useAuth } from '@/contexts/auth'
 import useWindowSize from '@/hooks/use-window-size'
 import {
 	HomeOutlined,
@@ -11,15 +12,23 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 const page = ['', 'wallet', 'transaction', 'report', 'profile']
-const routes = ['/', '/wallet', '/transaction', '/report', '/profile']
 
 function Sidebar() {
 	const navigate = useNavigate()
 	const location = useLocation()
+	const { user } = useAuth()
 	const windowWidth = useWindowSize()
 	const [activeButtonId, setActiveButtonId] = useState(
 		page.indexOf(location.pathname.split('/')[1])
 	)
+	const isInMobile = windowWidth <= 768
+	const routes = [
+		'/',
+		'/wallet',
+		'/transaction',
+		'/report',
+		'/profile/' + user.id,
+	]
 
 	const handleClick = (index: number) => {
 		setActiveButtonId(index)
@@ -29,7 +38,6 @@ function Sidebar() {
 		setActiveButtonId(page.indexOf(location.pathname.split('/')[1]))
 	}, [location])
 
-	const isInMobile = windowWidth <= 768
 	const labels = [
 		'Tổng quan',
 		'Tài khoản',
@@ -119,6 +127,7 @@ function SidebarInDesktop(props: {
 							icon={icon}
 							label={''}
 							onClick={() => onClick(index)}
+							key={index}
 						/>
 					) : (
 						<DesktopButton

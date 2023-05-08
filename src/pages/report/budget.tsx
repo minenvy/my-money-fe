@@ -4,64 +4,164 @@ import ShadowBox from '@/components/shadow-box'
 import getRemainingDays from '@/utilities/get-remaining-days-in-month'
 import formatMoney from '@/utilities/money-format'
 import { PlusOutlined } from '@ant-design/icons'
-import { Avatar, FloatButton, Modal, Typography } from 'antd'
+import { Avatar, FloatButton, Modal, Spin, Typography } from 'antd'
 import styled from 'styled-components'
-import BudgetModalContent from './budget-modal-content'
+import BudgetInfoModal from './budget-info-modal'
 import useWindowSize from '@/hooks/use-window-size'
+import NewBudgetModal from './new-budget-modal'
+import { Fragment, useRef, useState } from 'react'
+import useFetch from '@/hooks/use-fetch'
+import Loading from '@/components/loading'
+import VirtualList from 'rc-virtual-list'
+import { getFetch } from '@/api/fetch'
+
+const Offset = 15
+const ContainerHeight = 576
+const ItemHeight = 115
 
 function Budget() {
-	const hasData = false
+	const [isModalOpen, setIsModalOpen] = useState(false)
 
 	return (
 		<Wrapper>
-			{hasData ? (
+			<Budgets />
+			<FloatButton
+				type="primary"
+				icon={<PlusOutlined />}
+				style={{ bottom: 80 }}
+				onClick={() => setIsModalOpen(true)}
+			/>
+			<NewBudgetModal open={isModalOpen} close={() => setIsModalOpen(false)} />
+		</Wrapper>
+	)
+}
+
+interface IBudget {
+	id: string
+	name: string
+	money: number
+	usedMoney: number
+	startDate: Date
+	endDate: Date
+	options: string
+}
+interface IData {
+	isLoading: boolean
+	data: Array<IBudget>
+}
+
+function Budgets() {
+	const { data, isLoading } = useFetch('/budget/get-infinite/0') as IData
+	const [budgets, setBudgets] = useState<Array<IBudget>>()
+	const [isFetching, setIsFetching] = useState(false)
+	const offset = useRef(0)
+
+	if (isLoading) return <Loading />
+	if (!data) return null
+	if (!budgets) setBudgets(data)
+
+	const hasData = data.length > 0
+	if (!hasData)
+		return (
+			<Wrapper>
 				<ShadowBox>
 					<NoData />
 				</ShadowBox>
-			) : (
-				<>
-					<BudgetDetail
-						id="abc"
-						icon=""
-						title="ohoho"
-						subTitle={new Date()}
-						totalMoney={1_000_000}
-						usedMoney={700_000}
-					/>
-					<FloatButton
-						type="primary"
-						icon={<PlusOutlined />}
-						style={{ bottom: 80 }}
-					/>
-				</>
-			)}
+			</Wrapper>
+		)
+
+	const onScroll = async (e: React.UIEvent<HTMLElement, UIEvent>) => {
+		if (
+			e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
+			ContainerHeight
+		) {
+			setIsFetching(true)
+			const res = (await getFetch(
+				'/budget/get-infinite/' + (offset.current + Offset)
+			).catch(() => [])) as Response
+			if (!res.ok) return
+			offset.current += Offset
+			const resData = await res.json()
+			setBudgets([...(budgets as Array<IBudget>), ...resData])
+			setIsFetching(false)
+		}
+	}
+
+	return (
+		<Wrapper>
+			<VirtualList
+				data={budgets || []}
+				height={ContainerHeight}
+				itemHeight={ItemHeight}
+				itemKey="id"
+				onScroll={onScroll}
+			>
+				{(item: IBudget) => {
+					const { id, name, money, usedMoney, startDate, endDate, options } =
+						item
+
+					return (
+						<Fragment key={id}>
+							<BudgetDetail
+								id={id}
+								name={name}
+								startDate={new Date(startDate)}
+								endDate={new Date(endDate)}
+								totalMoney={money}
+								usedMoney={usedMoney}
+								options={options}
+							/>
+						</Fragment>
+					)
+				}}
+			</VirtualList>
+			{isFetching && <Spin />}
 		</Wrapper>
 	)
 }
 
 interface IDetailProps {
 	id: string
-	icon: string
-	title: string
-	subTitle: Date
+	icon?: React.ReactNode
+	name: string
+	startDate: Date
+	endDate: Date
 	totalMoney: number
 	usedMoney: number
+	options: string
 }
 
 function BudgetDetail(props: IDetailProps) {
-	const { id, icon, title, subTitle, totalMoney, usedMoney } = props
+	const { id, icon, name, startDate, endDate, totalMoney, usedMoney, options } =
+		props
 	const windowSize = useWindowSize()
 
 	const isInMobile = windowSize <= 768
+	const subTitle =
+		startDate.toLocaleDateString() + ' - ' + endDate.toLocaleDateString()
 	const percent = (usedMoney / totalMoney) * 100
 	const remainingMoney = totalMoney - usedMoney
-	const remainingDays = getRemainingDays(subTitle)
+	const today = new Date()
+	const remainingDays = getRemainingDays(today, endDate)
 
 	const handleClick = () => {
 		const modal = Modal.info({
-			title,
-			icon: <Avatar src={icon} />,
-			content: <BudgetModalContent id={id} />,
+			title: name,
+			icon: (
+				<Avatar style={{ backgroundColor: '#1677ff' }}>
+					{name[0].toUpperCase()}
+				</Avatar>
+			),
+			content: (
+				<BudgetInfoModal
+					id={id}
+					totalMoney={totalMoney}
+					usedMoney={usedMoney}
+					startDate={startDate}
+					endDate={endDate}
+					options={options}
+				/>
+			),
 			centered: true,
 			width: isInMobile ? '100%' : '40rem',
 			okButtonProps: { type: 'default' },
@@ -74,11 +174,10 @@ function BudgetDetail(props: IDetailProps) {
 			<DetailWrapper onClick={handleClick}>
 				<ShadowBox>
 					<InOutDetail
-						id={id}
-						title={title}
+						title={name}
 						icon={icon}
 						subTitle={subTitle}
-						rightPart={totalMoney}
+						moreDetail={formatMoney(totalMoney)}
 						mode="mini"
 					/>
 					<TotalLine>
@@ -96,7 +195,7 @@ function BudgetDetail(props: IDetailProps) {
 					</TotalLine>
 					<DueDate>
 						<Typography.Text type="secondary">
-							Còn {remainingDays} ngày
+							{remainingDays > 0 ? `Còn ${remainingDays} ngày` : 'Hết hạn'}
 						</Typography.Text>
 						<Typography.Text type="secondary">
 							{formatMoney(remainingMoney)}
@@ -110,6 +209,7 @@ function BudgetDetail(props: IDetailProps) {
 
 const Wrapper = styled.div`
 	max-width: 30rem;
+	max-height: 36rem;
 	width: 100%;
 	margin: 0 auto;
 `

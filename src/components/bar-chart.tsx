@@ -7,6 +7,7 @@ const chartOptions = {
 	plugins: {
 		legend: {
 			position: 'top' as const,
+			onClick: (e: any) => e.stopPropagation(),
 		},
 	},
 }
@@ -20,7 +21,7 @@ interface IProps {
 }
 
 function BarChart(props: IProps) {
-	const { labels, moneyIn, moneyOut, type = 'horizontal', unit = 'nghìn' } = props
+	const { labels, moneyIn, moneyOut, type = 'horizontal', unit } = props
 	const options =
 		type === 'horizontal'
 			? chartOptions
@@ -58,7 +59,9 @@ function BarChart(props: IProps) {
 
 	return (
 		<Wrapper>
-			<Typography.Text type="secondary">{`(Đơn vị: ${unit} đồng)`}</Typography.Text>
+			<Typography.Text type="secondary">
+				{unit ? `(Đơn vị: ${unit} đồng)` : `(Đơn vị: đồng)`}
+			</Typography.Text>
 			<Bar options={options} data={data} />
 		</Wrapper>
 	)

@@ -1,16 +1,13 @@
-import reportTypes from '@/constants/report-type'
+import reportTypes from '@/constants/report'
 import { Avatar, Button, Tabs } from 'antd'
-import { useState } from 'react'
 import MoneyReportLayout from './money-report-layout'
 import useWindowSize from '@/hooks/use-window-size'
-import bieudocot from '@/assets/bieudocot.jpg'
-import duongdo from '@/assets/duongdo.webp'
-import duongxanh from '@/assets/duongxanh.jpg'
 import ngansach from '@/assets/ngansach.jpg'
 import ShadowBox from '@/components/shadow-box'
 import styled from 'styled-components'
-import { LeftOutlined } from '@ant-design/icons'
+import { BarChartOutlined, LeftOutlined, LineChartOutlined } from '@ant-design/icons'
 import Budget from './budget'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const childrenTabs: Array<React.ReactNode> = [
 	<MoneyReportLayout chartType="bar" />,
@@ -18,17 +15,24 @@ const childrenTabs: Array<React.ReactNode> = [
 	<MoneyReportLayout chartType="line-in" />,
 	<Budget />,
 ]
+const page = ['all', 'out', 'in', 'budget']
 
 function Report() {
 	const windowSize = useWindowSize()
 
 	const isInMobile = windowSize <= 768
+	if (isInMobile) return <ReportInMobile />
 
-	return <>{isInMobile ? <ReportInMobile /> : <ReportInDesktop />}</>
+	return <ReportInDesktop />
 }
 
 function ReportInDesktop() {
-	const [activeTabKey, setActiveTabKey] = useState(reportTypes[0].key)
+	const navigate = useNavigate()
+	const location = useLocation()
+	const pathname = location.pathname
+	const partPathname = pathname.split('/')
+	const path = partPathname[partPathname.length - 1]
+	const activeTabKey = path !== 'report' ? path : 'all'
 
 	const tabItems = reportTypes.map((type, index) => {
 		return {
@@ -38,7 +42,7 @@ function ReportInDesktop() {
 	})
 
 	const handleChangeTab = (key: string) => {
-		setActiveTabKey(key)
+		navigate('/report/' + key)
 	}
 
 	return (
@@ -70,7 +74,12 @@ function Title(props: { backToHome: Function; title: string }) {
 	)
 }
 function ReportInMobile() {
-	const [pageId, setPageId] = useState(-1)
+	const navigate = useNavigate()
+	const location = useLocation()
+	const pathname = location.pathname
+	const partPathname = pathname.split('/')
+	const path = partPathname[partPathname.length - 1]
+	const pageId = path === 'report' ? -1 : page.indexOf(path)
 
 	return (
 		<>
@@ -80,10 +89,10 @@ function ReportInMobile() {
 						<ShadowBox>
 							<StyledButton
 								onClick={() => {
-									setPageId(0)
+									navigate('/report/all')
 								}}
 							>
-								<Avatar src={bieudocot} shape="square" />
+								<BarChartOutlined style={{color: '#1890ff', fontSize: '2rem'}} />
 								<Label>{labels[0]}</Label>
 							</StyledButton>
 						</ShadowBox>
@@ -92,10 +101,10 @@ function ReportInMobile() {
 						<ShadowBox>
 							<StyledButton
 								onClick={() => {
-									setPageId(1)
+									navigate('/report/out')
 								}}
 							>
-								<Avatar src={duongdo} shape="square" />
+								<LineChartOutlined style={{color: 'red', fontSize: '2rem'}} />
 								<Label>{labels[1]}</Label>
 							</StyledButton>
 						</ShadowBox>
@@ -104,10 +113,10 @@ function ReportInMobile() {
 						<ShadowBox>
 							<StyledButton
 								onClick={() => {
-									setPageId(2)
+									navigate('/report/in')
 								}}
 							>
-								<Avatar src={duongxanh} shape="square" />
+								<LineChartOutlined style={{color: 'green', fontSize: '2rem'}} />
 								<Label>{labels[2]}</Label>
 							</StyledButton>
 						</ShadowBox>
@@ -116,7 +125,7 @@ function ReportInMobile() {
 						<ShadowBox>
 							<StyledButton
 								onClick={() => {
-									setPageId(3)
+									navigate('/report/budget')
 								}}
 							>
 								<Avatar src={ngansach} shape="square" />
@@ -127,7 +136,7 @@ function ReportInMobile() {
 				</FlexBox>
 			) : (
 				<>
-					<Title backToHome={() => setPageId(-1)} title={labels[pageId]} />
+					<Title backToHome={() => navigate('/report')} title={labels[pageId]} />
 					{childrenTabs[pageId]}
 				</>
 			)}

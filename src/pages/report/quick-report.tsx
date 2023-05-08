@@ -1,66 +1,39 @@
 import DoughnutChart from '@/components/doughnut-chart'
-import generateBackgroundColor from '@/utilities/generate-color'
+import Loading from '@/components/loading'
+import { moneyInTypes, valueToLabel } from '@/constants/money-type'
+import useFetch from '@/hooks/use-fetch'
 import formatMoney from '@/utilities/money-format'
-import { Avatar, Divider, Modal, Typography } from 'antd'
+import { Avatar, Divider, Empty, Modal, Typography } from 'antd'
 import styled from 'styled-components'
 
 interface IProps {
-	title: string
+	type: 'tháng' | 'năm'
+	title: number
+	year: number
+	moneyType: 'in' | 'out' | 'in and out'
 	moneyIn?: number
 	moneyOut?: number
 }
 
 function QuickReport(props: IProps) {
-	const { title, moneyIn, moneyOut } = props
+	const { type, moneyType, title, year, moneyIn, moneyOut } = props
+	const isSelectMonth = type === 'tháng'
+	const titleWithText = isSelectMonth ? 'Tháng ' + title : 'Năm ' + title
+
+	if (moneyIn === 0 && moneyOut === 0) return null
+	if (moneyType === 'in' && moneyIn === 0) return null
+	if (moneyType === 'out' && moneyOut === 0) return null
 
 	const handleClick = () => {
 		const modal = Modal.info({
-			icon: (
-				<Avatar style={{ backgroundColor: generateBackgroundColor() }}>
-					{title}
-				</Avatar>
-			),
-			title,
+			icon: <Avatar style={{ backgroundColor: '#1677ff' }}>{title}</Avatar>,
+			title: titleWithText,
 			content: (
 				<ModalContent
-					detail={[
-						{
-							label: 'Ăn uống',
-							data: 70,
-						},
-						{
-							label: 'Chi phis khacs',
-							data: 30,
-						},
-						{
-							label: 'Giải trí',
-							data: 30,
-						},
-						{
-							label: 'Giải trí',
-							data: 30,
-						},
-						{
-							label: 'Giải trí',
-							data: 30,
-						},
-						{
-							label: 'Chi phis khacs',
-							data: 30,
-						},
-						{
-							label: 'Chi phis khacs',
-							data: 30,
-						},
-						{
-							label: 'Chi phis khacs',
-							data: 30,
-						},
-						{
-							label: 'Chi phis khacs',
-							data: 30,
-						},
-					]}
+					type={type}
+					moneyType={moneyType}
+					month={title}
+					year={year}
 				/>
 			),
 			okButtonProps: { type: 'default' },
@@ -71,15 +44,19 @@ function QuickReport(props: IProps) {
 	return (
 		<>
 			<FlexBox onClick={handleClick}>
-				<Typography.Title level={5}>{title}</Typography.Title>
+				<Typography.Title level={5}>{titleWithText}</Typography.Title>
 				<Money>
-					<Typography.Text type="success" ellipsis>
-						{moneyIn && moneyIn.toLocaleString()}
-					</Typography.Text>
-					<Typography.Text type="danger" ellipsis>
-						{moneyOut && moneyOut.toLocaleString()}
-					</Typography.Text>
-					{moneyIn && moneyOut && (
+					{moneyIn !== undefined && (
+						<Typography.Text type="success" ellipsis>
+							{moneyIn.toLocaleString()}
+						</Typography.Text>
+					)}
+					{moneyOut !== undefined && (
+						<Typography.Text type="danger" ellipsis>
+							{moneyOut.toLocaleString()}
+						</Typography.Text>
+					)}
+					{moneyIn !== undefined && moneyOut !== undefined && (
 						<>
 							<StyledDivider />
 							<Typography.Text ellipsis>
@@ -93,11 +70,69 @@ function QuickReport(props: IProps) {
 	)
 }
 
-function ModalContent(props: {
-	detail: Array<{ label: string; data: number }>
-}) {
-	const { detail } = props
+interface ITransaction {
+	type: string
+	money: number
+}
+interface IModalContentProps {
+	type: 'tháng' | 'năm'
+	month: number
+	year: number
+	moneyType: 'in' | 'out' | 'in and out'
+}
+interface IData {
+	isLoading: boolean
+	data: Array<ITransaction>
+}
+function ModalContent(props: IModalContentProps) {
+	const { type, moneyType, month, year } = props
+	const isMonthReport = type === 'tháng'
+	const { data, isLoading } = useFetch(
+		isMonthReport
+			? `/transaction/get-in-month/${month}/${year}`
+			: `/transaction/get-in-year/${year}`
+	) as IData
+
+	if (isLoading) return <Loading />
+	if (!data)
+		return (
+			<Empty
+				image={Empty.PRESENTED_IMAGE_SIMPLE}
+				imageStyle={{ height: 60 }}
+				description="Chưa có dữ liệu"
+			/>
+		)
+
+	const detail: Array<{
+		label: string
+		data: number
+	}> = []
+	data.forEach((item: ITransaction) => {
+		if (moneyType === 'in and out') {
+			detail.push({
+				label: valueToLabel(item.type),
+				data: item.money,
+			})
+			return
+		}
+		if (
+			(moneyType === 'in' && moneyInTypes.includes(item.type)) ||
+			(moneyType === 'out' && !moneyInTypes.includes(item.type))
+		)
+			detail.push({
+				label: valueToLabel(item.type),
+				data: item.money,
+			})
+	})
 	const total = detail.reduce((sum, item) => sum + item.data, 0)
+	if (total === 0)
+		return (
+			<Empty
+				image={Empty.PRESENTED_IMAGE_SIMPLE}
+				imageStyle={{ height: 60 }}
+				description="Chưa có dữ liệu"
+			/>
+		)
 
 	return (
 		<CenterBox>
@@ -124,8 +159,7 @@ const FlexBox = styled.div`
 const Money = styled.div`
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	justify-content: flex-start;
+	align-items: flex-end;
 `
 const StyledDivider = styled(Divider)`
 	margin: 0.25rem 0;

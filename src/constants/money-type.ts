@@ -108,7 +108,7 @@ const icons = [...moneyTypes['Chi tiêu'], ...moneyTypes['Khoản thu']].map(typ
   }
 })
 
-const typeOptions: any = []
+const typeSelectOptions: any = []
 for (const type in moneyTypes) {
   const option: {
     label: string
@@ -127,8 +127,14 @@ for (const type in moneyTypes) {
     })
   })
 
-  typeOptions.push(option)
+  typeSelectOptions.push(option)
 }
+
+const typeCheckboxOptions = [{
+  label: 'Tất cả chi tiêu',
+  value: 'chitieu',
+  children: typeSelectOptions[0].options
+}]
 
 const moneyOutTypes = moneyTypes['Chi tiêu'].map((item: any) => item.value)
 const moneyInTypes = moneyTypes['Khoản thu'].map((item: any) => item.value)
@@ -138,5 +144,5 @@ const valueToLabel = function (value: string) {
   ).label
 }
 
-export { icons, typeOptions, moneyOutTypes, moneyInTypes, valueToLabel }
+export { icons, typeSelectOptions, typeCheckboxOptions, moneyOutTypes, moneyInTypes, valueToLabel }
 export default moneyTypes

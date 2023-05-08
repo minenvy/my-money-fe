@@ -25,17 +25,17 @@ function postFetch(path: string, body: any, signal?: any) {
   })
 }
 
-function deleteFetch(path: string, body: any, signal?: any) {
+function uploadImage(path: string, body: any, signal?: any) {
   return fetch(domain + path, {
     method: 'post',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
+    // headers: {
+    //   Accept: 'application/json',
+    //   'Content-Type': 'multipart/form-data',
+    // },
     credentials: 'include',
-    body: JSON.stringify(body),
+    body: body,
     signal
   })
 }
 
-export { getFetch, postFetch, deleteFetch }
+export { getFetch, postFetch, uploadImage }

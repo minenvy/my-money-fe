@@ -2,7 +2,7 @@ import InOutDetail from '@/components/in-out-detail'
 import ShadowBox from '@/components/shadow-box'
 import TitleInOutDetail from '@/pages/wallet/title-in-out-detail'
 import formatMoney from '@/utilities/money-format'
-import { DatePicker, DatePickerProps, Typography } from 'antd'
+import { DatePicker, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import styled from 'styled-components'
@@ -11,139 +11,160 @@ import NoData from '@/components/empty'
 import useFetch from '@/hooks/use-fetch'
 import { icons, moneyInTypes, valueToLabel } from '@/constants/money-type'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/contexts/auth'
+import Loading from '@/components/loading'
 
 const monthFormat = 'MM/YYYY'
 const today = new Date()
 
 interface ITransaction {
 	id: string
-	type: string
 	money: number
-	day: number
-	month: number
-	year: number
+	type: string
+	createdAt: string | Date
 	note?: string
 }
 
 function Wallet() {
-	const navigate = useNavigate()
-	const [month, setMonth] = useState(today.getMonth() + 1)
-	const [year, setYear] = useState(today.getFullYear())
-	const { data, isLoading } = useFetch(
-		`/transaction/get-in-month/${month}/${year}`,
-		[month, year]
-	)
+	const { user } = useAuth()
+	const [time, setTime] = useState({
+		month: today.getMonth() + 1,
+		year: today.getFullYear(),
+	})
 
 	const changeMonth = (dateString: string) => {
 		const dateInfo = dateString.split('/')
-		setMonth(Number(dateInfo[0]))
-		setYear(Number(dateInfo[1]))
+		setTime({
+			month: Number(dateInfo[0]),
+			year: Number(dateInfo[1]),
+		})
 	}
-	const redirectToTransaction = (id: string) => navigate('/transaction/' + id)
 
-	const hasData = data && data.length > 0
-	const money = 5_000_000
+	return (
+		<>
+			<TotalMoney>
+				<StyledText type="secondary">Số dư</StyledText>
+				<StyledText strong>{formatMoney(user.money)}</StyledText>
+			</TotalMoney>
+			<StyledDatePicker
+				defaultValue={dayjs(dayjs(today), monthFormat)}
+				format={monthFormat}
+				picker="month"
+				onChange={(_, dateString) => changeMonth(dateString)}
+			/>
+			<MainContent month={time.month} year={time.year} />
+		</>
+	)
+}
+
+interface IData {
+	isLoading: boolean
+	data: Array<ITransaction>
+}
+interface IMainContentProps {
+	month: number
+	year: number
+}
+
+function MainContent(props: IMainContentProps) {
+	const { month, year } = props
+	const navigate = useNavigate()
+	const { data, isLoading } = useFetch(
+		`/transaction/get-separate-in-month/${month}/${year}`,
+		[month, year]
+	) as IData
+
+	if (isLoading) return <Loading />
+	if (!data)
+		return (
+			<ShadowBox>
+				<NoData />
+			</ShadowBox>
+		)
+
+	const hasData = data.length > 0
 	if (!hasData) {
 		return (
-			<>
-				<TotalMoneyTitle money={money} />
-				<MonthPicker onChange={changeMonth} />
-				<ShadowBox>
-					<NoData />
-				</ShadowBox>
-			</>
+			<ShadowBox>
+				<NoData />
+			</ShadowBox>
 		)
 	}
 
+	let totalMoneyIn = 0
+	let totalMoneyOut = 0
 	const monthStatist: Array<Array<ITransaction>> = []
 	const dayInMonth: Array<number> = []
-	data.forEach((item: ITransaction) => {
-		const day = item.day
+	data.forEach((item) => {
+		if (moneyInTypes.includes(item.type)) totalMoneyIn += item.money
+		else totalMoneyOut += item.money
+
+		const createdAt = new Date(item.createdAt)
+		const day = createdAt.getDate()
 		if (!dayInMonth.includes(day)) {
 			dayInMonth.push(day)
 			monthStatist.push([item])
 		} else monthStatist[dayInMonth.indexOf(day)].push(item)
 	})
 
-	return (
-		<>
-			<TotalMoneyTitle money={0} />
-			<MonthPicker onChange={changeMonth} />
-
-			<Layout>
-				<QuickReport
-					quickMoneyReport={[-200_000, 500_000, -100_000, 200_000]}
-				/>
-				<SeparatePart>
-					{monthStatist.map((dayStatis, index) => {
-						const totalMoney = dayStatis.reduce(
-							(total, item) =>
-								moneyInTypes.includes(item.type)
-									? total + item.money
-									: total - item.money,
-							0
-						)
-
-						return (
-							<ShadowBox mode="mini" key={index}>
-								<FlexBox>
-									<TitleInOutDetail
-										time={new Date(year, month, dayInMonth[index])}
-										money={totalMoney}
-									/>
-									{dayStatis.map((item: ITransaction) => {
-										const icon = icons.find(
-											(ic) => ic.value === item.type
-										)?.icon
-										const title = valueToLabel(item.type)
-										const date = new Date(item.year, item.month, item.day)
-											.toLocaleString()
-											.split(',')[0]
-										const money = formatMoney(item.money)
-										const type = moneyInTypes.includes(item.type) ? 'in' : 'out'
-										return (
-											<div key={item.id} onClick={() => redirectToTransaction(item.id)}>
-												<InOutDetail
-													id={item.id}
-													icon={icon}
-													title={title}
-													subTitle={date}
-													rightPart={money}
-													mode="mini"
-													type={type}
-												/>
-											</div>
-										)
-									})}
-								</FlexBox>
-							</ShadowBox>
-						)
-					})}
-				</SeparatePart>
-			</Layout>
-		</>
-	)
-}
-
-function TotalMoneyTitle(props: { money: number }) {
-	const { money } = props
-	return (
-		<TotalMoney>
-			<StyledText type="secondary">Số dư</StyledText>
-			<StyledText strong>{formatMoney(money)}</StyledText>
-		</TotalMoney>
-	)
-}
-function MonthPicker(props: { onChange: Function }) {
-	const { onChange } = props
+	const redirectToTransaction = (id: string) => navigate('/transaction/' + id)
 
 	return (
-		<StyledDatePicker
-			defaultValue={dayjs(dayjs(today), monthFormat)}
-			format={monthFormat}
-			picker="month"
-			onChange={(_, dateString) => onChange(dateString)}
-		/>
+		<Layout>
+			<QuickReport
+				quickMoneyReport={[
+					totalMoneyIn,
+					-totalMoneyOut,
+					totalMoneyIn - totalMoneyOut,
+				]}
+			/>
+			<SeparatePart>
+				{monthStatist.map((dayStatis, index) => {
+					const totalMoney = dayStatis.reduce(
+						(total, item) =>
+							moneyInTypes.includes(item.type)
+								? total + item.money
+								: total - item.money,
+						0
+					)
+
+					return (
+						<ShadowBox mode="mini" key={index}>
+							<FlexBox>
+								<TitleInOutDetail
+									time={new Date(year, month, dayInMonth[index])}
+									money={totalMoney}
+								/>
+								{dayStatis.map((item: ITransaction) => {
+									const icon = icons.find((ic) => ic.value === item.type)?.icon
+									const title = valueToLabel(item.type)
+									const date = new Date(item.createdAt).toLocaleDateString(
+										'en-GB'
+									)
+									const money = formatMoney(item.money)
+									const type = moneyInTypes.includes(item.type) ? 'in' : 'out'
+									return (
+										<div
+											key={item.id}
+											onClick={() => redirectToTransaction(item.id)}
+										>
+											<InOutDetail
+												icon={icon}
+												title={title}
+												subTitle={date}
+												moreDetail={money}
+												mode="mini"
+												type={type}
+											/>
+										</div>
+									)
+								})}
+							</FlexBox>
+						</ShadowBox>
+					)
+				})}
+			</SeparatePart>
+		</Layout>
 	)
 }
 

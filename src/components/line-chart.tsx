@@ -19,7 +19,7 @@ interface IProps {
 }
 
 function LineChart(props: IProps) {
-	const { labels, money, type, unit = 'nghìn' } = props
+	const { labels, money, type, unit } = props
 
 	const dataset =
 		type === 'out'
@@ -48,7 +48,9 @@ function LineChart(props: IProps) {
 
 	return (
 		<Wrapper>
-			<Typography.Text type="secondary">{`(Đơn vị: ${unit} đồng)`}</Typography.Text>
+			<Typography.Text type="secondary">
+				{unit ? `(Đơn vị: ${unit} đồng)` : `(Đơn vị: đồng)`}
+			</Typography.Text>
 			<Line options={options} data={data} />
 		</Wrapper>
 	)

@@ -1,12 +1,12 @@
 import styled from 'styled-components'
 import Header from './header'
-import MainContent from './main-content'
+import Main from './main'
 
 function Profile() {
 	return (
 		<Wrapper>
 			<Header />
-			<MainContent />
+			<Main />
 		</Wrapper>
 	)
 }

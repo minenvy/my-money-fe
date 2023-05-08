@@ -5,6 +5,10 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import QuickReport from './quick-report'
 import ChartComponent from './report-chart'
+import useFetch from '@/hooks/use-fetch'
+import NoData from '@/components/empty'
+import { moneyInTypes } from '@/constants/money-type'
+import Loading from '@/components/loading'
 
 const filterOptions = [
 	{ value: 'month', label: 'Tháng' },
@@ -25,69 +29,7 @@ function MoneyReportLayout(props: IProps) {
 	const { chartType } = props
 	const [selectedOption, setSelectedOption] = useState(filterOptions[0].value)
 	const [year, setYear] = useState(today.getFullYear())
-
-	const report: Array<IQuickReport> = [
-		{
-			title: '1',
-			moneyIn: 100000,
-			moneyOut: 200000,
-		},
-		{
-			title: '2',
-			moneyIn: 30000,
-			moneyOut: 40000,
-		},
-		{
-			title: '3',
-			moneyIn: 70000,
-			moneyOut: 70000,
-		},
-		{
-			title: '4',
-			moneyIn: 100000,
-			moneyOut: 200000,
-		},
-		{
-			title: '5',
-			moneyIn: 30000,
-			moneyOut: 40000,
-		},
-		{
-			title: '6',
-			moneyIn: 70000,
-			moneyOut: 70000,
-		},
-		{
-			title: '7',
-			moneyIn: 100000,
-			moneyOut: 200000,
-		},
-		{
-			title: '8',
-			moneyIn: 30000,
-			moneyOut: 40000,
-		},
-		{
-			title: '9',
-			moneyIn: 70000,
-			moneyOut: 70000,
-		},
-		{
-			title: '10',
-			moneyIn: 100000,
-			moneyOut: 200000,
-		},
-		{
-			title: '11',
-			moneyIn: 30000,
-			moneyOut: 40000,
-		},
-		{
-			title: '12',
-			moneyIn: 70000,
-			moneyOut: 70000,
-		},
-	]
+	const isSelectMonth = selectedOption === 'month'
 
 	const handleChangeSelect = (value: string) => {
 		setSelectedOption(value)
@@ -113,28 +55,109 @@ function MoneyReportLayout(props: IProps) {
 				value={dayjs(dayjs(today.setFullYear(year)), 'YYYY')}
 				onChange={handleChangeYear}
 			/>
-			<ShadowBox>
-				<FlexBox>
-					<Chart>
-						<ChartComponent chartType={chartType} report={report} />
-					</Chart>
-					<Report>
-						{report.map((quickReport) => {
-							const { title, moneyIn, moneyOut } = quickReport
-							const unitInTitle = selectedOption === 'month' ? 'Tháng' : 'Năm'
-							return (
-								<QuickReport
-									title={unitInTitle + ' ' + title}
-									moneyIn={moneyIn}
-									// moneyOut={moneyOut}
-									key={title}
-								/>
-							)
-						})}
-					</Report>
-				</FlexBox>
-			</ShadowBox>
+			<MainReport
+				year={year}
+				chartType={chartType}
+				isSelectMonth={isSelectMonth}
+			/>
 		</>
+	)
+}
+
+interface IMainReportContentProps {
+	year: number
+	chartType: string
+	isSelectMonth: boolean
+}
+interface IData {
+	isLoading: boolean
+	data: {
+		[key: string]: Array<{
+			type: string
+			money: number
+		}>
+	}
+}
+
+function MainReport(props: IMainReportContentProps) {
+	const { year, chartType, isSelectMonth } = props
+	const { data, isLoading } = useFetch(
+		(isSelectMonth ? '/report/month/' : '/report/year/') + year,
+		[isSelectMonth, year]
+	) as IData
+
+	if (isLoading) return <Loading />
+	if (!data)
+		return (
+			<ShadowBox>
+				<NoData />
+			</ShadowBox>
+		)
+
+	const maxLength = isSelectMonth ? 12 : 5
+	let hasData = false
+	for (let i = 1; i <= maxLength; i++) {
+		const index = isSelectMonth ? i : year + 1 - i
+		if (data[index]?.length !== 0) hasData = true
+	}
+	if (!hasData)
+		return (
+			<ShadowBox>
+				<NoData />
+			</ShadowBox>
+		)
+
+	const report: Array<IQuickReport> = []
+	for (let i = 1; i <= maxLength; i++) {
+		const title = (isSelectMonth ? i : year + 1 - i).toString()
+		const monthReport = {
+			title,
+			moneyIn: 0,
+			moneyOut: 0,
+		}
+
+		data[title]?.forEach((item: any) => {
+			if (moneyInTypes.includes(item.type)) {
+				monthReport.moneyIn += item.money
+			} else monthReport.moneyOut += item.money
+		})
+		report.push(monthReport)
+	}
+
+	return (
+		<ShadowBox>
+			<FlexBox>
+				<Chart>
+					<ChartComponent chartType={chartType} report={report} />
+				</Chart>
+				<Report>
+					{report.map((quickReport) => {
+						const { title, moneyIn, moneyOut } = quickReport
+						const type = isSelectMonth ? 'tháng' : 'năm'
+						const isReportMoneyIn = ['bar', 'line-in'].includes(chartType)
+						const isReportMoneyOut = ['bar', 'line-out'].includes(chartType)
+						const moneyType =
+							chartType === 'bar'
+								? 'in and out'
+								: chartType === 'line-in'
+								? 'in'
+								: 'out'
+
+						return (
+							<QuickReport
+								type={type}
+								moneyType={moneyType}
+								year={year}
+								title={Number(title)}
+								moneyIn={isReportMoneyIn ? moneyIn : undefined}
+								moneyOut={isReportMoneyOut ? moneyOut : undefined}
+								key={title}
+							/>
+						)
+					})}
+				</Report>
+			</FlexBox>
+		</ShadowBox>
 	)
 }
 
@@ -159,7 +182,7 @@ const Chart = styled.div`
 	justify-content: center;
 	overflow: scroll;
 	@media screen and (max-width: 768px) {
-		width: 17rem;
+		width: 18rem;
 		min-height: unset;
 	}
 `
@@ -169,24 +192,6 @@ const Report = styled.div`
 	overflow: auto;
 	@media screen and (max-width: 768px) {
 		width: 100%;
-		::-webkit-scrollbar {
-			display: none;
-		}
-	}
-	::-webkit-scrollbar {
-		display: block;
-		width: 6px;
-	}
-	::-webkit-scrollbar-track {
-		box-shadow: inset 0 0 2px grey;
-		border-radius: 10px;
-	}
-	::-webkit-scrollbar-thumb {
-		background: #ccc;
-		border-radius: 10px;
-	}
-	::-webkit-scrollbar-thumb:hover {
-		background: grey;
 	}
 `
 

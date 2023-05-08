@@ -18,7 +18,8 @@ function useFetch(
         try {
           if (isLoading) return
           setIsLoading(true)
-          const res = await getFetch(path, signal)
+          const res = await getFetch(path, signal) as Response
+          if (!res.ok) return
           const jsonData = await res.json()
           if (!didCancel) setData(jsonData)
         } catch (err) {

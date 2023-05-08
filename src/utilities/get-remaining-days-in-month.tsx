@@ -1,12 +1,8 @@
-function getRemainingDays(startDate: Date) {
-	const totalDays = new Date(
-		startDate.getFullYear(),
-		startDate.getMonth() + 1,
-		0
-	).getDate()
-	const today = new Date().getDate()
-	const remainingDays = totalDays - today
-	return remainingDays
+function getRemainingDays(startDate: Date, endDate: Date) {
+	const remainingDays = Math.ceil(
+		(endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24)
+	)
+	return remainingDays > 0 ? remainingDays : 0
 }
 
 export default getRemainingDays

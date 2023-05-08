@@ -6,12 +6,14 @@ import { register as registerApi } from '@/api/user'
 import { message, Button } from 'antd'
 import { useErrorBoundary } from '@/contexts/error-fetch-boundary'
 import Input from '@/pages/login-register/input'
+import { v4 as uuid } from 'uuid'
 
 function Register() {
 	const navigate = useNavigate()
 	const { showBoundary } = useErrorBoundary()
 	const { register } = useAuth()
 	const [registerInformation, setRegisterInformation] = useState({
+		id: uuid(),
 		username: '',
 		password: '',
 		repassword: '',
@@ -25,6 +27,14 @@ function Register() {
 		})
 	}
 	const handleRegister = async () => {
+		if (
+			!registerInformation.username ||
+			!registerInformation.password ||
+			!registerInformation.repassword
+		) {
+			message.warning('Cần nhập đủ các thông tin!')
+			return
+		}
 		if (registerInformation.password !== registerInformation.repassword) {
 			message.warning('Mật khẩu không trùng khớp!')
 			return
@@ -33,12 +43,11 @@ function Register() {
 		const res = (await registerApi({ ...registerInformation }).catch((err) => {
 			showBoundary(err)
 		})) as Response
-		const user = await res.json()
-		if (Object.keys(user).length === 0) {
+		if (!res.ok) {
 			message.warning('Tên tài khoản đã được sử dụng!')
 			return
 		}
-
+		const user = await res.json()
 		register(user)
 		navigate('/')
 	}

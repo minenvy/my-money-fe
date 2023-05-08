@@ -8,7 +8,7 @@ interface IProps {
 
 function QuickReport(props: IProps) {
 	const { quickMoneyReport } = props
-	const items = ['Số dư đầu', 'Tổng tiền vào', 'Tổng tiền ra', 'Số dư cuối']
+	const items = ['Tổng tiền vào', 'Tổng tiền ra', 'Tổng kết']
 
 	return (
 		<Wrapper>

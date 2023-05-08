@@ -4,12 +4,14 @@ import HomeSkeleton from '@/components/skeletons/home'
 import WalletSkeleton from '@/components/skeletons/wallet'
 import TransactionSkeleton from '@/components/skeletons/transaction'
 import ReportSkeleton from '@/components/skeletons/report'
+import ProfileSkeleton from '@/components/skeletons/profile'
 
 const AppLazy = lazy(() => import('@/App'))
 const HomeLazy = lazy(() => import('@/pages/home'))
 const WalletLazy = lazy(() => import('@/pages/wallet'))
 const TransactionLazy = lazy(() => import('@/pages/transaction'))
 const ReportLazy = lazy(() => import('@/pages/report'))
+const ProfileLazy = lazy(() => import('@/pages/profile'))
 
 export const App = () => (
 	<Suspense fallback={<AppSkeleton />}>
@@ -34,5 +36,10 @@ export const Transaction = () => (
 export const Report = () => (
 	<Suspense fallback={<ReportSkeleton />}>
 		<ReportLazy />
+	</Suspense>
+)
+export const Profile = () => (
+	<Suspense fallback={<ProfileSkeleton />}>
+		<ProfileLazy />
 	</Suspense>
 )

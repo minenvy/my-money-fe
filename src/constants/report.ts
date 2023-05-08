@@ -1,6 +1,6 @@
 const reportTypes = [
   {
-    key: 'in and out',
+    key: 'all',
     label: 'Tình hình thu chi'
   },
   {

@@ -1,105 +1,138 @@
-import ShadowBox from '@/components/shadow-box'
-import { Avatar, Button, Input, message } from 'antd'
+import { Button, message } from 'antd'
 import styled from 'styled-components'
-import { FileTextOutlined } from '@ant-design/icons'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import Transaction from './transaction'
 import { postFetch } from '@/api/fetch'
 import { useNavigate } from 'react-router-dom'
+import useFetch from '@/hooks/use-fetch'
+import Loading from '@/components/loading'
+import { useImagesUpload } from '@/contexts/images-uploader'
+import { moneyInTypes } from '@/constants/money-type'
+import { useAuth } from '@/contexts/auth'
+
+const allowedImageType = ['png', 'jpg', 'jpeg', 'gif']
 
 interface ITransaction {
 	id: string
 	money: number
 	type: string
-	date: Date
+	createdAt: Date
+	note?: string
 }
-interface ITransactionProps {
-	transactions: Array<ITransaction>
-	note: string
+interface IData {
+	isLoading: boolean
+	data: Array<ITransaction>
 }
 
 function NewTransactions() {
 	const navigate = useNavigate()
-	const [transactionPage, setTransactionPage] = useState<ITransactionProps>({
-		transactions: [
+	const { user, changeInfo } = useAuth()
+	const { uploadImages, isUploading } = useImagesUpload()
+	const { data, isLoading } = useFetch('/transaction/draft') as IData
+	const [transactions, setTransactions] = useState<Array<ITransaction>>([])
+	const [isPosting, setIsPosting] = useState(false)
+	const imagesRef = useRef<HTMLInputElement>(null)
+
+	if (isLoading) return <Loading />
+	if (!data) return null
+	if (data.length > 0 && transactions.length === 0) setTransactions(data)
+	if (data.length === 0 && transactions.length === 0)
+		setTransactions([
 			{
 				id: uuid(),
 				money: 0,
 				type: 'anuong',
-				date: new Date(),
+				createdAt: new Date(),
+				note: '',
 			},
-		],
-		note: '',
-	})
-	const [isLoading, setIsLoading] = useState(false)
+		])
 
 	const addDraft = (draft?: ITransaction) => {
 		const nullDraft: ITransaction = {
 			id: uuid(),
 			money: 0,
 			type: 'anuong',
-			date: new Date(),
+			createdAt: new Date(),
+			note: '',
 		}
 		const newTransaction: ITransaction = draft || nullDraft
-		setTransactionPage({
-			...transactionPage,
-			transactions: [...transactionPage.transactions, newTransaction],
-		})
+		setTransactions([...transactions, newTransaction])
 	}
 	const updateDraft = (id: string, draft: ITransaction) => {
-		setTransactionPage({
-			...transactionPage,
-			transactions: transactionPage.transactions.map((transaction) => {
+		setTransactions(
+			transactions.map((transaction) => {
 				if (transaction.id === id) return { ...transaction, ...draft }
 				return transaction
-			}),
-		})
+			})
+		)
 	}
 	const deleteDraft = (id: string) => {
-		setTransactionPage({
-			...transactionPage,
-			transactions: transactionPage.transactions.filter(
-				(item) => item.id !== id
-			),
-		})
-	}
-	const changeNote = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		setTransactionPage({ ...transactionPage, note: e.target.value })
+		setTransactions(transactions.filter((item) => item.id !== id))
 	}
 	const addNewTransaction = async () => {
-		if (transactionPage.transactions.length === 0) {
+		if (transactions.length === 0) {
 			message.warning('Yêu cầu có ít nhất 1 giao dịch nhỏ!')
 			return
 		}
-		const isNotValid = transactionPage.transactions.find(
-			(item) => item.money === 0
-		)
+		const isNotValid = transactions.find((item) => item.money === 0)
 		if (isNotValid) {
 			message.warning('Số tiền phải khác 0!')
 			return
 		}
-		const urls = transactionPage.transactions.map((item) =>
+		const urls = transactions.map((item) =>
 			postFetch('/transaction/add', {
 				...item,
-				note: transactionPage.note,
 			})
 		)
-		Promise.all(urls)
-			.then(() => {
-				message.success('Thêm giao dịch thành công!')
-				setTimeout(() => navigate('/wallet'), 1000)
-			})
-			.catch(() => {
-				message.warning('Có lỗi xảy ra. Thêm giao dịch thất bại!')
-				return
-			})
+		const totalMoney = transactions.reduce(
+			(total, transaction) =>
+				moneyInTypes.includes(transaction.type)
+					? total + transaction.money
+					: total - transaction.money,
+			0
+		)
+		urls.push(postFetch('/user/change-money', { money: totalMoney }))
+		const res = (await Promise.all(urls).catch(() => {
+			message.warning('Có lỗi xảy ra. Thêm giao dịch thất bại!')
+			return
+		})) as Response[]
+		const errors = res.filter((response: Response) => !response.ok)
+		if (errors.length > 0) {
+			message.warning('Có lỗi xảy ra. Thêm giao dịch thất bại!')
+			return
+		}
+		changeInfo({ money: user.money + totalMoney })
+		message.success('Thêm giao dịch thành công!')
+		setTimeout(() => navigate('/wallet'), 1000)
 	}
 	const handleSubmit = async () => {
-		if (isLoading) return
-		setIsLoading(true)
+		if (isPosting) return
+		setIsPosting(true)
 		await addNewTransaction()
-		setIsLoading(false)
+		setIsPosting(false)
+	}
+	const openImagesLibrary = () => {
+		imagesRef.current?.click()
+	}
+	const chooseImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const imageFiles = e.target.files
+
+		if (!imageFiles || imageFiles.length === 0) return
+
+		let isInvalid = false
+		for (const imageFile of imageFiles) {
+			const partName = imageFile.name.split('.')
+			const type = partName[partName.length - 1]
+			if (!allowedImageType.includes(type)) {
+				message.warning('Chỉ có thể chọn ảnh png, jpg, jpeg, gif!')
+				isInvalid = true
+				break
+			}
+		}
+
+		if (isInvalid) return
+		uploadImages(imageFiles)
 	}
 
 	return (
@@ -108,7 +141,13 @@ function NewTransactions() {
 				<HeaderTitle>Thêm giao dịch</HeaderTitle>
 			</HeaderWrapper>
 
-			{transactionPage.transactions.map((transaction) => {
+			{!isUploading && (
+				<StyledButton onClick={openImagesLibrary}>
+					Trích xuất dữ liệu từ ảnh giao dịch ngân hàng
+				</StyledButton>
+			)}
+
+			{transactions.map((transaction) => {
 				return (
 					<Transaction
 						key={transaction.id}
@@ -119,26 +158,21 @@ function NewTransactions() {
 				)
 			})}
 			<Button onClick={() => addDraft()}>Thêm giao dịch nhỏ</Button>
-			<ShadowBox>
-				<FlexBox>
-					<Avatar
-						src={
-							<FileTextOutlined
-								style={{ color: '#212121', fontSize: '1.25rem' }}
-							/>
-						}
-					/>
-					<Input.TextArea
-						allowClear
-						placeholder="Ghi chú"
-						value={transactionPage.note}
-						onChange={changeNote}
-					/>
-				</FlexBox>
-			</ShadowBox>
-			<Button type="primary" block loading={isLoading} onClick={handleSubmit}>
+			<StyledButton
+				type="primary"
+				block
+				loading={isPosting}
+				onClick={handleSubmit}
+			>
 				Thêm
-			</Button>
+			</StyledButton>
+
+			<HiddenInput
+				type="file"
+				multiple
+				onChange={chooseImages}
+				ref={imagesRef}
+			/>
 		</Wrapper>
 	)
 }
@@ -147,12 +181,6 @@ const Wrapper = styled.div`
 	max-width: 30rem;
 	width: 100%;
 	margin: 0 auto;
-`
-const FlexBox = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-	margin: 0.75rem 0;
 `
 const HeaderWrapper = styled.div`
 	display: flex;
@@ -164,6 +192,13 @@ const HeaderTitle = styled.p`
 	text-align: center;
 	padding: 0.25rem 0;
 	font-size: 1.1rem;
+`
+const StyledButton = styled(Button)`
+	display: block;
+	margin: 1rem auto;
+`
+const HiddenInput = styled.input`
+	display: none;
 `
 
 export default NewTransactions

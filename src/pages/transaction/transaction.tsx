@@ -9,8 +9,8 @@ import {
 } from 'antd'
 import styled from 'styled-components'
 import coinImage from '@/assets/coin.png'
-import { icons, typeOptions, valueToLabel } from '@/constants/money-type'
-import { CalendarOutlined } from '@ant-design/icons'
+import { icons, typeSelectOptions, valueToLabel } from '@/constants/money-type'
+import { CalendarOutlined, FileTextOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import PopDeleteConfirm from './pop-confirm'
 
@@ -18,20 +18,23 @@ interface ITransaction {
 	id: string
 	money: number
 	type: string
-	date: Date
+	createdAt: Date
+	note?: string
 	updateDraft: Function
 	deleteDraft?: Function
 }
 
 function Transaction(props: ITransaction) {
-	const { id, money, type, date, updateDraft, deleteDraft } = props
+	const { id, money, type, createdAt, note, updateDraft, deleteDraft } = props
 
 	const typeImage = icons.find((icon) => icon.value === type)?.icon
 
 	const changeMoney = (e: React.ChangeEvent<HTMLInputElement>) => {
-		updateDraft(id, {
-			money: Number(e.target.value.replaceAll(',', '')),
-		})
+		const money = Number(e.target.value.replaceAll(',', ''))
+		if (!isNaN(money))
+			updateDraft(id, {
+				money,
+			})
 	}
 	const changeType = (value: string) => {
 		updateDraft(id, {
@@ -41,6 +44,11 @@ function Transaction(props: ITransaction) {
 	const changeDate: DatePickerProps['onChange'] = (_, dateString) => {
 		updateDraft(id, {
 			date: new Date(dateString),
+		})
+	}
+	const changeNote = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+		updateDraft(id, {
+			note: e.target.value,
 		})
 	}
 
@@ -67,7 +75,7 @@ function Transaction(props: ITransaction) {
 						placeholder="Chọn nhóm"
 						value={valueToLabel(type)}
 						onChange={changeType}
-						options={typeOptions}
+						options={typeSelectOptions}
 						style={{ width: '100%' }}
 					/>
 				</FlexBox>
@@ -80,9 +88,24 @@ function Transaction(props: ITransaction) {
 						}
 					/>
 					<DatePicker
-						value={dayjs(dayjs(date), 'DD/MM/YYYY')}
+						value={dayjs(dayjs(createdAt).format('DD-MM-YYYY'))}
 						onChange={changeDate}
 						allowClear={false}
+					/>
+				</FlexBox>
+				<FlexBox>
+					<Avatar
+						src={
+							<FileTextOutlined
+								style={{ color: '#212121', fontSize: '1.25rem' }}
+							/>
+						}
+					/>
+					<Input.TextArea
+						allowClear
+						placeholder="Ghi chú"
+						value={note}
+						onChange={changeNote}
 					/>
 				</FlexBox>
 			</ShadowBox>
@@ -104,7 +127,7 @@ const MarginWrapper = styled.div`
 	}
 	&:hover {
 		& button {
-			display: inline;
+			display: block;
 		}
 	}
 `

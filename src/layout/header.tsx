@@ -1,23 +1,34 @@
+import { imagesDir } from '@/constants/env'
 import { useAuth } from '@/contexts/auth'
-import { BellOutlined, MenuOutlined } from '@ant-design/icons'
-import { Avatar, Badge, Button } from 'antd'
+import { useImagesUpload } from '@/contexts/images-uploader'
+import { BellOutlined, SyncOutlined } from '@ant-design/icons'
+import { Avatar, Badge, Button, Tooltip } from 'antd'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 function Header() {
 	const { user } = useAuth()
-	const [isHaveNotification, setIsHaveNotification] = useState(true)
+	const { isUploading } = useImagesUpload()
+	// const [isHaveNotification, setIsHaveNotification] = useState(true)
 
 	return (
 		<Wrapper>
 			<LogoImage />
 			<RightContent>
-				<Badge dot={isHaveNotification} offset={[-21, 5]}>
+				{isUploading && (
+					<Tooltip title="Trích xuất dữ liệu từ ảnh các giao dịch" color="blue">
+						<StyledSyncOutlined spin={isUploading} />
+					</Tooltip>
+				)}
+				{/* <Badge dot={isHaveNotification} offset={[-21, 5]}>
 					<MarginButton type="text" shape="circle" icon={<BellOutlined />} />
-				</Badge>
-				<StyledAvatar src={user?.image || ''} size="large">
-					{(user.username[0] || '').toUpperCase()}
+				</Badge> */}
+				<StyledAvatar
+					src={user?.image !== '' ? imagesDir + user.image : ''}
+					size="large"
+				>
+					{user.nickname ? user.nickname[0].toUpperCase() : ''}
 				</StyledAvatar>
 			</RightContent>
 		</Wrapper>
@@ -66,6 +77,11 @@ const MarginButton = styled(Button)`
 `
 const StyledAvatar = styled(Avatar)`
 	background-color: #1890ff;
+`
+const StyledSyncOutlined = styled(SyncOutlined)`
+	margin-top: 0.5rem;
+	margin-right: 1rem;
+	height: fit-content;
 `
 
 export { LogoImage }

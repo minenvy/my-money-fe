@@ -24,15 +24,18 @@ function Login() {
 		})
 	}
 	const handleLogin = async () => {
+		if (!loginInformation.username || !loginInformation.password) {
+			message.warning('Cần nhập đủ các thông tin!')
+			return
+		}
 		const res = (await loginApi({ ...loginInformation }).catch((err) => {
 			showBoundary(err)
 		})) as Response
-		const user = await res.json()
-		if (Object.keys(user).length === 0) {
+		if (!res.ok) {
 			message.warning('Tài khoản hoặc mật khẩu không chính xác!')
 			return
 		}
-
+		const user = await res.json()
 		login(user)
 		navigate('/')
 	}

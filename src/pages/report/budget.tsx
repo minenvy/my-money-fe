@@ -173,40 +173,33 @@ function BudgetDetail(props: IDetailProps) {
 	}
 
 	return (
-		<>
-			<DetailWrapper onClick={handleClick}>
-				<ShadowBox>
-					<ListItem
-						title={name}
-						icon={icon}
-						subTitle={subTitle}
-						moreDetail={formatMoney(totalMoney)}
-						mode="mini"
+		<DetailWrapper onClick={handleClick}>
+			<ShadowBox>
+				<ListItem
+					title={name}
+					icon={icon}
+					subTitle={subTitle}
+					moreDetail={formatMoney(totalMoney)}
+				/>
+				<TotalLine>
+					<UsedLine
+						style={{
+							width: `${percent}%`,
+							backgroundColor:
+								percent < 30 ? '#58ff79' : percent < 70 ? '#e4ff58' : '#ff5858',
+						}}
 					/>
-					<TotalLine>
-						<UsedLine
-							style={{
-								width: `${percent}%`,
-								backgroundColor:
-									percent < 30
-										? '#58ff79'
-										: percent < 70
-										? '#e4ff58'
-										: '#ff5858',
-							}}
-						/>
-					</TotalLine>
-					<DueDate>
-						<Typography.Text type="secondary">
-							{remainingDays > 0 ? `Còn ${remainingDays} ngày` : 'Hết hạn'}
-						</Typography.Text>
-						<Typography.Text type="secondary">
-							{formatMoney(remainingMoney)}
-						</Typography.Text>
-					</DueDate>
-				</ShadowBox>
-			</DetailWrapper>
-		</>
+				</TotalLine>
+				<DueDate>
+					<Typography.Text type="secondary">
+						{remainingDays > 0 ? `Còn ${remainingDays} ngày` : 'Hết hạn'}
+					</Typography.Text>
+					<Typography.Text type="secondary">
+						{formatMoney(remainingMoney)}
+					</Typography.Text>
+				</DueDate>
+			</ShadowBox>
+		</DetailWrapper>
 	)
 }
 

@@ -61,11 +61,7 @@ const Person = React.forwardRef((props: IPerson, ref) => {
 				title={nickname}
 				subTitle={bio || 'Chưa có bio'}
 				moreDetail={
-					isInOwnerProfile ? (
-						<Typography.Text>
-							{isFollowed ? 'Unfollow' : 'Follow'}
-						</Typography.Text>
-					) : (
+					!isInOwnerProfile && (
 						<Button loading={isPosting} onClick={handleClickFollow}>
 							{isFollowed ? 'Unfollow' : 'Follow'}
 						</Button>

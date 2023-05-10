@@ -6,6 +6,12 @@ import Person from './person'
 import ProposersList from './proposers-list'
 import { useParams } from 'react-router-dom'
 
+const shadowBoxStyles = {
+	margin: '0.25rem 0',
+	width: '100%',
+	maxWidth: '33rem',
+}
+
 interface IPerson {
 	id: string
 	nickname: string
@@ -33,7 +39,7 @@ function Follow(props: IProps) {
 
 	return (
 		<Wrapper>
-			<ShadowBox style={{ margin: '0.25rem 0' }}>
+			<ShadowBox style={shadowBoxStyles}>
 				{data.map((item) => (
 					<Person {...item} key={item.id} />
 				))}
@@ -44,19 +50,10 @@ function Follow(props: IProps) {
 }
 
 const Wrapper = styled.div`
-	max-height: 32rem;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	overflow: auto;
-	@media (max-width: 768px) {
-	}
-`
-const Boundary = styled.div`
-	width: 30rem;
-	@media (max-width: 768px) {
-		width: 19rem;
-	}
 `
 
 export default Follow

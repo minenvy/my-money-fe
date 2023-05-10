@@ -1,4 +1,4 @@
-import InOutDetail from '@/components/list-item'
+import ListItem from '@/components/list-item'
 import ShadowBox from '@/components/shadow-box'
 import TitleInOutDetail from '@/pages/wallet/title-in-out-detail'
 import formatMoney from '@/utilities/money-format'
@@ -130,7 +130,7 @@ function MainContent(props: IMainContentProps) {
 					)
 
 					return (
-						<ShadowBox mode="mini" key={index}>
+						<ShadowBox key={index}>
 							<FlexBox>
 								<TitleInOutDetail
 									time={new Date(year, month, dayInMonth[index])}
@@ -149,13 +149,13 @@ function MainContent(props: IMainContentProps) {
 											key={item.id}
 											onClick={() => redirectToTransaction(item.id)}
 										>
-											<InOutDetail
+											<ListItem
 												icon={icon}
 												title={title}
 												subTitle={date}
 												moreDetail={money}
-												mode="mini"
 												type={type}
+												description={item?.note}
 											/>
 										</div>
 									)
@@ -188,22 +188,16 @@ const Layout = styled.div`
 	gap: 2rem;
 	@media (max-width: 768px) {
 		flex-direction: column;
-		gap: 0;
 	}
 `
 const SeparatePart = styled.div`
 	flex: 1;
-	max-width: 40rem;
 	max-height: 32rem;
-	margin: 0 auto;
 	display: flex;
 	gap: 0.5rem;
 	justify-content: space-between;
 	flex-wrap: wrap;
 	overflow: auto;
-	@media (max-width: 768px) {
-		max-width: 19rem;
-	}
 `
 const FlexBox = styled.div`
 	display: flex;

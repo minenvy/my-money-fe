@@ -70,16 +70,6 @@ function Transaction(props: ITransaction) {
 					</Money>
 				</FlexBox>
 				<FlexBox>
-					<Avatar src={typeImage} />
-					<Select
-						placeholder="Chọn nhóm"
-						value={valueToLabel(type)}
-						onChange={changeType}
-						options={typeSelectOptions}
-						style={{ width: '100%' }}
-					/>
-				</FlexBox>
-				<FlexBox>
 					<Avatar
 						src={
 							<CalendarOutlined
@@ -93,6 +83,17 @@ function Transaction(props: ITransaction) {
 						allowClear={false}
 					/>
 				</FlexBox>
+				<FlexBox>
+					<Avatar src={typeImage} />
+					<Select
+						placeholder="Chọn nhóm"
+						value={valueToLabel(type)}
+						onChange={changeType}
+						options={typeSelectOptions}
+						style={{ width: '100%' }}
+					/>
+				</FlexBox>
+
 				<FlexBox>
 					<Avatar
 						src={

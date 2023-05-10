@@ -9,7 +9,7 @@ import Person from './person'
 import NoData from '@/components/empty'
 import { useParams } from 'react-router-dom'
 
-const ContainerHeight = 360
+const ContainerHeight = 350
 const ItemHeight = 72
 const Offset = 15
 

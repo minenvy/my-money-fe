@@ -12,7 +12,7 @@ import { Spin } from 'antd'
 import { useParams } from 'react-router-dom'
 import NoData from '@/components/empty'
 
-const ContainerHeight = 360
+const ContainerHeight = 350
 const ItemHeight = 44
 const Offset = 15
 const shadowBoxStyles = {
@@ -87,7 +87,6 @@ function MiniTransaction() {
 								title={valueToLabel(item.type)}
 								subTitle={new Date(item.createdAt).toLocaleDateString()}
 								moreDetail={formatMoney(item.money)}
-								mode="mini"
 							/>
 						</Boundary>
 					)}
@@ -99,13 +98,10 @@ function MiniTransaction() {
 }
 
 const Wrapper = styled.div`
-	max-height: 32rem;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	overflow: auto;
-	@media (max-width: 768px) {
-	}
 `
 const Boundary = styled.div`
 	width: 30rem;

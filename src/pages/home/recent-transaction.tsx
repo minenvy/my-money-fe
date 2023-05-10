@@ -5,7 +5,6 @@ import useFetch from '@/hooks/use-fetch'
 import { icons, moneyInTypes, valueToLabel } from '@/constants/money-type'
 import formatMoney from '@/utilities/money-format'
 import { useNavigate } from 'react-router-dom'
-import useWindowSize from '@/hooks/use-window-size'
 import { Avatar, Modal, Typography } from 'antd'
 import Loading from '@/components/loading'
 
@@ -22,13 +21,11 @@ interface IData {
 
 function RecentTransaction() {
 	const navigate = useNavigate()
-	const windowSize = useWindowSize()
 	const { data, isLoading } = useFetch(
 		'recent transaction',
 		'/transaction/recent'
 	) as IData
 
-	const isInMobile = windowSize <= 768
 	if (isLoading) return <Loading />
 	if (data === undefined) return null
 	const hasData = data && data.length > 0
@@ -38,8 +35,6 @@ function RecentTransaction() {
 		navigate('/wallet')
 	}
 	const showMoreDetail = (detail: any) => {
-		if (!isInMobile) return
-
 		const modal = Modal.info({
 			icon: <Avatar src={detail.icon} />,
 			title: detail.title,
@@ -85,7 +80,6 @@ function RecentTransaction() {
 							title={label}
 							icon={icon}
 							subTitle={date}
-							description={item.note}
 							moreDetail={money}
 							type={type}
 						/>

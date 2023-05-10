@@ -101,7 +101,8 @@ const Form = styled.form`
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	margin: 8rem auto 0;
+	margin: 0 auto;
+	padding-top: 8rem;
 `
 const StyledLink = styled(Link)`
 	margin-top: 1rem;

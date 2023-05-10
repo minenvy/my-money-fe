@@ -93,7 +93,7 @@ function NewBudgetModal(props: IProps) {
 			message.warning('Có lỗi xảy ra, vui lòng thử lại sau.')
 			return
 		}
-		message.success('Thêm giao dịch thành công!')
+		message.success('Thêm ngân sách thành công!')
 		setTimeout(() => navigate(0), 1000)
 	}
 	const handleAdd = async () => {

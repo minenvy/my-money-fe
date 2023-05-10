@@ -29,13 +29,13 @@ function NewTransactions() {
 	const navigate = useNavigate()
 	const { user, changeInfo } = useAuth()
 	const { uploadImages, isUploading } = useImagesUpload()
-	const { data, isLoading } = useFetch('/transaction/draft') as IData
+	const { data, isLoading } = useFetch('draft', '/transaction/draft') as IData
 	const [transactions, setTransactions] = useState<Array<ITransaction>>([])
 	const [isPosting, setIsPosting] = useState(false)
 	const imagesRef = useRef<HTMLInputElement>(null)
 
 	if (isLoading) return <Loading />
-	if (!data) return null
+	if (data === undefined) return null
 	if (data.length > 0 && transactions.length === 0) setTransactions(data)
 	if (data.length === 0 && transactions.length === 0)
 		setTransactions([

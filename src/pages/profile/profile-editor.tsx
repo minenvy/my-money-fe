@@ -11,7 +11,7 @@ import { imagesDir } from '@/constants/env'
 const allowedImageType = ['png', 'jpg', 'jpeg', 'gif']
 
 function ProfileEditor() {
-	const { user } = useAuth()
+	const { user, changeInfo } = useAuth()
 	const navigate = useNavigate()
 	const imageInput = useRef<HTMLInputElement>(null)
 	const [image, setImage] = useState<File>()
@@ -27,7 +27,7 @@ function ProfileEditor() {
 			? { labelCol: { span: 8 }, wrapperCol: { span: 16 } }
 			: null
 
-	if (user.nickname && !nickname) {
+	if (user.nickname && nickname === undefined) {
 		setNickname(user.nickname)
 		setBio(user?.bio)
 	}
@@ -62,17 +62,23 @@ function ProfileEditor() {
 				return
 			}
 
-			const res = (await postFetch('/user/change-profile-without-avatar', { bio, nickname }).catch(
-				() => {
-					message.warning('Có lỗi xảy ra vui lòng thử lại sau!')
-					return
-				}
-			)) as Response
+			const res = (await postFetch('/user/change-profile-without-avatar', {
+				bio,
+				nickname,
+			}).catch(() => {
+				message.warning(
+					'Bạn chỉ có thể thay đổi Tên cách nhau ít nhất 20 ngày!'
+				)
+				return
+			})) as Response
 			if (!res.ok) {
-				message.warning('Có lỗi xảy ra vui lòng thử lại sau!')
+				message.warning(
+					'Bạn chỉ có thể thay đổi Tên cách nhau ít nhất 20 ngày!'
+				)
 				return
 			}
 			message.success('Cập nhật thành công')
+			changeInfo({ bio, nickname })
 			setTimeout(() => navigate('/profile/' + user.id), 1000)
 			return
 		}
@@ -89,14 +95,22 @@ function ProfileEditor() {
 				uploadImage('/user/change-profile-with-avatar', formData)
 					.then((res) => {
 						if (!res.ok) {
-							message.warning('Có lỗi xảy ra vui lòng thử lại sau!')
+							message.warning(
+								'Bạn chỉ có thể thay đổi Tên cách nhau ít nhất 20 ngày!'
+							)
 							return
 						}
+						return res.json()
+					})
+					.then((data: { image: string }) => {
 						message.success('Cập nhật thành công')
+						changeInfo({ bio, nickname, image: data.image })
 						setTimeout(() => navigate('/profile/' + user.id), 1000)
 					})
 					.catch(() => {
-						message.warning('Có lỗi xảy ra vui lòng thử lại sau!')
+						message.warning(
+							'Bạn chỉ có thể thay đổi Tên cách nhau ít nhất 20 ngày!'
+						)
 						return
 					})
 			},
@@ -139,7 +153,7 @@ function ProfileEditor() {
 				</AvatarWrapper>
 				<StyledForm {...formItemLayout}>
 					<Form.Item label="Tên người dùng">
-						<Input value={user.nickname} onChange={changeNickname} />
+						<Input value={nickname} onChange={changeNickname} />
 					</Form.Item>
 					<Form.Item label="Bio">
 						<Input value={bio} onChange={changeBio} />
@@ -173,7 +187,7 @@ const FlexBox = styled.div`
 	max-width: 37.5rem;
 	padding: 2rem 4rem;
 	border: 1px solid #ddd;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		padding: 1rem;
 	}
 `
@@ -194,7 +208,7 @@ const Buttons = styled.div`
 `
 const StyledForm = styled(Form)`
 	margin-top: 1rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		& .ant-row {
 			display: unset;
 		}

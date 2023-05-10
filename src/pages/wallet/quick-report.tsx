@@ -28,7 +28,7 @@ function QuickReport(props: IProps) {
 
 const Wrapper = styled.div`
 	width: 19rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		margin: 0 auto;
 	}
 `

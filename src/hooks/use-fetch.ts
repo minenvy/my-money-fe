@@ -2,14 +2,18 @@ import { getFetch } from "@/api/fetch"
 import { useEffect, useState } from "react"
 
 function useFetch(
+  key: string,
   path: string,
   dependencies?: Array<string | number | boolean>
 ) {
-  const [data, setData] = useState<Array<any> | any>()
+  const [cachedData, setCachedData] = useState<{
+    [key: string]: Array<any> | any
+  }>({})
   const [isLoading, setIsLoading] = useState(false)
   const effectDependencies = dependencies || []
 
   useEffect(() => {
+    if (cachedData[key] !== undefined) return
     const controller = new AbortController()
     const signal = controller.signal
     let didCancel = false
@@ -21,7 +25,11 @@ function useFetch(
           const res = await getFetch(path, signal) as Response
           if (!res.ok) return
           const jsonData = await res.json()
-          if (!didCancel) setData(jsonData)
+          if (!didCancel) {
+            setCachedData(preState => {
+              return { ...preState, [key]: jsonData }
+            })
+          }
         } catch (err) {
           console.log(err)
           return null
@@ -36,7 +44,7 @@ function useFetch(
     }
   }, effectDependencies)
 
-  return { data, isLoading }
+  return { data: cachedData[key], isLoading }
 }
 
 export default useFetch

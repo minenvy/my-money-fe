@@ -6,6 +6,7 @@ import { Avatar, Badge, Button, Tooltip } from 'antd'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import default_avatar from '@/assets/default_avatar.jpg'
 
 function Header() {
 	const { user } = useAuth()
@@ -25,11 +26,9 @@ function Header() {
 					<MarginButton type="text" shape="circle" icon={<BellOutlined />} />
 				</Badge> */}
 				<StyledAvatar
-					src={user?.image !== '' ? imagesDir + user.image : ''}
+					src={user?.image !== '' ? imagesDir + user.image : default_avatar}
 					size="large"
-				>
-					{user.nickname ? user.nickname[0].toUpperCase() : ''}
-				</StyledAvatar>
+				/>
 			</RightContent>
 		</Wrapper>
 	)
@@ -65,7 +64,7 @@ const LogoImageWrapper = styled.div`
 const StyledText = styled.b`
 	min-width: fit-content;
 	margin-left: 0.25rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		display: none;
 	}
 `

@@ -7,7 +7,7 @@ export const profileTabs: Array<{
 		label: 'giao dịch',
 	},
 	{
-		key: 'followers',
+		key: 'follower',
 		label: 'followers',
 	},
 	{

@@ -5,9 +5,12 @@ import { useAuth } from '@/contexts/auth'
 import { Typography } from 'antd'
 import styled from 'styled-components'
 import FirstLoginSteps from '@/components/first-login-steps'
+import { NOT_LOGGED_IN } from '@/constants/env'
 
 function Home() {
 	const { user } = useAuth()
+
+	if (user.id === NOT_LOGGED_IN) return null
 
 	return (
 		<Wrapper>

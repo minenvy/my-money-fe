@@ -1,5 +1,4 @@
 import ShadowBox from '@/components/shadow-box'
-import { List } from 'antd'
 import styled from 'styled-components'
 import useFetch from '@/hooks/use-fetch'
 import Loading from '@/components/loading'
@@ -24,19 +23,20 @@ interface IProps {
 function Follow(props: IProps) {
 	const { type } = props
 	const { id = '' } = useParams()
-	const { data, isLoading } = useFetch(`/user/get-${type}/` + id, [id]) as IData
+	const { data, isLoading } = useFetch(
+		`${type} ${id}`,
+		`/user/get-${type}/` + id
+	) as IData
 
 	if (isLoading) return <Loading />
-	if (!data) return null
+	if (data === undefined) return null
 
 	return (
 		<Wrapper>
 			<ShadowBox style={{ margin: '0.25rem 0' }}>
-				<List>
-					{data.map((item) => (
-						<Person {...item} key={item.id} />
-					))}
-				</List>
+				{data.map((item) => (
+					<Person {...item} key={item.id} />
+				))}
 				<ProposersList />
 			</ShadowBox>
 		</Wrapper>
@@ -49,7 +49,13 @@ const Wrapper = styled.div`
 	flex-direction: column;
 	align-items: center;
 	overflow: auto;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
+	}
+`
+const Boundary = styled.div`
+	width: 30rem;
+	@media (max-width: 768px) {
+		width: 19rem;
 	}
 `
 

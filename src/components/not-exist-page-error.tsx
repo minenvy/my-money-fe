@@ -15,7 +15,7 @@ function NotExistPageError() {
 			subTitle="Sorry, the page you visited does not exist."
 			extra={
 				<Button type="primary" onClick={handleClick}>
-					Back Home
+					Trở về trang chủ
 				</Button>
 			}
 		/>

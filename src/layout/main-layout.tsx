@@ -47,7 +47,7 @@ function MainLayout() {
 const Main = styled.main`
 	display: flex;
 	flex-direction: row;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		flex-direction: column;
 	}
 `
@@ -58,7 +58,7 @@ const Content = styled.div`
 	margin-bottom: 0.5rem;
 	max-width: 70rem;
 	margin: 0 auto;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		order: -1;
 		width: 100%;
 		padding: 0.5rem 1rem;

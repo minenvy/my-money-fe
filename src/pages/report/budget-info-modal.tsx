@@ -1,6 +1,9 @@
 import { postFetch } from '@/api/fetch'
+import NoData from '@/components/empty'
+import Loading from '@/components/loading'
 import ShadowBox from '@/components/shadow-box'
 import { valueToLabel } from '@/constants/money-type'
+import useFetch from '@/hooks/use-fetch'
 import getRemainingDays from '@/utilities/get-remaining-days-in-month'
 import formatMoney from '@/utilities/money-format'
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons'
@@ -72,12 +75,12 @@ function BudgetInfoModal(props: IProps) {
 				<br></br>
 				<Typography.Text>Dự kiến chi tiêu: </Typography.Text>
 				<Typography.Text>
-					{formatMoney(totalMoney / totalDays)}/ngày
+					{formatMoney(Math.round(totalMoney / totalDays))}/ngày
 				</Typography.Text>
 				<br></br>
 				<Typography.Text>Thực tế chi tiêu: </Typography.Text>
 				<Typography.Text>
-					{formatMoney(days > 0 ? usedMoney / days : 0)}/ngày
+					{formatMoney(days > 0 ? Math.round(usedMoney / days) : 0)}/ngày
 				</Typography.Text>
 				<br></br>
 				<Typography.Text>Các loại chi tiêu: </Typography.Text>
@@ -91,10 +94,12 @@ function BudgetInfoModal(props: IProps) {
 			</MarginBox>
 
 			<MarginBox>
-				<Typography.Text>Biểu đồ chi tiêu</Typography.Text>
-				<br></br>
-				<Typography.Text type="secondary">(Đơn vị: nghìn đồng)</Typography.Text>
-				<MultipleDatasetLineChart id={id} totalMoney={totalMoney} />
+				<MultipleDatasetLineChart
+					id={id}
+					totalMoney={totalMoney}
+					startDate={startDate}
+					endDate={endDate}
+				/>
 			</MarginBox>
 		</Wrapper>
 	)
@@ -152,7 +157,7 @@ const options = {
 	responsive: true,
 	plugins: {
 		legend: {
-			display: false,
+			display: false
 		},
 		tooltips: {
 			callbacks: {
@@ -167,14 +172,47 @@ const options = {
 interface IMultipleDatasetLineChartProps {
 	id: string
 	totalMoney: number
+	startDate: string | Date
+	endDate: string | Date
 }
+interface IData {
+	isLoading: boolean
+	data: Array<{
+		createdAt: string | Date
+		money: number
+	}>
+}
+
 function MultipleDatasetLineChart(props: IMultipleDatasetLineChartProps) {
-	const { id, totalMoney } = props
-	const usedMoneyEachDay = [0, 20000, 40000, 40000].map((money) => round(money))
+	const { id, totalMoney, startDate, endDate } = props
+	const { data, isLoading } = useFetch(
+		`chart budget ${id}`,
+		'/budget/get-day-expense/' + id
+	) as IData
+
+	if (isLoading) return <Loading />
+	if (data === undefined) return null
+	if (data.length === 0)
+		return (
+			<Typography.Text>
+				Hiện tại bạn chưa có tiêu dùng nào trong ngân sách này
+			</Typography.Text>
+		)
+
+	const dataLength = data.length
+	const passDays =
+		getRemainingDays(startDate, data[dataLength - 1].createdAt) + 1
+	let usedMoneyEachDay = Array(passDays).fill(0)
+	data.forEach((item) => {
+		const index = getRemainingDays(startDate, item.createdAt)
+		usedMoneyEachDay[index] = item.money
+	})
+
+	usedMoneyEachDay = usedMoneyEachDay.map((money) => round(money))
 	const usedMoney = usedMoneyEachDay.reduce((total, money) => total + money, 0)
 	const averageOneDay =
 		usedMoneyEachDay.length > 0 ? usedMoney / usedMoneyEachDay.length : 0
-	const remainingDays = 10
+	const remainingDays = getRemainingDays(new Date(), endDate)
 	const moneyWillUseData: Array<number> = []
 	usedMoneyEachDay.forEach((money, index) => {
 		if (index === 0) moneyWillUseData.push(money)
@@ -184,7 +222,7 @@ function MultipleDatasetLineChart(props: IMultipleDatasetLineChartProps) {
 		moneyWillUseData.push(usedMoney + averageOneDay * i)
 	}
 
-	const data = {
+	const chartData = {
 		labels: Array(moneyWillUseData.length).fill(''),
 		datasets: [
 			{
@@ -219,7 +257,14 @@ function MultipleDatasetLineChart(props: IMultipleDatasetLineChartProps) {
 		],
 	}
 
-	return <Line options={options} data={data} />
+	return (
+		<>
+			<Typography.Text>Biểu đồ chi tiêu</Typography.Text>
+			<br></br>
+			<Typography.Text type="secondary">(Đơn vị: nghìn đồng)</Typography.Text>
+			<Line options={options} data={chartData} />
+		</>
+	)
 }
 
 function round(money: number) {
@@ -241,7 +286,7 @@ const ReportBox = styled.div`
 const FlexBox = styled.div`
 	display: flex;
 	justify-content: space-around;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		justify-content: space-between;
 	}
 `

@@ -1,5 +1,5 @@
 import NoData from '@/components/empty'
-import InOutDetail from '@/components/in-out-detail'
+import ListItem from '@/components/list-item'
 import ShadowBox from '@/components/shadow-box'
 import getRemainingDays from '@/utilities/get-remaining-days-in-month'
 import formatMoney from '@/utilities/money-format'
@@ -51,14 +51,17 @@ interface IData {
 }
 
 function Budgets() {
-	const { data, isLoading } = useFetch('/budget/get-infinite/0') as IData
+	const { data, isLoading } = useFetch(
+		'budgets',
+		'/budget/get-infinite/0'
+	) as IData
 	const [budgets, setBudgets] = useState<Array<IBudget>>()
 	const [isFetching, setIsFetching] = useState(false)
 	const offset = useRef(0)
 
 	if (isLoading) return <Loading />
-	if (!data) return null
-	if (!budgets) setBudgets(data)
+	if (data === undefined) return null
+	if (budgets === undefined) setBudgets(data)
 
 	const hasData = data.length > 0
 	if (!hasData)
@@ -173,7 +176,7 @@ function BudgetDetail(props: IDetailProps) {
 		<>
 			<DetailWrapper onClick={handleClick}>
 				<ShadowBox>
-					<InOutDetail
+					<ListItem
 						title={name}
 						icon={icon}
 						subTitle={subTitle}

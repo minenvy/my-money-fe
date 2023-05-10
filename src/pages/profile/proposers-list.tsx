@@ -1,12 +1,8 @@
-import InOutDetail from '@/components/in-out-detail'
-import ShadowBox from '@/components/shadow-box'
-import formatMoney from '@/utilities/money-format'
 import styled from 'styled-components'
 import VirtualList from 'rc-virtual-list'
 import useFetch from '@/hooks/use-fetch'
 import { useRef, useState } from 'react'
 import Loading from '@/components/loading'
-import { icons, valueToLabel } from '@/constants/money-type'
 import { getFetch } from '@/api/fetch'
 import { Spin, Typography } from 'antd'
 import Person from './person'
@@ -29,14 +25,17 @@ interface IData {
 }
 
 function ProposersList() {
-	const {id} = useParams()
-	const { data, isLoading } = useFetch(`/user/get-proposers/${id}/0`) as IData
+	const { id = '' } = useParams()
+	const { data, isLoading } = useFetch(
+		`proposers ${id}`,
+		`/user/get-proposers/${id}/0`
+	) as IData
 	const [proposers, setProposers] = useState<Array<IPerson>>()
 	const [isFetching, setIsFetching] = useState(false)
 	const offset = useRef(0)
 
 	if (isLoading) return <Loading />
-	if (!data) return null
+	if (data === undefined) return null
 	if (data.length === 0)
 		return (
 			<Boundary>
@@ -44,7 +43,7 @@ function ProposersList() {
 				<NoData />
 			</Boundary>
 		)
-	if (!proposers) setProposers(data)
+	if (proposers === undefined) setProposers(data)
 
 	const onScroll = async (e: React.UIEvent<HTMLElement, UIEvent>) => {
 		if (
@@ -64,7 +63,7 @@ function ProposersList() {
 	}
 
 	return (
-		<>
+		<Boundary>
 			<StyledText strong>Những người có thể bạn biết</StyledText>
 			<VirtualList
 				data={proposers || []}
@@ -76,13 +75,13 @@ function ProposersList() {
 				{(item) => <Person {...item} key={item.id} />}
 			</VirtualList>
 			{isFetching && <Spin />}
-		</>
+		</Boundary>
 	)
 }
 
 const Boundary = styled.div`
 	width: 30rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		width: 19rem;
 	}
 `

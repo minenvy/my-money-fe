@@ -1,5 +1,4 @@
 import useWindowSize from '@/hooks/use-window-size'
-import generateBackgroundColor from '@/utilities/generate-color'
 import { Avatar, Typography } from 'antd'
 import styled from 'styled-components'
 
@@ -13,43 +12,40 @@ interface IInOutDetailProps {
 	mode?: string
 }
 
-function InOutDetail(props: IInOutDetailProps) {
-	const {
-		icon,
-		title,
-		subTitle,
-		description,
-		moreDetail,
-		type,
-		mode,
-	} = props
+function ListItem(props: IInOutDetailProps) {
+	const { icon, title, subTitle, description, moreDetail, type, mode } = props
 	const windowSize = useWindowSize()
 
 	const isInMobile = windowSize < 768
 
 	return (
 		<Wrapper data-mini-mode-info={mode === 'mini' || isInMobile}>
-			<Avatar src={icon} style={{ backgroundColor: '#1677ff' }}>
-				{title[0].toUpperCase()}
-			</Avatar>
-			<NameAndMoney>
-				<Name>
-					<Typography.Text
-						style={{ width: mode !== 'mini' && !isInMobile ? '20%' : 'unset' }}
-					>
-						{title}
+			<Meta>
+				<Avatar src={icon} style={{ backgroundColor: '#1677ff' }}>
+					{title[0].toUpperCase()}
+				</Avatar>
+				<MetaContent>
+					<Title>
+						<Typography.Text
+							style={{
+								width: mode !== 'mini' && !isInMobile ? '20%' : 'unset',
+							}}
+						>
+							{title}
+						</Typography.Text>
+					</Title>
+
+					<Typography.Text type="secondary">
+						{subTitle.toLocaleString()}
 					</Typography.Text>
 					{description && mode !== 'mini' && !isInMobile && (
 						<Description>
 							<StyledText ellipsis>{description}</StyledText>
 						</Description>
 					)}
-					<Percent data-type-info={type}>{moreDetail}</Percent>
-				</Name>
-				<Typography.Text type="secondary">
-					{subTitle.toLocaleString()}
-				</Typography.Text>
-			</NameAndMoney>
+				</MetaContent>
+			</Meta>
+			<MoreDetail data-type-info={type}>{moreDetail}</MoreDetail>
 		</Wrapper>
 	)
 }
@@ -63,25 +59,28 @@ const Wrapper = styled.div`
 		cursor: pointer;
 	}
 `
-const NameAndMoney = styled.div`
+const MetaContent = styled.div`
 	flex: 1;
 	display: flex;
 	flex-direction: column;
+	margin-left: 1rem;
 `
-const Name = styled.div`
+const Title = styled.div`
+	flex: 1;
+`
+const Meta = styled.div`
+	flex: 1;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 `
 const Description = styled.div`
-	width: 60%;
-	text-align: center;
 	text-overflow: ellipsis;
 `
 const StyledText = styled(Typography.Text)`
-	max-width: 40vw !important;
+	max-width: 58vw !important;
 `
-const Percent = styled.span`
+const MoreDetail = styled.span`
 	&[data-type-info='out'] {
 		color: red;
 	}
@@ -90,4 +89,4 @@ const Percent = styled.span`
 	}
 `
 
-export default InOutDetail
+export default ListItem

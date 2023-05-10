@@ -11,7 +11,7 @@ function TitleInOutDetail(props: IProps) {
 	const { time, money } = props
 	const date = time.getDate()
 	const dayInWeek = time.toLocaleString('default', { weekday: 'long' })
-	const monthWithYear = `tháng ${time.getMonth() + 1} ${time.getFullYear()}`
+	const monthWithYear = `tháng ${time.getMonth()} ${time.getFullYear()}`
 
 	return (
 		<Wrapper>

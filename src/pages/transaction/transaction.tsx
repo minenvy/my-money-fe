@@ -43,7 +43,7 @@ function Transaction(props: ITransaction) {
 	}
 	const changeDate: DatePickerProps['onChange'] = (_, dateString) => {
 		updateDraft(id, {
-			date: new Date(dateString),
+			createdAt: new Date(dateString),
 		})
 	}
 	const changeNote = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -88,7 +88,7 @@ function Transaction(props: ITransaction) {
 						}
 					/>
 					<DatePicker
-						value={dayjs(dayjs(createdAt).format('DD-MM-YYYY'))}
+						value={dayjs(dayjs(createdAt).format('YYYY-MM-DD'))}
 						onChange={changeDate}
 						allowClear={false}
 					/>

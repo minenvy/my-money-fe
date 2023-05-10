@@ -10,10 +10,7 @@ function ShadowBox(props: IProps) {
 	const { children, mode, style } = props
 
 	return (
-		<Wrapper
-			data-mode-info={mode}
-			style={style}
-		>
+		<Wrapper data-mode-info={mode} style={style}>
 			{children}
 		</Wrapper>
 	)
@@ -29,7 +26,7 @@ const Wrapper = styled.div`
 	&[data-mode-info='mini'] {
 		width: 19rem;
 	}
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		margin: 0.5rem auto;
 	}
 `

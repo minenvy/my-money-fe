@@ -89,12 +89,15 @@ function ModalContent(props: IModalContentProps) {
 	const isMonthReport = type === 'tháng'
 	const { data, isLoading } = useFetch(
 		isMonthReport
+			? `quick report month ${month} ${year}`
+			: `quick report year ${year}`,
+		isMonthReport
 			? `/transaction/get-in-month/${month}/${year}`
 			: `/transaction/get-in-year/${year}`
 	) as IData
 
 	if (isLoading) return <Loading />
-	if (!data)
+	if (data === undefined)
 		return (
 			<Empty
 				image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -152,7 +155,7 @@ const FlexBox = styled.div`
 	border: 1px solid #ddd;
 	box-shadow: 0 2px 8px #ddd;
 	cursor: pointer;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		margin: 1rem auto;
 	}
 `

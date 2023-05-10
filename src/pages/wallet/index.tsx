@@ -1,4 +1,4 @@
-import InOutDetail from '@/components/in-out-detail'
+import InOutDetail from '@/components/list-item'
 import ShadowBox from '@/components/shadow-box'
 import TitleInOutDetail from '@/pages/wallet/title-in-out-detail'
 import formatMoney from '@/utilities/money-format'
@@ -70,12 +70,13 @@ function MainContent(props: IMainContentProps) {
 	const { month, year } = props
 	const navigate = useNavigate()
 	const { data, isLoading } = useFetch(
+		`transactions in wallet ${month} ${year}`,
 		`/transaction/get-separate-in-month/${month}/${year}`,
 		[month, year]
 	) as IData
 
 	if (isLoading) return <Loading />
-	if (!data)
+	if (data === undefined)
 		return (
 			<ShadowBox>
 				<NoData />
@@ -185,7 +186,7 @@ const Layout = styled.div`
 	flex-direction: row;
 	justify-content: space-evenly;
 	gap: 2rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		flex-direction: column;
 		gap: 0;
 	}
@@ -200,7 +201,7 @@ const SeparatePart = styled.div`
 	justify-content: space-between;
 	flex-wrap: wrap;
 	overflow: auto;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		max-width: 19rem;
 	}
 `

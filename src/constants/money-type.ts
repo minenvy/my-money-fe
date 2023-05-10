@@ -14,6 +14,7 @@ import thuenha from '@/assets/thuenha.png'
 import thunhapkhac from '@/assets/thunhapkhac.png'
 import vatnuoi from '@/assets/vatnuoi.png'
 import vuichoi from '@/assets/vuichoi.jpg'
+import creditcard from '@/assets/creditcard.png'
 
 const moneyTypes: any = []
 moneyTypes['Chi tiêu'] = [
@@ -81,6 +82,11 @@ moneyTypes['Chi tiêu'] = [
     icon: lamdep,
     label: 'Làm đẹp',
     value: 'lamdep'
+  },
+  {
+    icon: creditcard,
+    label: 'Banking',
+    value: 'banking'
   },
   {
     icon: chiphikhac,

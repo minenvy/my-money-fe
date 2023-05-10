@@ -1,4 +1,4 @@
-import InOutDetail from '@/components/in-out-detail'
+import ListItem from '@/components/list-item'
 import TitleOfPartContent from './title-of-part-content'
 import ShadowBox from '@/components/shadow-box'
 import useFetch from '@/hooks/use-fetch'
@@ -23,11 +23,14 @@ interface IData {
 function RecentTransaction() {
 	const navigate = useNavigate()
 	const windowSize = useWindowSize()
-	const { data, isLoading } = useFetch('/transaction/recent') as IData
+	const { data, isLoading } = useFetch(
+		'recent transaction',
+		'/transaction/recent'
+	) as IData
 
 	const isInMobile = windowSize <= 768
 	if (isLoading) return <Loading />
-	if (!data) return null
+	if (data === undefined) return null
 	const hasData = data && data.length > 0
 	if (!hasData) return null
 
@@ -73,10 +76,11 @@ function RecentTransaction() {
 								title: label,
 								subTitle: date,
 								moreDetail: money,
+								description: item?.note,
 							})
 						}
 					>
-						<InOutDetail
+						<ListItem
 							key={item.id}
 							title={label}
 							icon={icon}

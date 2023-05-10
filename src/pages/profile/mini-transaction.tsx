@@ -1,4 +1,4 @@
-import InOutDetail from '@/components/in-out-detail'
+import ListItem from '@/components/list-item'
 import ShadowBox from '@/components/shadow-box'
 import formatMoney from '@/utilities/money-format'
 import styled from 'styled-components'
@@ -32,8 +32,9 @@ interface IData {
 }
 
 function MiniTransaction() {
-	const { id } = useParams()
+	const { id = '' } = useParams()
 	const { data, isLoading } = useFetch(
+		`transactions ${id}`,
 		`/transaction/get-infinite/${id}/0`
 	) as IData
 	const [transactions, setTransactions] = useState<Array<ITransaction>>()
@@ -41,7 +42,7 @@ function MiniTransaction() {
 	const offset = useRef(0)
 
 	if (isLoading) return <Loading />
-	if (!data) return null
+	if (data === undefined) return null
 	if (data.length === 0)
 		return (
 			<Wrapper>
@@ -50,7 +51,7 @@ function MiniTransaction() {
 				</ShadowBox>
 			</Wrapper>
 		)
-	if (!transactions) setTransactions(data)
+	if (transactions === undefined) setTransactions(data)
 
 	const onScroll = async (e: React.UIEvent<HTMLElement, UIEvent>) => {
 		if (
@@ -59,10 +60,7 @@ function MiniTransaction() {
 		) {
 			setIsFetching(true)
 			const res = (await getFetch(
-				'/transaction/get-infinite/' +
-					id +
-					'/' +
-					(offset.current + Offset)
+				'/transaction/get-infinite/' + id + '/' + (offset.current + Offset)
 			).catch(() => [])) as Response
 			if (!res.ok) return
 			offset.current += Offset
@@ -84,7 +82,7 @@ function MiniTransaction() {
 				>
 					{(item) => (
 						<Boundary key={item.id}>
-							<InOutDetail
+							<ListItem
 								icon={icons.find((ic) => ic.value === item.type)?.icon}
 								title={valueToLabel(item.type)}
 								subTitle={new Date(item.createdAt).toLocaleDateString()}
@@ -106,12 +104,12 @@ const Wrapper = styled.div`
 	flex-direction: column;
 	align-items: center;
 	overflow: auto;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 	}
 `
 const Boundary = styled.div`
 	width: 30rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		width: 19rem;
 	}
 `

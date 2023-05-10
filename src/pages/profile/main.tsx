@@ -23,13 +23,17 @@ interface IData {
 }
 
 function Main() {
-	const { id } = useParams()
+	const { id = '' } = useParams()
 	const { user } = useAuth()
-	const { data, isLoading } = useFetch('/user/check-block/' + id) as IData
+	const { data, isLoading } = useFetch(
+		`check block ${id}`,
+		'/user/check-block/' + id,
+		[id]
+	) as IData
 	const [activeKeyTab, setActiveKeyTab] = useState(profileTabs[0].key)
 
 	if (isLoading) return <Loading />
-	if (!data) return null
+	if (data === undefined) return null
 	if (user.id !== id && data.isBlocked)
 		return (
 			<Wrapper>
@@ -59,7 +63,7 @@ function Main() {
 
 const Wrapper = styled.div`
 	margin-top: 2.75rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		margin-top: 1rem;
 	}
 `

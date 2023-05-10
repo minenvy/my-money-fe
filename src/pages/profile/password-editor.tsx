@@ -111,7 +111,7 @@ const FlexBox = styled.div`
 	max-width: 37.5rem;
 	padding: 2rem 4rem;
 	border: 1px solid #ddd;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		padding: 1rem;
 	}
 `
@@ -132,7 +132,7 @@ const Buttons = styled.div`
 `
 const StyledForm = styled(Form)`
 	margin-top: 1rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		& .ant-row {
 			display: unset;
 		}

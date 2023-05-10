@@ -25,7 +25,10 @@ interface IData {
 function TransactionEditor() {
 	const { id } = useParams()
 	const { user, changeInfo } = useAuth()
-	const { data } = useFetch('/transaction/get-by-id/' + id) as IData
+	const { data } = useFetch(
+		`transaction ${id}`,
+		'/transaction/get-by-id/' + id
+	) as IData
 	const [transaction, setTransaction] = useState<ITransaction>({
 		id: '',
 		money: 0,

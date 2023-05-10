@@ -2,7 +2,7 @@ import { Select, Typography } from 'antd'
 import styled from 'styled-components'
 import BarChart from '@/components/bar-chart'
 import DoughnutChart from '@/components/doughnut-chart'
-import InOutDetail from '@/components/in-out-detail'
+import ListItem from '@/components/list-item'
 import NoData from '@/components/empty'
 import useFetch from '@/hooks/use-fetch'
 import {
@@ -71,13 +71,16 @@ function MainReport(props: IProps) {
 	const isSelectMonth = selectedOption === 'month'
 	const { data, isLoading } = useFetch(
 		isSelectMonth
+			? `transaction month ${month} ${year}`
+			: `transaction year ${year}`,
+		isSelectMonth
 			? `/transaction/get-in-month/${month}/${year}`
 			: `/transaction/get-in-year/${year}`,
 		[selectedOption]
 	) as IData
 
 	if (isLoading) return <Loading />
-	if (!data) return <NoData hasButton />
+	if (data === undefined) return <NoData hasButton />
 
 	const hasData = data.length > 0
 	if (!hasData) return <NoData hasButton />
@@ -134,7 +137,7 @@ function MainReport(props: IProps) {
 				const money = formatMoney(item.money)
 				const type = moneyInTypes.includes(item.type) ? 'in' : 'out'
 				return (
-					<InOutDetail
+					<ListItem
 						key={item.type}
 						title={title}
 						icon={icon}
@@ -170,7 +173,7 @@ const ChartWrapper = styled.div`
 	flex-wrap: wrap;
 	justify-content: space-between;
 	gap: 2rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		flex-direction: column;
 	}
 `
@@ -179,7 +182,7 @@ const FlexBox = styled.div`
 	align-items: center;
 	justify-content: center;
 	width: 45%;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		width: 100%;
 	}
 `

@@ -82,12 +82,13 @@ interface IData {
 function MainReport(props: IMainReportContentProps) {
 	const { year, chartType, isSelectMonth } = props
 	const { data, isLoading } = useFetch(
+		`chart report ${isSelectMonth} ${year}`,
 		(isSelectMonth ? '/report/month/' : '/report/year/') + year,
 		[isSelectMonth, year]
 	) as IData
 
 	if (isLoading) return <Loading />
-	if (!data)
+	if (data === undefined)
 		return (
 			<ShadowBox>
 				<NoData />
@@ -170,7 +171,7 @@ const FlexBox = styled.div`
 	align-items: center;
 	justify-content: space-between;
 	gap: 2rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		flex-direction: column;
 	}
 `
@@ -181,7 +182,7 @@ const Chart = styled.div`
 	align-items: center;
 	justify-content: center;
 	overflow: scroll;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		width: 18rem;
 		min-height: unset;
 	}
@@ -190,7 +191,7 @@ const Report = styled.div`
 	max-height: 28rem;
 	width: 20rem;
 	overflow: auto;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		width: 100%;
 	}
 `

@@ -7,6 +7,7 @@ import {
 import useFetch from '@/hooks/use-fetch'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getFetch } from '@/api/fetch'
+import { NOT_LOGGED_IN } from '@/constants/env'
 
 interface IUserInfo {
 	id: string
@@ -45,37 +46,42 @@ interface IAuthProviderProps {
 	children: React.ReactNode
 }
 
+const NotLoggedInUser = {
+	id: NOT_LOGGED_IN,
+	nickname: '',
+	money: 0,
+	image: '',
+	bio: '',
+	followings: [],
+	blockers: [],
+}
+
 export default function AuthProvider({ children }: IAuthProviderProps) {
-	const { data } = useFetch('/user/get-by-token')
-	const [user, setUser] = useState<IUserInfo>({
-		id: '',
-		nickname: '',
-		money: 0,
-		image: '',
-		bio: '',
-		followings: [],
-		blockers: [],
-	})
+	const { data } = useFetch('auth', '/user/get-by-token')
+	const [user, setUser] = useState<IUserInfo>(NotLoggedInUser)
 	const navigate = useNavigate()
 	const location = useLocation()
 
 	useEffect(() => {
-		if (!data) return
+		if (data === undefined) return
 		if (Object.keys(data).length === 0) {
 			removeLoginState()
 			navigate('/login')
-		} else {
-			const isInNotLoggedInPage =
-				location.pathname.includes('login') ||
-				location.pathname.includes('register')
-			if (isInNotLoggedInPage) navigate('/')
-			setLoginState()
-			changeUserInfo(data)
+			return
 		}
+		const isInNotLoggedInPage =
+			location.pathname.includes('login') ||
+			location.pathname.includes('register')
+		if (isInNotLoggedInPage) {
+			navigate('/')
+			return
+		}
+		setLoginState()
+		changeUserInfo(data)
 	}, [data])
 
-	function changeUserInfo(newUser: INewUserInfo | null) {
-		setUser({ ...user, ...newUser })
+	function changeUserInfo(newUser: INewUserInfo) {
+		setUser({ ...(user as IUserInfo), ...newUser })
 	}
 	function login(newUser: INewUserInfo) {
 		setLoginState()
@@ -91,7 +97,7 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
 		})) as Response
 		if (!res.ok) return
 		removeLoginState()
-		changeUserInfo(null)
+		changeUserInfo(NotLoggedInUser)
 		navigate('/login')
 	}
 

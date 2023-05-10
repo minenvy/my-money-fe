@@ -46,3 +46,8 @@ a:hover {
 .ant-modal-confirm-content {
 	max-width: unset !important;
 }
+.ant-avatar {
+	width: 2.6rem;
+	height: 2.6rem;
+	border: none;
+}

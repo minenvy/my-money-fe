@@ -9,6 +9,7 @@ import OwnerDialog from './owner-dialog'
 import useFetch from '@/hooks/use-fetch'
 import Loading from '@/components/loading'
 import { profileMenuIcon } from '@/constants/profile'
+import default_avatar from '@/assets/default_avatar.jpg'
 
 interface IData {
 	isLoading: boolean
@@ -27,13 +28,16 @@ function OwnerHeaderProfile() {
 	const navigate = useNavigate()
 	const { id } = useParams()
 	const windowSize = useWindowSize()
-	const { data, isLoading } = useFetch('/user/get-by-id/' + id) as IData
+	const { data, isLoading } = useFetch(
+		'my header profile',
+		'/user/get-by-id/' + id
+	) as IData
 	const [isShowedDialog, setIsShowedDialog] = useState(false)
 
 	const isInMobile = windowSize <= 768
 
 	if (isLoading) return <Loading />
-	if (!data) return null
+	if (data === undefined) return null
 
 	const redirectToEdit = () => {
 		navigate('/profile/edit-profile')
@@ -49,11 +53,11 @@ function OwnerHeaderProfile() {
 				<AvatarBox>
 					<AvatarBoundary>
 						<StyledAvatar
-							src={data?.image !== '' ? imagesDir + data?.image : ''}
+							src={
+								data?.image !== '' ? imagesDir + data?.image : default_avatar
+							}
 							size={isInMobile ? 75 : 150}
-						>
-							{data.nickname[0].toUpperCase()}
-						</StyledAvatar>
+						/>
 					</AvatarBoundary>
 				</AvatarBox>
 				<InfoBox>
@@ -134,7 +138,7 @@ const StyledSpan = styled.span`
 `
 const StyledButton = styled(Button)`
 	margin-left: 1.25rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		margin: 0;
 		margin-top: 1rem;
 		display: block;
@@ -142,7 +146,7 @@ const StyledButton = styled(Button)`
 `
 const MoreInfo = styled.div`
 	margin-top: 1.875rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		margin-top: 1rem;
 		display: flex;
 		justify-content: space-between;
@@ -154,7 +158,7 @@ const ChildMoreInfo = styled.span`
 `
 const Bio = styled.div`
 	margin-top: 1rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		text-align: center;
 	}
 `

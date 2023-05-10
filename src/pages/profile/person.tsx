@@ -1,10 +1,13 @@
 import { postFetch } from '@/api/fetch'
+import ListItem from '@/components/list-item'
 import { imagesDir } from '@/constants/env'
 import { useAuth } from '@/contexts/auth'
-import { Avatar, Button, List, Typography, message } from 'antd'
+import { Avatar, Button, Typography, message } from 'antd'
+import React from 'react'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import default_avatar from '@/assets/default_avatar.jpg'
+import { useNavigate } from 'react-router-dom'
 
 interface IPerson {
 	id: string
@@ -13,7 +16,7 @@ interface IPerson {
 	bio: string
 }
 
-function Person(props: IPerson) {
+const Person = React.forwardRef((props: IPerson, ref) => {
 	const { id, nickname, image, bio } = props
 	const navigate = useNavigate()
 	const { user, changeInfo } = useAuth()
@@ -48,41 +51,39 @@ function Person(props: IPerson) {
 
 	return (
 		<Boundary onClick={redirectToFriendProfile}>
-			<List.Item>
-				<List.Item.Meta
-					avatar={
-						<StyledAvatar
-							src={image !== '' ? imagesDir + image : ''}
-							size="large"
-						>
-							{nickname[0].toUpperCase()}
-						</StyledAvatar>
-					}
-					title={nickname}
-					description={bio || 'Chưa có bio'}
-				/>
-				{isInOwnerProfile ? (
-					<Typography.Text>
-						{isFollowed ? 'Unfollow' : 'Follow'}
-					</Typography.Text>
-				) : (
-					<Button loading={isPosting} onClick={handleClickFollow}>
-						{isFollowed ? 'Unfollow' : 'Follow'}
-					</Button>
-				)}
-			</List.Item>
+			<ListItem
+				icon={
+					<StyledAvatar
+						src={image !== '' ? imagesDir + image : default_avatar}
+						size="large"
+					/>
+				}
+				title={nickname}
+				subTitle={bio || 'Chưa có bio'}
+				moreDetail={
+					isInOwnerProfile ? (
+						<Typography.Text>
+							{isFollowed ? 'Unfollow' : 'Follow'}
+						</Typography.Text>
+					) : (
+						<Button loading={isPosting} onClick={handleClickFollow}>
+							{isFollowed ? 'Unfollow' : 'Follow'}
+						</Button>
+					)
+				}
+			/>
 		</Boundary>
 	)
-}
+})
 
-const Boundary = styled.div`
-	width: 30rem;
-	@media screen and (max-width: 768px) {
-		width: 19rem;
-	}
-`
 const StyledAvatar = styled(Avatar)`
 	background-color: #1890ff;
+`
+const Boundary = styled.div`
+	width: 30rem;
+	@media (max-width: 768px) {
+		width: 19rem;
+	}
 `
 
 export default Person

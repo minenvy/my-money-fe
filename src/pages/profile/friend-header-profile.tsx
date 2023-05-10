@@ -11,6 +11,7 @@ import { profileMenuIcon } from '@/constants/profile'
 import { useAuth } from '@/contexts/auth'
 import FriendDialog from './friend-dialog'
 import { postFetch } from '@/api/fetch'
+import default_avatar from '@/assets/default_avatar.jpg'
 
 interface IData {
 	isLoading: boolean
@@ -31,12 +32,15 @@ function FriendHeaderProfile() {
 	const windowSize = useWindowSize()
 	const [isShowedDialog, setIsShowedDialog] = useState(false)
 	const [isPosting, setIsPosting] = useState(false)
-	const { data, isLoading } = useFetch('/user/get-by-id/' + id) as IData
+	const { data, isLoading } = useFetch(
+		'friend header profile',
+		'/user/get-by-id/' + id
+	) as IData
 
 	const isInMobile = windowSize <= 768
 
 	if (isLoading) return <Loading />
-	if (!data) return null
+	if (data === undefined) return null
 	const isFollowed = user.followings.includes(id || '')
 
 	const follow = async () => {
@@ -71,11 +75,11 @@ function FriendHeaderProfile() {
 				<AvatarBox>
 					<AvatarBoundary>
 						<StyledAvatar
-							src={data?.image !== '' ? imagesDir + data?.image : ''}
+							src={
+								data?.image !== '' ? imagesDir + data?.image : default_avatar
+							}
 							size={isInMobile ? 75 : 150}
-						>
-							{data.nickname ? data.nickname[0].toUpperCase() : ''}
-						</StyledAvatar>
+						/>
 					</AvatarBoundary>
 				</AvatarBox>
 				<InfoBox>
@@ -156,7 +160,7 @@ const StyledSpan = styled.span`
 `
 const StyledButton = styled(Button)`
 	margin-left: 1.25rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		margin: 0;
 		margin-top: 1rem;
 		display: block;
@@ -164,7 +168,7 @@ const StyledButton = styled(Button)`
 `
 const MoreInfo = styled.div`
 	margin-top: 1.875rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		margin-top: 1rem;
 		display: flex;
 		justify-content: space-between;
@@ -176,7 +180,7 @@ const ChildMoreInfo = styled.span`
 `
 const Bio = styled.div`
 	margin-top: 1rem;
-	@media screen and (max-width: 768px) {
+	@media (max-width: 768px) {
 		text-align: center;
 	}
 `

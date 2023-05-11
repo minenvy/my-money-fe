@@ -3,48 +3,105 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/images/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   <title>My Money</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-size: 1rem;
+      line-height: 1.25;
+      color: #212121;
+      background-color: white;
+      width: 100vw;
+      height: 100vh;
+      text-overflow: ellipsis;
+    }
+
     .warning_404 {
       font-size: 16px;
       width: 550px;
-      margin: 50px auto;
+      margin: 0 auto;
+      padding: 50px;
       text-align: center;
     }
 
-    .symb_404 {
-      background: url('./notice.gif');
-      width: 548px;
-      height: 372px;
-      display: block;
+    .image {
+      width: 100%;
+      height: 100%;
       margin: 0 auto 25px;
     }
 
     .ptext01 {
-      font-weight: bold;
+      font-weight: 500;
       text-transform: uppercase;
       font-size: 22px;
+    }
+
+    #reload_btn {
+      padding: 8px 16px;
+      margin-top: 8px;
+      border: 1px solid #ddd;
+      cursor: pointer;
     }
   </style>
 </head>
 
 <body>
   <div class="warning_404">
-    <div class="symb_404">
+    <div class="image">
+      <svg width="287" height="287" xmlns="http://www.w3.org/2000/svg">
+        <g label="Layer 1" id="imagebot_2">
+          <path label="Layer 1" fill="#000000"
+            d="M286.921,143.453 C286.921,222.678 222.693,286.906 143.46,286.906 C64.2309,286.906 -2.70626e-06,222.68 -2.70626e-06,143.453 C-2.70626e-06,64.2273 64.2283,9.53014e-06 143.46,9.53014e-06 C222.69,9.53014e-06 286.921,64.2252 286.921,143.453 z"
+            id="imagebot_11" />
+          <g label="Layer 1" stroke="#ffffff"
+            transform="translate(-0.00198094, 0.0281582) matrix(1, 0, 0, 1, -168.486, -348.196)" id="imagebot_3">
+            <path stroke="#ffffff" stroke-linecap="round" stroke-width="14.992" fill="none"
+              transform="matrix(.94025 0 0 .92745 12.409 42.957)"
+              d="M422.85999,483.79001C422.85999,540.59601 376.16999,586.65001 318.56998,586.65001C260.97498,586.65001 214.27998,540.59901 214.27998,483.79001C214.27998,426.98401 260.96998,380.93001 318.56998,380.93001C376.16499,380.93001 422.85999,426.98101 422.85999,483.79001z"
+              id="imagebot_10" />
+            <path stroke="#ffffff" stroke-width="14" fill="none" d="M230,442.35999L398,442.35999" id="imagebot_9" />
+            <path stroke="#ffffff" stroke-width="14" fill="none" d="M228,538.85999L400,538.85999" id="imagebot_8" />
+            <path stroke="#ffffff" stroke-width="14" fill="none" d="M218,491.35999L406,491.35999" id="imagebot_7" />
+            <path stroke="#ffffff" stroke-width="14" fill="none" d="M310.25,583.10999L310.25,399.10999"
+              id="imagebot_6" />
+            <path stroke="#ffffff" stroke-width="14" fill="none"
+              d="M310.25,583.10999C250,562.35999 240,432.35999 310.25,399.10999" id="imagebot_5" />
+            <path stroke="#ffffff" stroke-width="14" fill="none"
+              d="M310.25,583.10999C380,552.35999 380,432.35999 310.25,399.10999" id="imagebot_4" />
+          </g>
+          <title>Layer 1</title>
+        </g>
+        <metadata>image/svg+xmlOpenclipartInternet
+          Icon2010-09-23T04:19:58https://openclipart.org/detail/86401/internet-icon-by-benbenIconinternetworld
+        </metadata>
+      </svg>
     </div>
     <div class="warningcontent">
       <p class="ptext01">Không có kết nối mạng!</p>
+      <button id="reload_btn">Tải lại trang</button>
     </div>
   </div>
+  <script>
+    document.getElementById('reload_btn').addEventListener('click', () => {
+      window.location.reload()
+    })
+  </script>
 </body>
 
 </html>

@@ -43,14 +43,12 @@ function PasswordEditor() {
 			message.warning('Mật khẩu mới không trùng nhau!')
 			return
 		}
-		const res = (await postFetch('/user/change-password', {
+		const res = await postFetch('/user/change-password', {
 			...password,
-		}).catch(() => {
-			message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
-			return
-		})) as Response
+		}) as Response
+		if (!res) return
 		if (!res.ok) {
-			message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
+			message.warning('Có lỗi xảy ra, thay đổi mật khẩu thất bại!')
 			return
 		}
 		message.success('Thay đổi mật khẩu thành công.')

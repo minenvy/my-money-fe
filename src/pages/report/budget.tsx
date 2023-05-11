@@ -79,10 +79,10 @@ function Budgets() {
 			ContainerHeight
 		) {
 			setIsFetching(true)
-			const res = (await getFetch(
+			const res = await getFetch(
 				'/budget/get-infinite/' + (offset.current + Offset)
-			).catch(() => [])) as Response
-			if (!res.ok) return
+			) as Response
+			if (!res || !res.ok) return
 			offset.current += Offset
 			const resData = await res.json()
 			setBudgets([...(budgets as Array<IBudget>), ...resData])

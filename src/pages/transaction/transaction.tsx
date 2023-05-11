@@ -22,10 +22,12 @@ interface ITransaction {
 	note?: string
 	updateDraft: Function
 	deleteDraft?: Function
+	allowEditImage?: boolean
 }
 
 function Transaction(props: ITransaction) {
-	const { id, money, type, createdAt, note, updateDraft, deleteDraft } = props
+	const { id, money, type, createdAt, note, updateDraft, deleteDraft, allowEditImage = true } =
+		props
 
 	const typeImage = icons.find((icon) => icon.value === type)?.icon
 
@@ -84,7 +86,10 @@ function Transaction(props: ITransaction) {
 					/>
 				</FlexBox>
 				<FlexBox>
-					<Avatar src={typeImage} />
+					<Avatar
+						src={typeImage}
+						style={{ color: '#212121', fontSize: '1.25rem' }}
+					/>
 					<Select
 						placeholder="Chọn nhóm"
 						value={valueToLabel(type)}

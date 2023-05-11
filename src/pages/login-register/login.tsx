@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import { login as loginApi } from '@/api/user'
 import { useAuth } from '@/contexts/auth'
 import { message, Button } from 'antd'
 import { useErrorBoundary } from '@/contexts/error-fetch-boundary'
 import Input from '@/pages/login-register/input'
+import { postFetch } from '@/api/fetch'
 
 function Login() {
 	const navigate = useNavigate()
@@ -28,9 +28,12 @@ function Login() {
 			message.warning('Cần nhập đủ các thông tin!')
 			return
 		}
-		const res = (await loginApi({ ...loginInformation }).catch((err) => {
-			showBoundary(err)
-		})) as Response
+		const res = (await postFetch('/user/login', { ...loginInformation }).catch(
+			(err) => {
+				showBoundary(err)
+			}
+		)) as Response
+		if (!res) return
 		if (!res.ok) {
 			message.warning('Tài khoản hoặc mật khẩu không chính xác!')
 			return

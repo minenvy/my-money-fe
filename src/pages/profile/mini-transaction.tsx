@@ -61,8 +61,8 @@ function MiniTransaction() {
 			setIsFetching(true)
 			const res = (await getFetch(
 				'/transaction/get-infinite/' + id + '/' + (offset.current + Offset)
-			).catch(() => [])) as Response
-			if (!res.ok) return
+			)) as Response
+			if (!res || !res.ok) return
 			offset.current += Offset
 			const resData = await res.json()
 			setTransactions([...(transactions as Array<ITransaction>), ...resData])

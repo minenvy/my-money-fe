@@ -93,10 +93,8 @@ function NewTransactions() {
 			0
 		)
 		urls.push(postFetch('/user/change-money', { money: totalMoney }))
-		const res = (await Promise.all(urls).catch(() => {
-			message.warning('Có lỗi xảy ra. Thêm giao dịch thất bại!')
-			return
-		})) as Response[]
+		const res = (await Promise.all(urls)) as Response[]
+		if (!res) return
 		const errors = res.filter((response: Response) => !response.ok)
 		if (errors.length > 0) {
 			message.warning('Có lỗi xảy ra. Thêm giao dịch thất bại!')

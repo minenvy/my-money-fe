@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { useAuth } from '@/contexts/auth'
-import { register as registerApi } from '@/api/user'
 import { message, Button } from 'antd'
 import { useErrorBoundary } from '@/contexts/error-fetch-boundary'
 import Input from '@/pages/login-register/input'
 import { v4 as uuid } from 'uuid'
+import { postFetch } from '@/api/fetch'
 
 function Register() {
 	const navigate = useNavigate()
@@ -40,9 +40,12 @@ function Register() {
 			return
 		}
 
-		const res = (await registerApi({ ...registerInformation }).catch((err) => {
+		const res = (await postFetch('/user/register', {
+			...registerInformation,
+		}).catch((err) => {
 			showBoundary(err)
 		})) as Response
+		if (!res) return
 		if (!res.ok) {
 			message.warning('Tên tài khoản đã được sử dụng!')
 			return

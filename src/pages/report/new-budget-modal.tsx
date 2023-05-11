@@ -88,9 +88,9 @@ function NewBudgetModal(props: IProps) {
 			endDate: endDate.toDateString(),
 			options: moneyOptions === '' ? moneyOutTypes.toString() : moneyOptions,
 		})
-		const data = await res.json()
-		if (Object.keys(data).length === 0) {
-			message.warning('Có lỗi xảy ra, vui lòng thử lại sau.')
+		if (!res) return
+		if (!res.ok) {
+			message.warning('Có lỗi xảy ra, thêm thất bại!')
 			return
 		}
 		message.success('Thêm ngân sách thành công!')

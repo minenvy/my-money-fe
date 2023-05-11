@@ -47,11 +47,12 @@ function FriendHeaderProfile() {
 		const res = (await postFetch('/user/follow', {
 			id,
 			isFollowed: !isFollowed,
-		}).catch(() => {
-			message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
-			return
 		})) as Response
-		if (!res.ok) return
+		if (!res) return
+		if (!res.ok) {
+			message.warning('Bạn chỉ có thể follow tối đa 20 người!')
+			return
+		}
 		changeInfo({
 			followings: isFollowed
 				? user.followings.filter((item) => item !== id)

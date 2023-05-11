@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import Compressor from 'compressorjs'
 import { postFetch, uploadImage } from '@/api/fetch'
 import { imagesDir } from '@/constants/env'
+import compressImage from '@/utilities/compress-image'
 
 const allowedImageType = ['png', 'jpg', 'jpeg', 'gif']
 
@@ -55,69 +56,44 @@ function ProfileEditor() {
 	const cancel = () => {
 		navigate('/profile/' + user.id)
 	}
+	const changeProfile = async (newUser: {
+		bio?: string
+		nickname?: string
+		image?: string
+	}) => {
+		const res = (await postFetch('/user/change-profile', {
+			...newUser,
+		})) as Response
+		if (!res) return
+		if (!res.ok) {
+			message.warning('Bạn chỉ có thể thay đổi Tên cách nhau ít nhất 20 ngày!')
+			return
+		}
+		message.success('Cập nhật thành công')
+		changeInfo({ ...newUser })
+		setTimeout(() => navigate('/profile/' + user.id), 1000)
+	}
 	const upload = async () => {
 		if (!image) {
-			if (!bio && !image && !nickname) {
+			if (!bio && !nickname) {
 				navigate('/profile/' + user.id)
 				return
 			}
-
-			const res = (await postFetch('/user/change-profile-without-avatar', {
-				bio,
-				nickname,
-			}).catch(() => {
-				message.warning(
-					'Bạn chỉ có thể thay đổi Tên cách nhau ít nhất 20 ngày!'
-				)
-				return
-			})) as Response
-			if (!res.ok) {
-				message.warning(
-					'Bạn chỉ có thể thay đổi Tên cách nhau ít nhất 20 ngày!'
-				)
-				return
-			}
-			message.success('Cập nhật thành công')
-			changeInfo({ bio, nickname })
-			setTimeout(() => navigate('/profile/' + user.id), 1000)
+			await changeProfile({ bio, nickname })
 			return
 		}
 
-		new Compressor(image, {
-			quality: 0.8,
-			success: (result: File) => {
-				const formData = new FormData()
-				formData.append('file', result, result.name)
-				formData.append('bio', bio)
-				formData.append('nickname', nickname as string)
-
-				// Send the compressed image file to server with XMLHttpRequest.
-				uploadImage('/user/change-profile-with-avatar', formData)
-					.then((res) => {
-						if (!res.ok) {
-							message.warning(
-								'Bạn chỉ có thể thay đổi Tên cách nhau ít nhất 20 ngày!'
-							)
-							return
-						}
-						return res.json()
-					})
-					.then((data: { image: string }) => {
-						message.success('Cập nhật thành công')
-						changeInfo({ bio, nickname, image: data.image })
-						setTimeout(() => navigate('/profile/' + user.id), 1000)
-					})
-					.catch(() => {
-						message.warning(
-							'Bạn chỉ có thể thay đổi Tên cách nhau ít nhất 20 ngày!'
-						)
-						return
-					})
-			},
-			error(err) {
-				console.log(err.message)
-			},
-		})
+		const compressedImage = (await compressImage(image).catch(() => {
+			message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
+			return
+		})) as File
+		const uploadResponse = (await uploadImage(
+			'/image/upload',
+			compressedImage
+		)) as Response
+		if (!uploadResponse || !uploadResponse.ok) return
+		const data = await uploadResponse.json()
+		await changeProfile({ bio, nickname, image: data.image })
 	}
 	const handleSubmit = async () => {
 		if (isLoading) return

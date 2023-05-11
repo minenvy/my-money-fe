@@ -69,12 +69,11 @@ function TransactionEditor() {
 					money: totalMoney,
 				})
 			)
-			const res = (await Promise.all(urls).catch(() =>
-				message.warning('Có lỗi xảy ra, vui lòng thử lại sau.')
-			)) as Response[]
+			const res = (await Promise.all(urls)) as Response[]
+			if (!res) return
 			const errors = res.filter((response: Response) => !response.ok)
 			if (errors.length > 0) {
-				message.warning('Có lỗi xảy ra. Thêm giao dịch thất bại!')
+				message.warning('Có lỗi xảy ra. Sửa giao dịch thất bại!')
 				return
 			}
 			changeInfo({ money: user.money + totalMoney })
@@ -89,13 +88,10 @@ function TransactionEditor() {
 		;(async () => {
 			const res = (await postFetch('/transaction/delete', {
 				id: transaction.id,
-			}).catch(() =>
-				message.warning('Có lỗi xảy ra, vui lòng thử lại sau.')
-			)) as Response
-			const serverMessage = await res.json()
-
-			if (Object.keys(serverMessage).length === 0) {
-				message.warning('Có lỗi xảy ra, vui lòng thử lại sau.')
+			})) as Response
+			if (!res) return
+			if (!res.ok) {
+				message.warning('Có lỗi xảy ra, xóa thất bại!')
 				return
 			}
 			message.success('Xóa thành công!')
@@ -125,7 +121,11 @@ function TransactionEditor() {
 				<HeaderTitle>Sửa giao dịch</HeaderTitle>
 			</HeaderWrapper>
 
-			<Transaction {...transaction} updateDraft={updateDraft} />
+			<Transaction
+				{...transaction}
+				updateDraft={updateDraft}
+				allowEditImage={false}
+			/>
 
 			<EditButtons>
 				<Button

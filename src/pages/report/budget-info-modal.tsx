@@ -111,12 +111,10 @@ function PopDeleteConfirm(props: { id: string }) {
 	const [isLoading, setIsLoading] = useState(false)
 
 	const onDelete = async () => {
-		const res = (await postFetch('/budget/delete', { id }).catch(() => {
-			message.warning('Có lỗi xảy ra. Vui lòng thử lại sau!')
-			return
-		})) as Response
+		const res = (await postFetch('/budget/delete', { id })) as Response
+		if (!res) return
 		if (!res.ok) {
-			message.warning('Có lỗi xảy ra. Vui lòng thử lại sau!')
+			message.warning('Có lỗi xảy ra, xóa thất bại!')
 			return
 		}
 		message.success('Xóa thành công!')
@@ -157,7 +155,7 @@ const options = {
 	responsive: true,
 	plugins: {
 		legend: {
-			display: false
+			display: false,
 		},
 		tooltips: {
 			callbacks: {

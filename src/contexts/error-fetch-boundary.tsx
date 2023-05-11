@@ -1,4 +1,4 @@
-import { Result } from 'antd'
+import { Button, Result } from 'antd'
 import { createContext, useContext, useState } from 'react'
 
 interface IErrorBoundaryContext {
@@ -15,7 +15,16 @@ interface IErrorBoundaryProp {
 }
 
 const ErrorElement = (
-	<Result status="500" title="500" subTitle="Sorry, something went wrong." />
+	<Result
+		status="500"
+		title="500"
+		subTitle="Sorry, something went wrong."
+		extra={
+			<Button type="primary" onClick={() => window.location.reload()}>
+				Tải lại trang
+			</Button>
+		}
+	/>
 )
 
 function ErrorBoundary({ children }: IErrorBoundaryProp) {

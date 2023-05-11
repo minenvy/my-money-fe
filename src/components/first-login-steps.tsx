@@ -53,16 +53,14 @@ function FirstLoginSteps() {
 		}
 		const urls = []
 		urls.push(
-			postFetch('/user/change-profile-without-avatar', { nickname }),
+			postFetch('/user/change-profile', { nickname }),
 			postFetch('/user/change-money', { money })
 		)
-		const res = (await Promise.all(urls).catch(() => {
-			message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
-			return
-		})) as Response[]
+		const res = await Promise.all(urls) as Response[]
+		if (!res) return
 		const errors = res.filter((response: Response) => !response.ok)
 		if (errors.length > 0) {
-			message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
+			message.warning('Tên này đã được sử dụng!')
 			return
 		}
 		changeInfo({ nickname, money })
@@ -86,11 +84,7 @@ function FirstLoginSteps() {
 						</Button>
 					)}
 					{current === steps.length - 1 && (
-						<Button
-							type="primary"
-							loading={isLoading}
-							onClick={handleToDone}
-						>
+						<Button type="primary" loading={isLoading} onClick={handleToDone}>
 							Hoàn tất
 						</Button>
 					)}

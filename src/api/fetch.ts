@@ -1,6 +1,7 @@
 import { domain } from "@/constants/env"
+import { message } from "antd"
 
-function getFetch(path: string, signal?: any) {
+async function getFetch(path: string, signal?: any) {
   return fetch(domain + path, {
     method: 'get',
     headers: {
@@ -9,10 +10,15 @@ function getFetch(path: string, signal?: any) {
     },
     credentials: 'include',
     signal
+  }).catch((error) => {
+    if (error.name === 'AbortError') return
+    message.destroy()
+    message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
+    throw new Error(error)
   })
 }
 
-function postFetch(path: string, body: any, signal?: any) {
+async function postFetch(path: string, body: any, signal?: any) {
   return fetch(domain + path, {
     method: 'post',
     headers: {
@@ -22,19 +28,28 @@ function postFetch(path: string, body: any, signal?: any) {
     credentials: 'include',
     body: JSON.stringify(body),
     signal
+  }).catch((error) => {
+    if (error.name === 'AbortError') return
+    message.destroy()
+    message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
+    throw new Error(error)
   })
 }
 
-function uploadImage(path: string, body: any, signal?: any) {
+async function uploadImage(path: string, file: File, signal?: any) {
+  const formData = new FormData()
+  formData.append('file', file, file.name)
+
   return fetch(domain + path, {
     method: 'post',
-    // headers: {
-    //   Accept: 'application/json',
-    //   'Content-Type': 'multipart/form-data',
-    // },
     credentials: 'include',
-    body: body,
+    body: formData,
     signal
+  }).catch((error) => {
+    if (error.name === 'AbortError') return
+    message.destroy()
+    message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
+    throw new Error(error)
   })
 }
 

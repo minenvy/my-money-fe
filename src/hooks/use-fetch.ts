@@ -23,7 +23,7 @@ function useFetch(
           if (isLoading) return
           setIsLoading(true)
           const res = await getFetch(path, signal) as Response
-          if (!res.ok) return
+          if (!res || !res.ok) return
           const jsonData = await res.json()
           if (!didCancel) {
             setCachedData(preState => {

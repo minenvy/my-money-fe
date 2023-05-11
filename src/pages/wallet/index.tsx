@@ -2,7 +2,7 @@ import ListItem from '@/components/list-item'
 import ShadowBox from '@/components/shadow-box'
 import TitleInOutDetail from '@/pages/wallet/title-in-out-detail'
 import formatMoney from '@/utilities/money-format'
-import { DatePicker, Typography } from 'antd'
+import { Avatar, DatePicker, Image, Modal, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import styled from 'styled-components'
@@ -65,6 +65,14 @@ interface IMainContentProps {
 	month: number
 	year: number
 }
+interface IModal {
+	id: string
+	icon: string
+	title: string
+	subTitle: React.ReactNode
+	moreDetail: string
+	description?: string
+}
 
 function MainContent(props: IMainContentProps) {
 	const { month, year } = props
@@ -109,6 +117,26 @@ function MainContent(props: IMainContentProps) {
 	})
 
 	const redirectToTransaction = (id: string) => navigate('/transaction/' + id)
+	const showMoreDetail = (detail: IModal) => {
+		const modal = Modal.confirm({
+			icon: <Avatar src={detail.icon} />,
+			title: detail.title,
+			content: (
+				<>
+					<Typography.Text>{detail.subTitle}</Typography.Text>
+					<br></br>
+					<Typography.Text>{detail.moreDetail}</Typography.Text>
+					<br></br>
+					<Typography.Text>{detail.description}</Typography.Text>
+				</>
+			),
+			okButtonProps: { type: 'primary' },
+			onOk: () => modal.destroy(),
+			cancelText: 'Sửa',
+			cancelButtonProps: { type: 'default' },
+			onCancel: () => redirectToTransaction(detail.id),
+		})
+	}
 
 	return (
 		<Layout>
@@ -147,7 +175,16 @@ function MainContent(props: IMainContentProps) {
 									return (
 										<div
 											key={item.id}
-											onClick={() => redirectToTransaction(item.id)}
+											onClick={() =>
+												showMoreDetail({
+													id: item.id,
+													icon: icon,
+													title: title,
+													subTitle: date,
+													moreDetail: money,
+													description: item?.note,
+												})
+											}
 										>
 											<ListItem
 												icon={icon}
@@ -155,7 +192,6 @@ function MainContent(props: IMainContentProps) {
 												subTitle={date}
 												moreDetail={money}
 												type={type}
-												description={item?.note}
 											/>
 										</div>
 									)

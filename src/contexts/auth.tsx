@@ -74,7 +74,6 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
 			location.pathname.includes('register')
 		if (isInNotLoggedInPage) {
 			navigate('/')
-			return
 		}
 		setLoginState()
 		changeUserInfo(data)
@@ -92,10 +91,8 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
 		changeUserInfo(newUser)
 	}
 	async function logout() {
-		const res = (await getFetch('/user/logout').catch((err) => {
-			console.log(err)
-		})) as Response
-		if (!res.ok) return
+		const res = (await getFetch('/user/logout')) as Response
+		if (!res || !res.ok) return
 		removeLoginState()
 		changeUserInfo(NotLoggedInUser)
 		navigate('/login')

@@ -21,11 +21,12 @@ function FriendDialog(props: IProps) {
 		const res = (await postFetch('/user/block', {
 			id,
 			isBlocked: !isBlocked,
-		}).catch(() => {
-			message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
-			return
 		})) as Response
-		if (!res.ok) return
+		if (!res) return
+		if (!res.ok) {
+			message.warning('Có lỗi xảy ra, block thất bại!')
+			return
+		}
 		changeInfo({
 			blockers: isBlocked
 				? user.blockers.filter((item) => item !== id)

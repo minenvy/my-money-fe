@@ -5,7 +5,7 @@ import useFetch from '@/hooks/use-fetch'
 import { icons, moneyInTypes, valueToLabel } from '@/constants/money-type'
 import formatMoney from '@/utilities/money-format'
 import { useNavigate } from 'react-router-dom'
-import { Avatar, Modal, Typography } from 'antd'
+import { Avatar, Modal, Typography, Image } from 'antd'
 import Loading from '@/components/loading'
 
 interface IData {
@@ -17,6 +17,14 @@ interface IData {
 		createdAt: string | Date
 		note?: string
 	}>
+}
+interface IModal {
+	id: string
+	icon: string
+	title: string
+	subTitle: React.ReactNode
+	moreDetail: string
+	description?: string
 }
 
 function RecentTransaction() {
@@ -34,7 +42,7 @@ function RecentTransaction() {
 	const handleClick = () => {
 		navigate('/wallet')
 	}
-	const showMoreDetail = (detail: any) => {
+	const showMoreDetail = (detail: IModal) => {
 		const modal = Modal.info({
 			icon: <Avatar src={detail.icon} />,
 			title: detail.title,
@@ -45,7 +53,6 @@ function RecentTransaction() {
 					<Typography.Text>{detail.moreDetail}</Typography.Text>
 					<br></br>
 					<Typography.Text>{detail.description}</Typography.Text>
-					<br></br>
 				</>
 			),
 			okButtonProps: { type: 'default' },
@@ -67,6 +74,7 @@ function RecentTransaction() {
 						key={item.id}
 						onClick={() =>
 							showMoreDetail({
+								id: item.id,
 								icon: icon,
 								title: label,
 								subTitle: date,

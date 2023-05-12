@@ -80,7 +80,7 @@ function NewTransactions() {
 		}
 		const isNotValid = transactions.find((item) => item.money === 0)
 		if (isNotValid) {
-			message.warning('Số tiền phải khác 0!')
+			message.warning('Số tiền trong 1 giao dịch phải khác 0!')
 			return
 		}
 		const images = await Promise.all(
@@ -94,6 +94,13 @@ function NewTransactions() {
 				image: images[index],
 			})
 		)
+		const res = (await Promise.all(urls)) as Response[]
+		if (res.filter((r) => r).length === 0) return
+		const errors = res.filter((response: Response) => !response.ok)
+		message.success(
+			`Thêm ${transactions.length - errors.length} giao dịch thành công!`
+		)
+
 		const totalMoney = transactions.reduce(
 			(total, transaction) =>
 				moneyInTypes.includes(transaction.type)
@@ -101,16 +108,7 @@ function NewTransactions() {
 					: total - transaction.money,
 			0
 		)
-		urls.push(postFetch('/user/change-money', { money: totalMoney }))
-		const res = (await Promise.all(urls)) as Response[]
-		if (res.filter((r) => r).length === 0) return
-		const errors = res.filter((response: Response) => !response.ok)
-		if (errors.length > 0) {
-			message.warning('Có lỗi xảy ra. Thêm giao dịch thất bại!')
-			return
-		}
 		changeInfo({ money: user.money + totalMoney })
-		message.success('Thêm giao dịch thành công!')
 		setTimeout(() => navigate('/wallet'), 1000)
 	}
 	const handleSubmit = async () => {

@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import {
-	getLoginState,
 	removeLoginState,
 	setLoginState,
 } from '@/utilities/check-login'

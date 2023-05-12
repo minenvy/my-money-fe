@@ -67,20 +67,13 @@ function TransactionEditor() {
 				typeof transaction.image === 'string'
 					? transaction.image
 					: await uploadImageToServer(transaction.image as File)
-			const urls = []
-			urls.push(
-				postFetch('/transaction/edit', {
-					...transaction,
-					image: imageName,
-				}),
-				postFetch('/user/change-money', {
-					money: totalMoney,
-				})
-			)
-			const res = (await Promise.all(urls)) as Response[]
+
+			const res = (await postFetch('/transaction/edit', {
+				...transaction,
+				image: imageName,
+			})) as Response
 			if (!res) return
-			const errors = res.filter((response: Response) => !response.ok)
-			if (errors.length > 0) {
+			if (!res.ok) {
 				message.warning('Có lỗi xảy ra. Sửa giao dịch thất bại!')
 				return
 			}
@@ -94,19 +87,11 @@ function TransactionEditor() {
 		if (isLoading) return
 		setIsLoading('delete')
 		;(async () => {
-			const urls = []
-			urls.push(
-				postFetch('/transaction/delete', {
-					id: transaction.id,
-				}),
-				postFetch('/user/change-money', {
-					money: -beforeUpdateMoney.current,
-				})
-			)
-			const res = (await Promise.all(urls)) as Response[]
-			if (res.filter((r) => r).length === 0) return
-			const errors = res.filter((response: Response) => !response.ok)
-			if (errors.length > 0) {
+			const res = (await postFetch('/transaction/delete', {
+				id: transaction.id,
+			})) as Response
+			if (!res) return
+			if (!res.ok) {
 				message.warning('Có lỗi xảy ra. Xóa giao dịch thất bại!')
 				return
 			}

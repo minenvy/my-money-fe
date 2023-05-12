@@ -4,10 +4,9 @@ import { Avatar, Button, Form, Input, Typography, message } from 'antd'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import Compressor from 'compressorjs'
 import { postFetch, uploadImage } from '@/api/fetch'
 import { imagesDir } from '@/constants/env'
-import compressImage from '@/utilities/compress-image'
+import { compressImage, uploadImageToServer } from '@/utilities/image'
 
 const allowedImageType = ['png', 'jpg', 'jpeg', 'gif']
 
@@ -83,17 +82,8 @@ function ProfileEditor() {
 			return
 		}
 
-		const compressedImage = (await compressImage(image).catch(() => {
-			message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
-			return
-		})) as File
-		const uploadResponse = (await uploadImage(
-			'/image/upload',
-			compressedImage
-		)) as Response
-		if (!uploadResponse || !uploadResponse.ok) return
-		const data = await uploadResponse.json()
-		await changeProfile({ bio, nickname, image: data.image })
+		const imageName = await uploadImageToServer(image)
+		await changeProfile({ bio, nickname, image: imageName })
 	}
 	const handleSubmit = async () => {
 		if (isLoading) return

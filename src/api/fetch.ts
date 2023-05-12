@@ -14,7 +14,7 @@ async function getFetch(path: string, signal?: any) {
     if (error.name === 'AbortError') return
     message.destroy()
     message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
-    throw new Error(error)
+    return null
   })
 }
 
@@ -32,7 +32,7 @@ async function postFetch(path: string, body: any, signal?: any) {
     if (error.name === 'AbortError') return
     message.destroy()
     message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
-    throw new Error(error)
+    return null
   })
 }
 
@@ -49,7 +49,7 @@ async function uploadImage(path: string, file: File, signal?: any) {
     if (error.name === 'AbortError') return
     message.destroy()
     message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
-    throw new Error(error)
+    return null
   })
 }
 

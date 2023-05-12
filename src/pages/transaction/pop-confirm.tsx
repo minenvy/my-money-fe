@@ -35,6 +35,7 @@ function PopDeleteConfirm(props: IProps) {
 			onCancel={handleCancel}
 		>
 			<DeleteButton
+				className="deleteBtn"
 				icon={<DeleteOutlined />}
 				type="text"
 				onClick={showPopConfirm}

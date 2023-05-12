@@ -3,15 +3,18 @@ import { useAuth } from '@/contexts/auth'
 import { useImagesUpload } from '@/contexts/images-uploader'
 import { BellOutlined, SyncOutlined } from '@ant-design/icons'
 import { Avatar, Badge, Button, Tooltip } from 'antd'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import default_avatar from '@/assets/default_avatar.jpg'
+import socket from '@/utilities/socket'
 
 function Header() {
 	const { user } = useAuth()
 	const { isUploading } = useImagesUpload()
-	// const [isHaveNotification, setIsHaveNotification] = useState(true)
+	const [isHaveNotification, setIsHaveNotification] = useState(false)
+	console.log('header')
+	useEffect(() => {}, [socket])
 
 	return (
 		<Wrapper>
@@ -22,9 +25,9 @@ function Header() {
 						<StyledSyncOutlined spin={isUploading} />
 					</Tooltip>
 				)}
-				{/* <Badge dot={isHaveNotification} offset={[-21, 5]}>
+				<Badge dot={isHaveNotification} offset={[-21, 5]}>
 					<MarginButton type="text" shape="circle" icon={<BellOutlined />} />
-				</Badge> */}
+				</Badge>
 				<StyledAvatar
 					src={user?.image !== '' ? imagesDir + user.image : default_avatar}
 					size="large"

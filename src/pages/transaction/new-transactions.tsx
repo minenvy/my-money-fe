@@ -10,8 +10,8 @@ import Loading from '@/components/loading'
 import { useImagesUpload } from '@/contexts/images-uploader'
 import { moneyInTypes } from '@/constants/money-type'
 import { useAuth } from '@/contexts/auth'
-
-const allowedImageType = ['png', 'jpg', 'jpeg', 'gif']
+import allowedImageType from '@/constants/image-type'
+import { uploadImageToServer } from '@/utilities/image'
 
 interface ITransaction {
 	id: string
@@ -19,6 +19,7 @@ interface ITransaction {
 	type: string
 	createdAt: Date
 	note?: string
+	image?: string | File
 }
 interface IData {
 	isLoading: boolean
@@ -45,6 +46,7 @@ function NewTransactions() {
 				type: 'anuong',
 				createdAt: new Date(),
 				note: '',
+				image: '',
 			},
 		])
 
@@ -55,6 +57,7 @@ function NewTransactions() {
 			type: 'anuong',
 			createdAt: new Date(),
 			note: '',
+			image: '',
 		}
 		const newTransaction: ITransaction = draft || nullDraft
 		setTransactions([...transactions, newTransaction])
@@ -77,14 +80,27 @@ function NewTransactions() {
 		}
 		const isNotValid = transactions.find((item) => item.money === 0)
 		if (isNotValid) {
-			message.warning('Số tiền phải khác 0!')
+			message.warning('Số tiền trong 1 giao dịch phải khác 0!')
 			return
 		}
-		const urls = transactions.map((item) =>
+		const images = await Promise.all(
+			transactions.map((item) =>
+				item?.image ? uploadImageToServer(item.image as File) : ''
+			)
+		).then((image) => image || '')
+		const urls = transactions.map((item, index) =>
 			postFetch('/transaction/add', {
 				...item,
+				image: images[index],
 			})
 		)
+		const res = (await Promise.all(urls)) as Response[]
+		if (res.filter((r) => r).length === 0) return
+		const errors = res.filter((response: Response) => !response.ok)
+		message.success(
+			`Thêm ${transactions.length - errors.length} giao dịch thành công!`
+		)
+
 		const totalMoney = transactions.reduce(
 			(total, transaction) =>
 				moneyInTypes.includes(transaction.type)
@@ -92,16 +108,7 @@ function NewTransactions() {
 					: total - transaction.money,
 			0
 		)
-		urls.push(postFetch('/user/change-money', { money: totalMoney }))
-		const res = (await Promise.all(urls)) as Response[]
-		if (!res) return
-		const errors = res.filter((response: Response) => !response.ok)
-		if (errors.length > 0) {
-			message.warning('Có lỗi xảy ra. Thêm giao dịch thất bại!')
-			return
-		}
 		changeInfo({ money: user.money + totalMoney })
-		message.success('Thêm giao dịch thành công!')
 		setTimeout(() => navigate('/wallet'), 1000)
 	}
 	const handleSubmit = async () => {

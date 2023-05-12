@@ -1,6 +1,6 @@
-// import { io } from 'socket.io-client'
-// import { domain } from '@/constants/env'
+import { io } from 'socket.io-client'
+import { domain } from '@/constants/env'
 
-// const socket = io(domain)
+const socket = io(domain)
 
-// export default socket
+export default socket

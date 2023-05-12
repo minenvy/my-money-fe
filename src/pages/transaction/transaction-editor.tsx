@@ -8,6 +8,7 @@ import useFetch from '@/hooks/use-fetch'
 import { postFetch } from '@/api/fetch'
 import { useAuth } from '@/contexts/auth'
 import { moneyInTypes } from '@/constants/money-type'
+import { uploadImageToServer } from '@/utilities/image'
 
 const { confirm } = Modal
 
@@ -17,6 +18,7 @@ interface ITransaction {
 	type: string
 	createdAt: Date
 	note?: string
+	image?: string | File
 }
 interface IData {
 	data: ITransaction
@@ -35,6 +37,7 @@ function TransactionEditor() {
 		type: 'anuong',
 		createdAt: new Date(),
 		note: '',
+		image: '',
 	})
 	const [isLoading, setIsLoading] = useState('')
 	const navigate = useNavigate()
@@ -60,19 +63,17 @@ function TransactionEditor() {
 				? transaction.money
 				: -transaction.money
 			const totalMoney = updateMoney - beforeUpdateMoney.current
-			const urls = []
-			urls.push(
-				postFetch('/transaction/edit', {
-					...transaction,
-				}),
-				postFetch('/user/change-money', {
-					money: totalMoney,
-				})
-			)
-			const res = (await Promise.all(urls)) as Response[]
+			const imageName =
+				typeof transaction.image === 'string'
+					? transaction.image
+					: await uploadImageToServer(transaction.image as File)
+
+			const res = (await postFetch('/transaction/edit', {
+				...transaction,
+				image: imageName,
+			})) as Response
 			if (!res) return
-			const errors = res.filter((response: Response) => !response.ok)
-			if (errors.length > 0) {
+			if (!res.ok) {
 				message.warning('Có lỗi xảy ra. Sửa giao dịch thất bại!')
 				return
 			}
@@ -91,9 +92,10 @@ function TransactionEditor() {
 			})) as Response
 			if (!res) return
 			if (!res.ok) {
-				message.warning('Có lỗi xảy ra, xóa thất bại!')
+				message.warning('Có lỗi xảy ra. Xóa giao dịch thất bại!')
 				return
 			}
+			changeInfo({ money: user.money - beforeUpdateMoney.current })
 			message.success('Xóa thành công!')
 			setTimeout(() => navigate('/wallet'), 1000)
 		})()

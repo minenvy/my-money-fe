@@ -8,6 +8,7 @@ import useFetch from '@/hooks/use-fetch'
 import { postFetch } from '@/api/fetch'
 import { useAuth } from '@/contexts/auth'
 import { moneyInTypes } from '@/constants/money-type'
+import { uploadImageToServer } from '@/utilities/image'
 
 const { confirm } = Modal
 
@@ -17,6 +18,7 @@ interface ITransaction {
 	type: string
 	createdAt: Date
 	note?: string
+	image?: string | File
 }
 interface IData {
 	data: ITransaction
@@ -35,6 +37,7 @@ function TransactionEditor() {
 		type: 'anuong',
 		createdAt: new Date(),
 		note: '',
+		image: '',
 	})
 	const [isLoading, setIsLoading] = useState('')
 	const navigate = useNavigate()
@@ -60,10 +63,15 @@ function TransactionEditor() {
 				? transaction.money
 				: -transaction.money
 			const totalMoney = updateMoney - beforeUpdateMoney.current
+			const imageName =
+				typeof transaction.image === 'string'
+					? transaction.image
+					: await uploadImageToServer(transaction.image as File)
 			const urls = []
 			urls.push(
 				postFetch('/transaction/edit', {
 					...transaction,
+					image: imageName,
 				}),
 				postFetch('/user/change-money', {
 					money: totalMoney,
@@ -86,14 +94,23 @@ function TransactionEditor() {
 		if (isLoading) return
 		setIsLoading('delete')
 		;(async () => {
-			const res = (await postFetch('/transaction/delete', {
-				id: transaction.id,
-			})) as Response
-			if (!res) return
-			if (!res.ok) {
-				message.warning('Có lỗi xảy ra, xóa thất bại!')
+			const urls = []
+			urls.push(
+				postFetch('/transaction/delete', {
+					id: transaction.id,
+				}),
+				postFetch('/user/change-money', {
+					money: -beforeUpdateMoney.current,
+				})
+			)
+			const res = (await Promise.all(urls)) as Response[]
+			if (res.filter((r) => r).length === 0) return
+			const errors = res.filter((response: Response) => !response.ok)
+			if (errors.length > 0) {
+				message.warning('Có lỗi xảy ra. Xóa giao dịch thất bại!')
 				return
 			}
+			changeInfo({ money: user.money - beforeUpdateMoney.current })
 			message.success('Xóa thành công!')
 			setTimeout(() => navigate('/wallet'), 1000)
 		})()

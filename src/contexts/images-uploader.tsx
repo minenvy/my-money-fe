@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from 'react'
 import { uploadImage } from '@/api/fetch'
 import { message } from 'antd'
-import compressImage from '@/utilities/compress-image'
+import { compressImage } from '@/utilities/image'
 
 interface IContext {
 	isUploading: boolean

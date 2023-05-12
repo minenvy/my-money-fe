@@ -7,6 +7,8 @@ import formatMoney from '@/utilities/money-format'
 import { useNavigate } from 'react-router-dom'
 import { Avatar, Modal, Typography, Image } from 'antd'
 import Loading from '@/components/loading'
+import styled from 'styled-components'
+import { imagesDir } from '@/constants/env'
 
 interface IData {
 	isLoading: boolean
@@ -16,6 +18,7 @@ interface IData {
 		type: string
 		createdAt: string | Date
 		note?: string
+		image?: string
 	}>
 }
 interface IModal {
@@ -25,6 +28,7 @@ interface IModal {
 	subTitle: React.ReactNode
 	moreDetail: string
 	description?: string
+	image?: string
 }
 
 function RecentTransaction() {
@@ -52,7 +56,11 @@ function RecentTransaction() {
 					<br></br>
 					<Typography.Text>{detail.moreDetail}</Typography.Text>
 					<br></br>
-					<Typography.Text>{detail.description}</Typography.Text>
+					<Typography.Text>{detail?.description}</Typography.Text>
+					<br></br>
+					{detail.image && (
+						<StyledImg src={imagesDir + detail.image} loading="lazy" />
+					)}
 				</>
 			),
 			okButtonProps: { type: 'default' },
@@ -80,6 +88,7 @@ function RecentTransaction() {
 								subTitle: date,
 								moreDetail: money,
 								description: item?.note,
+								image: item?.image,
 							})
 						}
 					>
@@ -97,5 +106,10 @@ function RecentTransaction() {
 		</ShadowBox>
 	)
 }
+
+const StyledImg = styled.img`
+	width: 100%;
+	height: 100%;
+`
 
 export default RecentTransaction

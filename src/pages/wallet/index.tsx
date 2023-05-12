@@ -13,6 +13,7 @@ import { icons, moneyInTypes, valueToLabel } from '@/constants/money-type'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/auth'
 import Loading from '@/components/loading'
+import { imagesDir } from '@/constants/env'
 
 const monthFormat = 'MM/YYYY'
 const today = new Date()
@@ -23,6 +24,7 @@ interface ITransaction {
 	type: string
 	createdAt: string | Date
 	note?: string
+	image?: string
 }
 
 function Wallet() {
@@ -72,6 +74,7 @@ interface IModal {
 	subTitle: React.ReactNode
 	moreDetail: string
 	description?: string
+	image?: string
 }
 
 function MainContent(props: IMainContentProps) {
@@ -127,7 +130,11 @@ function MainContent(props: IMainContentProps) {
 					<br></br>
 					<Typography.Text>{detail.moreDetail}</Typography.Text>
 					<br></br>
-					<Typography.Text>{detail.description}</Typography.Text>
+					<Typography.Text>{detail?.description}</Typography.Text>
+					<br></br>
+					{detail.image && (
+						<StyledImg src={imagesDir + detail.image} loading="lazy" />
+					)}
 				</>
 			),
 			okButtonProps: { type: 'primary' },
@@ -183,6 +190,7 @@ function MainContent(props: IMainContentProps) {
 													subTitle: date,
 													moreDetail: money,
 													description: item?.note,
+													image: item?.image,
 												})
 											}
 										>
@@ -238,6 +246,10 @@ const SeparatePart = styled.div`
 const FlexBox = styled.div`
 	display: flex;
 	flex-direction: column;
+`
+const StyledImg = styled.img`
+	width: 100%;
+	height: 100%;
 `
 
 export default Wallet

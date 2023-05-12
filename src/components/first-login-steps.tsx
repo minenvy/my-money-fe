@@ -56,8 +56,8 @@ function FirstLoginSteps() {
 			postFetch('/user/change-profile', { nickname }),
 			postFetch('/user/change-money', { money })
 		)
-		const res = await Promise.all(urls) as Response[]
-		if (!res) return
+		const res = (await Promise.all(urls)) as Response[]
+		if (res.filter((r) => r).length === 0) return
 		const errors = res.filter((response: Response) => !response.ok)
 		if (errors.length > 0) {
 			message.warning('Tên này đã được sử dụng!')

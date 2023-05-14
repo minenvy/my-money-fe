@@ -8,6 +8,8 @@ import { useState } from 'react'
 import styled from 'styled-components'
 import default_avatar from '@/assets/default_avatar.jpg'
 import { useNavigate } from 'react-router-dom'
+import socket from '@/utilities/socket'
+import { followMessages } from '@/constants/profile'
 
 interface IPerson {
 	id: string
@@ -32,9 +34,18 @@ const Person = React.forwardRef((props: IPerson, ref) => {
 		})) as Response
 		if (!res) return
 		if (!res.ok) {
-			message.warning('Bạn chỉ có thể follow tối đa 20 người!')
+			const serverMessage = await res.json()
+			const isYourLimit = followMessages.indexOf(serverMessage) === 0
+			message.warning(
+				isYourLimit
+					? 'Bạn chỉ có thể follow tối đa 20 người!'
+					: `Số người có thể follow ${nickname} đã đạt tối đa!`
+			)
 			return
 		}
+
+		if (!isFollowed)
+			socket.emit('follow', { senderId: user.id, receiverId: id })
 		changeInfo({
 			followings: isFollowed
 				? user.followings.filter((item) => item !== id)
@@ -77,10 +88,8 @@ const StyledAvatar = styled(Avatar)`
 	background-color: #1890ff;
 `
 const Boundary = styled.div`
-	width: 30rem;
-	@media (max-width: 768px) {
-		width: 19rem;
-	}
+	width: 100%;
+	margin: 0 auto;
 `
 
 export default Person

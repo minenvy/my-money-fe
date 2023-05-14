@@ -1,20 +1,30 @@
 import { imagesDir } from '@/constants/env'
 import { useAuth } from '@/contexts/auth'
 import { useImagesUpload } from '@/contexts/images-uploader'
-import { BellOutlined, SyncOutlined } from '@ant-design/icons'
-import { Avatar, Badge, Button, Tooltip } from 'antd'
-import { useEffect, useState } from 'react'
+import { SyncOutlined } from '@ant-design/icons'
+import { Avatar, Tooltip } from 'antd'
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import default_avatar from '@/assets/default_avatar.jpg'
+import { NOT_LOGGED_IN } from '@/constants/env'
 import socket from '@/utilities/socket'
+import Notification from '@/components/notification'
 
 function Header() {
 	const { user } = useAuth()
 	const { isUploading } = useImagesUpload()
-	const [isHaveNotification, setIsHaveNotification] = useState(false)
-	console.log('header')
-	useEffect(() => {}, [socket])
+
+	useEffect(() => {
+		if (user.id === NOT_LOGGED_IN) return
+		socket.emit('connect socket', { id: user.id })
+		console.log(socket)
+
+		return () => {
+			socket.emit('disconnect socket', { id: user.id })
+			socket.disconnect()
+		}
+	}, [user.id])
 
 	return (
 		<Wrapper>
@@ -25,9 +35,7 @@ function Header() {
 						<StyledSyncOutlined spin={isUploading} />
 					</Tooltip>
 				)}
-				<Badge dot={isHaveNotification} offset={[-21, 5]}>
-					<MarginButton type="text" shape="circle" icon={<BellOutlined />} />
-				</Badge>
+				<Notification />
 				<StyledAvatar
 					src={user?.image !== '' ? imagesDir + user.image : default_avatar}
 					size="large"
@@ -73,9 +81,6 @@ const StyledText = styled.b`
 `
 const RightContent = styled.div`
 	display: flex;
-`
-const MarginButton = styled(Button)`
-	margin-right: 1rem;
 `
 const StyledAvatar = styled(Avatar)`
 	background-color: #1890ff;

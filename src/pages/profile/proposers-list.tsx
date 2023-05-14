@@ -39,7 +39,7 @@ function ProposersList() {
 	if (data.length === 0)
 		return (
 			<Boundary>
-				<StyledText strong>Những người có thể bạn biết</StyledText>
+				<Typography.Text strong>Những người có thể bạn biết</Typography.Text>
 				<NoData />
 			</Boundary>
 		)
@@ -64,7 +64,7 @@ function ProposersList() {
 
 	return (
 		<Boundary>
-			<StyledText strong>Những người có thể bạn biết</StyledText>
+			<Typography.Text strong>Những người có thể bạn biết</Typography.Text>
 			<VirtualList
 				data={proposers || []}
 				height={ContainerHeight}
@@ -80,13 +80,8 @@ function ProposersList() {
 }
 
 const Boundary = styled.div`
-	width: 30rem;
-	@media (max-width: 768px) {
-		width: 19rem;
-	}
-`
-const StyledText = styled(Typography.Text)`
-	margin: 1rem 0;
+	width: 100%;
+	margin: 1rem auto 0;
 `
 
 export default ProposersList

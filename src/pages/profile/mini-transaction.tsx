@@ -104,10 +104,8 @@ const Wrapper = styled.div`
 	overflow: auto;
 `
 const Boundary = styled.div`
-	width: 30rem;
-	@media (max-width: 768px) {
-		width: 19rem;
-	}
+	width: 100%;
+	margin: 0 auto;
 `
 
 export default MiniTransaction

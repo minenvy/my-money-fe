@@ -12,6 +12,7 @@ import { moneyInTypes } from '@/constants/money-type'
 import { useAuth } from '@/contexts/auth'
 import allowedImageType from '@/constants/image-type'
 import { uploadImageToServer } from '@/utilities/image'
+import socket from '@/utilities/socket'
 
 interface ITransaction {
 	id: string
@@ -101,6 +102,7 @@ function NewTransactions() {
 			`Thêm ${transactions.length - errors.length} giao dịch thành công!`
 		)
 
+		socket.emit('new transaction', { id: user.id })
 		const totalMoney = transactions.reduce(
 			(total, transaction) =>
 				moneyInTypes.includes(transaction.type)

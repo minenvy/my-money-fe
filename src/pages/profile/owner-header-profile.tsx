@@ -147,10 +147,13 @@ const StyledButton = styled(Button)`
 const MoreInfo = styled.div`
 	margin-top: 1.875rem;
 	@media (max-width: 768px) {
+		width: 100%;
+		max-width: 30rem;
 		margin-top: 1rem;
 		display: flex;
 		justify-content: space-between;
 		padding: 0 0.5rem;
+		margin: 0 auto;
 	}
 `
 const ChildMoreInfo = styled.span`
@@ -160,6 +163,7 @@ const Bio = styled.div`
 	margin-top: 1rem;
 	@media (max-width: 768px) {
 		text-align: center;
+		margin: 1rem;
 	}
 `
 const StyledIcon = styled(Icon)`

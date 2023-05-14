@@ -7,11 +7,12 @@ import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import useFetch from '@/hooks/use-fetch'
 import Loading from '@/components/loading'
-import { profileMenuIcon } from '@/constants/profile'
+import { followMessages, profileMenuIcon } from '@/constants/profile'
 import { useAuth } from '@/contexts/auth'
 import FriendDialog from './friend-dialog'
 import { postFetch } from '@/api/fetch'
 import default_avatar from '@/assets/default_avatar.jpg'
+import socket from '@/utilities/socket'
 
 interface IData {
 	isLoading: boolean
@@ -48,11 +49,21 @@ function FriendHeaderProfile() {
 			id,
 			isFollowed: !isFollowed,
 		})) as Response
+		console.log(res)
 		if (!res) return
 		if (!res.ok) {
-			message.warning('Bạn chỉ có thể follow tối đa 20 người!')
+			const serverMessage = await res.json()
+			const isYourLimit = followMessages.indexOf(serverMessage) === 0
+			message.warning(
+				isYourLimit
+					? 'Bạn chỉ có thể follow tối đa 20 người!'
+					: `Số người có thể follow ${data.nickname} đã đạt tối đa!`
+			)
 			return
 		}
+
+		if (!isFollowed)
+			socket.emit('follow', { senderId: user.id, receiverId: id })
 		changeInfo({
 			followings: isFollowed
 				? user.followings.filter((item) => item !== id)
@@ -170,10 +181,13 @@ const StyledButton = styled(Button)`
 const MoreInfo = styled.div`
 	margin-top: 1.875rem;
 	@media (max-width: 768px) {
+		width: 100%;
+		max-width: 30rem;
 		margin-top: 1rem;
 		display: flex;
 		justify-content: space-between;
 		padding: 0 0.5rem;
+		margin: 0 auto;
 	}
 `
 const ChildMoreInfo = styled.span`
@@ -183,6 +197,7 @@ const Bio = styled.div`
 	margin-top: 1rem;
 	@media (max-width: 768px) {
 		text-align: center;
+		margin: 1rem;
 	}
 `
 const StyledIcon = styled(Icon)`

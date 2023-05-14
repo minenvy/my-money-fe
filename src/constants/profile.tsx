@@ -38,3 +38,8 @@ export const profileMenuIcon = () => (
 		></path>
 	</svg>
 )
+
+export const followMessages = [
+	'max your followers',
+	'max your friend followers',
+]

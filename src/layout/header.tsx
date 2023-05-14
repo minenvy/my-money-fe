@@ -18,7 +18,6 @@ function Header() {
 	useEffect(() => {
 		if (user.id === NOT_LOGGED_IN) return
 		socket.emit('connect socket', { id: user.id })
-		console.log(socket)
 
 		return () => {
 			socket.emit('disconnect socket', { id: user.id })

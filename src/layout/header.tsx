@@ -12,6 +12,7 @@ import socket from '@/utilities/socket'
 import Notification from '@/components/notification'
 
 function Header() {
+	const navigate = useNavigate()
 	const { user } = useAuth()
 	const { isUploading } = useImagesUpload()
 
@@ -38,6 +39,7 @@ function Header() {
 				<StyledAvatar
 					src={user?.image !== '' ? imagesDir + user.image : default_avatar}
 					size="large"
+					onClick={() => navigate('/profile/' + user.id)}
 				/>
 			</RightContent>
 		</Wrapper>

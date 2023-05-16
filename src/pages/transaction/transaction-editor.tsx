@@ -19,6 +19,7 @@ interface ITransaction {
 	createdAt: Date
 	note?: string
 	image?: string | File
+	accessPermission: 'public' | 'private'
 }
 interface IData {
 	data: ITransaction
@@ -38,6 +39,7 @@ function TransactionEditor() {
 		createdAt: new Date(),
 		note: '',
 		image: '',
+		accessPermission: 'public',
 	})
 	const [isLoading, setIsLoading] = useState('')
 	const navigate = useNavigate()

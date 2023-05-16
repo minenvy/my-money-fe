@@ -11,6 +11,8 @@ import {
 } from 'antd'
 import styled from 'styled-components'
 import coinImage from '@/assets/coin.png'
+import publicImage from '@/assets/earth.png'
+import privateImage from '@/assets/lock.png'
 import { icons, typeSelectOptions, valueToLabel } from '@/constants/money-type'
 import {
 	CalendarOutlined,
@@ -20,12 +22,15 @@ import {
 	EyeOutlined,
 	FileImageOutlined,
 	FileTextOutlined,
+	GlobalOutlined,
+	UserOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
 import PopDeleteConfirm from './pop-confirm'
 import allowedImageType from '@/constants/image-type'
 import { useRef, useState } from 'react'
 import { imagesDir } from '@/constants/env'
+import { permissionOptions } from '@/constants/transaction'
 
 interface ITransaction {
 	id: string
@@ -34,6 +39,7 @@ interface ITransaction {
 	createdAt: Date
 	note?: string
 	image?: string | File
+	accessPermission: 'public' | 'private'
 	updateDraft: Function
 	deleteDraft?: Function
 	allowEditImage?: boolean
@@ -47,6 +53,7 @@ function Transaction(props: ITransaction) {
 		createdAt,
 		note,
 		image,
+		accessPermission,
 		updateDraft,
 		deleteDraft,
 		allowEditImage = true,
@@ -61,9 +68,13 @@ function Transaction(props: ITransaction) {
 				: image
 			: URL.createObjectURL(image as File)
 	const typeImage = icons.find((icon) => icon.value === type)?.icon
+	const iconStyle = {
+		color: '#212121',
+		fontSize: '1.25rem',
+	}
 
 	const changeMoney = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const money = Number(e.target.value.replaceAll(',', ''))
+		const money = Number(e.target.value.replaceAll(',', '').replaceAll('.', ''))
 		if (!isNaN(money))
 			updateDraft(id, {
 				money,
@@ -82,6 +93,11 @@ function Transaction(props: ITransaction) {
 	const changeNote = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		updateDraft(id, {
 			note: e.target.value,
+		})
+	}
+	const changePermission = (value: string) => {
+		updateDraft(id, {
+			accessPermission: value,
 		})
 	}
 	const handleChooseImage = () => {
@@ -127,13 +143,7 @@ function Transaction(props: ITransaction) {
 					</Money>
 				</FlexBox>
 				<FlexBox>
-					<Avatar
-						src={
-							<FileImageOutlined
-								style={{ color: '#212121', fontSize: '1.25rem' }}
-							/>
-						}
-					/>
+					<Avatar src={<FileImageOutlined style={iconStyle} />} />
 					{image ? (
 						<ImageBox>
 							<Image onClick={previewImage}>
@@ -154,13 +164,7 @@ function Transaction(props: ITransaction) {
 					)}
 				</FlexBox>
 				<FlexBox>
-					<Avatar
-						src={
-							<CalendarOutlined
-								style={{ color: '#212121', fontSize: '1.25rem' }}
-							/>
-						}
-					/>
+					<Avatar src={<CalendarOutlined style={iconStyle} />} />
 					<DatePicker
 						value={dayjs(dayjs(createdAt).format('YYYY-MM-DD'))}
 						onChange={changeDate}
@@ -168,10 +172,7 @@ function Transaction(props: ITransaction) {
 					/>
 				</FlexBox>
 				<FlexBox>
-					<Avatar
-						src={typeImage}
-						style={{ color: '#212121', fontSize: '1.25rem' }}
-					/>
+					<Avatar src={typeImage} style={iconStyle} />
 					<Select
 						placeholder="Chọn nhóm"
 						value={valueToLabel(type)}
@@ -182,18 +183,30 @@ function Transaction(props: ITransaction) {
 				</FlexBox>
 
 				<FlexBox>
-					<Avatar
-						src={
-							<FileTextOutlined
-								style={{ color: '#212121', fontSize: '1.25rem' }}
-							/>
-						}
-					/>
+					<Avatar src={<FileTextOutlined style={iconStyle} />} />
 					<Input.TextArea
 						allowClear
 						placeholder="Ghi chú"
 						value={note}
 						onChange={changeNote}
+					/>
+				</FlexBox>
+				<FlexBox>
+					<Avatar
+						src={
+							accessPermission === 'public' ? (
+								<GlobalOutlined style={iconStyle} />
+							) : (
+								<UserOutlined style={iconStyle} />
+							)
+						}
+					/>
+					<Select
+						placeholder="Chọn quyền truy cập"
+						value={accessPermission === 'public' ? 'Công khai' : 'Chỉ mình tôi'}
+						onChange={changePermission}
+						options={permissionOptions}
+						style={{ width: '100%' }}
 					/>
 				</FlexBox>
 			</ShadowBox>

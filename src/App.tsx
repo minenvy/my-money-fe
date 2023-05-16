@@ -5,7 +5,7 @@ import NetWorkNotification from '@/components/network-notification'
 import preventInspects from './utilities/prevent-inspect'
 
 function App() {
-	// preventInspects()
+	preventInspects()
 
 	return (
 		<ErrorBoundary>

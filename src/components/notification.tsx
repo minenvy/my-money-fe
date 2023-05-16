@@ -13,7 +13,7 @@ import default_avatar from '@/assets/default_avatar.jpg'
 import { imagesDir } from '@/constants/env'
 import { useNavigate } from 'react-router-dom'
 
-const ContainerHeight = 350
+const ContainerHeight = 400
 const ItemHeight = 48
 const Offset = 15
 
@@ -50,7 +50,9 @@ function Notification() {
 				const isHadThisNotification = notifications.find(
 					(notification) => notification.id === data.id
 				)
-				return isHadThisNotification ? [...preState] : [data, ...preState]
+				return isHadThisNotification
+					? [...preState]
+					: [{ ...data, status: 'unread' }, ...preState]
 			})
 		})
 	}, [socket])
@@ -100,7 +102,7 @@ function Notification() {
 
 	return (
 		<Wrapper>
-			<Badge count={numberOfNotification} offset={[-10, 5]}>
+			<Badge count={numberOfNotification} overflowCount={9} offset={[-10, 5]}>
 				<Button
 					type="text"
 					shape="circle"

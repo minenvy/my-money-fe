@@ -18,7 +18,7 @@ function FirstLoginSteps() {
 		setNickname(e.target.value)
 	}
 	const changeMoney = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const money = Number(e.target.value.replaceAll(',', ''))
+		const money = Number(e.target.value.replaceAll(',', '').replaceAll('.', ''))
 		if (!isNaN(money)) setMoney(money)
 	}
 

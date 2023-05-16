@@ -12,6 +12,7 @@ async function getFetch(path: string, signal?: any) {
     signal
   }).catch((error) => {
     if (error.name === 'AbortError') return
+    if (path.includes('/user/get-by-token')) return
     message.destroy()
     message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
     return null

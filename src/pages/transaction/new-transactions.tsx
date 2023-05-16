@@ -21,6 +21,7 @@ interface ITransaction {
 	createdAt: Date
 	note?: string
 	image?: string | File
+	accessPermission: 'public' | 'private'
 }
 interface IData {
 	isLoading: boolean
@@ -48,6 +49,7 @@ function NewTransactions() {
 				createdAt: new Date(),
 				note: '',
 				image: '',
+				accessPermission: 'public',
 			},
 		])
 
@@ -59,6 +61,7 @@ function NewTransactions() {
 			createdAt: new Date(),
 			note: '',
 			image: '',
+			accessPermission: 'public',
 		}
 		const newTransaction: ITransaction = draft || nullDraft
 		setTransactions([...transactions, newTransaction])

@@ -11,6 +11,7 @@ import { getFetch } from '@/api/fetch'
 import { Spin } from 'antd'
 import { useParams } from 'react-router-dom'
 import NoData from '@/components/empty'
+import { useAuth } from '@/contexts/auth'
 
 const ContainerHeight = 350
 const ItemHeight = 44
@@ -30,8 +31,25 @@ interface IData {
 	isLoading: boolean
 	data: Array<ITransaction>
 }
+interface ICheckFollow {
+	isLoading: boolean
+	data: {
+		isFollowed: boolean
+	}
+}
 
 function MiniTransaction() {
+	const { id = '' } = useParams()
+	const { user } = useAuth()
+	const isFollowed = user.id === id || user.followings.includes(id)
+
+	if (!isFollowed)
+		return <StyledP>Bạn chưa follow người dùng này</StyledP>
+
+	return <MainContent />
+}
+
+function MainContent() {
 	const { id = '' } = useParams()
 	const { data, isLoading } = useFetch(
 		`transactions ${id}`,
@@ -106,6 +124,9 @@ const Wrapper = styled.div`
 const Boundary = styled.div`
 	width: 100%;
 	margin: 0 auto;
+`
+const StyledP = styled.p`
+	text-align: center;
 `
 
 export default MiniTransaction

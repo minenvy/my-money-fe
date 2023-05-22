@@ -97,7 +97,7 @@ function ModalContent(props: IModalContentProps) {
 	) as IData
 
 	if (isLoading) return <Loading />
-	if (data === undefined)
+	if (data === undefined || data === null)
 		return (
 			<Empty
 				image={Empty.PRESENTED_IMAGE_SIMPLE}

@@ -38,7 +38,7 @@ function NewTransactions() {
 	const imagesRef = useRef<HTMLInputElement>(null)
 
 	if (isLoading) return <Loading />
-	if (data === undefined) return null
+	if (data === undefined || data === null) return null
 	if (data.length > 0 && transactions.length === 0) setTransactions(data)
 	if (data.length === 0 && transactions.length === 0)
 		setTransactions([
@@ -98,14 +98,13 @@ function NewTransactions() {
 				image: images[index],
 			})
 		)
-		const res = (await Promise.all(urls)) as Response[]
-		if (res.filter((r) => r).length === 0) return
-		const errors = res.filter((response: Response) => !response.ok)
-		message.success(
-			`Thêm ${transactions.length - errors.length} giao dịch thành công!`
-		)
+		const res = await Promise.all(urls)
+		if (res.filter((r) => r !== null).length === 0) return
 
-		socket.emit('new transaction', { id: user.id })
+		const havePublicTransaction = transactions.find(
+			(transaction) => transaction.accessPermission === 'public'
+		)
+		if (havePublicTransaction) socket.emit('new transaction', { id: user.id })
 		const totalMoney = transactions.reduce(
 			(total, transaction) =>
 				moneyInTypes.includes(transaction.type)

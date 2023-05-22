@@ -1,4 +1,6 @@
 import { getFetch } from "@/api/fetch"
+import { useErrorBoundary } from "@/contexts/error-fetch-boundary"
+import { error } from "console"
 import { useEffect, useState } from "react"
 
 function useFetch(
@@ -10,10 +12,11 @@ function useFetch(
     [key: string]: Array<any> | any
   }>({})
   const [isLoading, setIsLoading] = useState(false)
+  const { showBoundary } = useErrorBoundary()
   const effectDependencies = dependencies || []
 
   useEffect(() => {
-    if (cachedData[key] !== undefined) return
+    if (cachedData[key] !== undefined && cachedData[key] !== null) return
     const controller = new AbortController()
     const signal = controller.signal
     let didCancel = false
@@ -22,17 +25,14 @@ function useFetch(
         try {
           if (isLoading) return
           setIsLoading(true)
-          const res = await getFetch(path, signal) as Response
-          if (!res || !res.ok) return
-          const jsonData = await res.json()
+          const fetchData = await getFetch(path, signal).catch(err => showBoundary(err))
           if (!didCancel) {
             setCachedData(preState => {
-              return { ...preState, [key]: jsonData }
+              return { ...preState, [key]: fetchData }
             })
           }
         } catch (err) {
           console.log(err)
-          return null
         } finally {
           setIsLoading(false)
         }

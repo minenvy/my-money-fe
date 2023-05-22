@@ -7,7 +7,7 @@ const options = {
 	plugins: {
 		legend: {
 			position: 'top' as const,
-			onClick: (e: any) => e.stopPropagation(),
+			onClick: () => {},
 		},
 	},
 }

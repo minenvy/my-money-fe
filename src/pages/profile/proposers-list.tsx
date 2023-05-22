@@ -72,7 +72,7 @@ function MainContent(props: IProps) {
 	}
 
 	if (isLoading) return <Loading />
-	if (data === undefined) return null
+	if (data === undefined || data === null) return null
 	if (data.length === 0) return <NoData />
 	if (proposers === undefined) setProposers(data)
 
@@ -82,15 +82,14 @@ function MainContent(props: IProps) {
 			ContainerHeight
 		) {
 			setIsFetching(true)
-			const res = (await getFetch(
+			const res = await getFetch(
 				`/user/get-proposers/${id}/${offset.current + Offset}${
 					search ? `/${search}` : ''
 				}`
-			)) as Response
-			if (!res || !res.ok) return
+			)
+			if (res === null) return
 			offset.current += Offset
-			const resData = await res.json()
-			setProposers([...(proposers as Array<IPerson>), ...resData])
+			setProposers([...(proposers as Array<IPerson>), ...res])
 			setIsFetching(false)
 		}
 	}

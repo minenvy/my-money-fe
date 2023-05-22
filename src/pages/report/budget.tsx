@@ -60,7 +60,7 @@ function Budgets() {
 	const offset = useRef(0)
 
 	if (isLoading) return <Loading />
-	if (data === undefined) return null
+	if (data === undefined || data === null) return null
 	if (budgets === undefined) setBudgets(data)
 
 	const hasData = data.length > 0
@@ -81,11 +81,10 @@ function Budgets() {
 			setIsFetching(true)
 			const res = await getFetch(
 				'/budget/get-infinite/' + (offset.current + Offset)
-			) as Response
-			if (!res || !res.ok) return
+			)
+			if (res === null) return
 			offset.current += Offset
-			const resData = await res.json()
-			setBudgets([...(budgets as Array<IBudget>), ...resData])
+			setBudgets([...(budgets as Array<IBudget>), ...res])
 			setIsFetching(false)
 		}
 	}

@@ -75,22 +75,22 @@ function Notification() {
 			ContainerHeight
 		) {
 			setIsFetching(true)
-			const res = (await getFetch(
+			const res = await getFetch(
 				'/notification/get-infinite/' +
 					user.id +
 					'/' +
 					(offset.current + Offset)
-			)) as Response
-			if (!res || !res.ok) return
+			)
+			if (res === null) return
 			offset.current += Offset
-			const resData = await res.json()
-			setNotifications([...notifications, ...resData])
+			setNotifications([...notifications, ...res])
 			setIsFetching(false)
 		}
 	}
 	const redirectToFriend = async (id: string, userId: string) => {
 		const res = await postFetch('/notification/read', { id })
-		if (!res || !res.ok) return
+		if (res === null) return
+
 		setNotifications(
 			notifications.map((item) =>
 				item.id === id ? { ...item, status: 'read' } : item

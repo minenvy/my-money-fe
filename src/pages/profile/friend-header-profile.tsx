@@ -26,13 +26,24 @@ interface IData {
 		followings: number
 	}
 }
+interface IFollowStatus {
+	isLoading: boolean
+	data: {
+		isFollowed: boolean
+	}
+}
 
 function FriendHeaderProfile() {
 	const { id } = useParams()
-	const { user, changeInfo } = useAuth()
+	const { user } = useAuth()
 	const windowSize = useWindowSize()
 	const [isShowedDialog, setIsShowedDialog] = useState(false)
 	const [isPosting, setIsPosting] = useState(false)
+	const [isFollowed, setIsFollowed] = useState<boolean>()
+	const followStatus = useFetch(
+		`check follow ${id}`,
+		'/user/check-follow/' + id
+	) as IFollowStatus
 	const { data, isLoading } = useFetch(
 		'friend header profile',
 		'/user/get-by-id/' + id
@@ -40,35 +51,26 @@ function FriendHeaderProfile() {
 
 	const isInMobile = windowSize <= 768
 
-	if (isLoading) return <Loading />
-	if (data === undefined) return null
-	const isFollowed = user.followings.includes(id || '')
+	if (isLoading || followStatus.isLoading) return <Loading />
+	if (
+		data === undefined ||
+		data === null ||
+		followStatus.data === undefined ||
+		followStatus.data === null
+	)
+		return null
+	if (isFollowed === undefined) setIsFollowed(followStatus.data.isFollowed)
 
 	const follow = async () => {
-		const res = (await postFetch('/user/follow', {
+		const res = await postFetch('/user/follow', {
 			id,
 			isFollowed: !isFollowed,
-		})) as Response
-		console.log(res)
-		if (!res) return
-		if (!res.ok) {
-			const serverMessage = await res.json()
-			const isYourLimit = followMessages.indexOf(serverMessage) === 0
-			message.warning(
-				isYourLimit
-					? 'Bạn chỉ có thể follow tối đa 20 người!'
-					: `Số người có thể follow ${data.nickname} đã đạt tối đa!`
-			)
-			return
-		}
+		})
+		if (res === null) return
+		setIsFollowed(!isFollowed)
 
 		if (!isFollowed)
 			socket.emit('follow', { senderId: user.id, receiverId: id })
-		changeInfo({
-			followings: isFollowed
-				? user.followings.filter((item) => item !== id)
-				: [...user.followings, id],
-		})
 	}
 	const handleClickFollow = async () => {
 		if (isPosting) return

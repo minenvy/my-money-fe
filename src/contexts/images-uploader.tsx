@@ -25,7 +25,7 @@ function ImagesUploadProvider({ children }: IImagesProps) {
 		if (isLoading) return
 		setIsLoading(true)
 
-		const processImagePromises: Promise<Response | null | undefined>[] = []
+		const processImagePromises: Promise<string | null | undefined>[] = []
 		const compressPromises: Promise<File>[] = []
 
 		for (const file of files) {

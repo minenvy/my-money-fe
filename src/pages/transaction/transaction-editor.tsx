@@ -70,17 +70,13 @@ function TransactionEditor() {
 					? transaction.image
 					: await uploadImageToServer(transaction.image as File)
 
-			const res = (await postFetch('/transaction/edit', {
+			const res = await postFetch('/transaction/edit', {
 				...transaction,
 				image: imageName,
-			})) as Response
-			if (!res) return
-			if (!res.ok) {
-				message.warning('Có lỗi xảy ra. Sửa giao dịch thất bại!')
-				return
-			}
+			})
+			if (res === null) return
+
 			changeInfo({ money: user.money + totalMoney })
-			message.success('Cập nhật thành công!')
 			setTimeout(() => navigate('/wallet'), 1000)
 		})()
 		setIsLoading('')
@@ -89,16 +85,12 @@ function TransactionEditor() {
 		if (isLoading) return
 		setIsLoading('delete')
 		;(async () => {
-			const res = (await postFetch('/transaction/delete', {
+			const res = await postFetch('/transaction/delete', {
 				id: transaction.id,
-			})) as Response
-			if (!res) return
-			if (!res.ok) {
-				message.warning('Có lỗi xảy ra. Xóa giao dịch thất bại!')
-				return
-			}
+			})
+			if (res === null) return
+
 			changeInfo({ money: user.money - beforeUpdateMoney.current })
-			message.success('Xóa thành công!')
 			setTimeout(() => navigate('/wallet'), 1000)
 		})()
 		setIsLoading('')

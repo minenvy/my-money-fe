@@ -88,7 +88,7 @@ function MainReport(props: IMainReportContentProps) {
 	) as IData
 
 	if (isLoading) return <Loading />
-	if (data === undefined)
+	if (data === undefined || data === null)
 		return (
 			<ShadowBox>
 				<NoData />

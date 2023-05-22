@@ -1,12 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import {
-	removeLoginState,
-	setLoginState,
-} from '@/utilities/check-login'
+import { removeLoginState, setLoginState } from '@/utilities/check-login'
 import useFetch from '@/hooks/use-fetch'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getFetch } from '@/api/fetch'
-import { NOT_LOGGED_IN } from '@/constants/env'
+import Loading from '@/components/loading'
 
 interface IUserInfo {
 	id: string
@@ -14,8 +11,6 @@ interface IUserInfo {
 	money: number
 	image: string
 	bio: string
-	followings: Array<string>
-	blockers: Array<string>
 }
 
 interface INewUserInfo {
@@ -23,8 +18,11 @@ interface INewUserInfo {
 	money?: number
 	image?: string
 	bio?: string
-	followings?: Array<string>
-	blockers?: Array<string>
+}
+
+interface IData {
+	isLoading: boolean
+	data: INewUserInfo
 }
 
 interface IAuthContext {
@@ -45,27 +43,18 @@ interface IAuthProviderProps {
 	children: React.ReactNode
 }
 
-const NotLoggedInUser = {
-	id: NOT_LOGGED_IN,
-	nickname: '',
-	money: 0,
-	image: '',
-	bio: '',
-	followings: [],
-	blockers: [],
-}
-
 export default function AuthProvider({ children }: IAuthProviderProps) {
-	const { data } = useFetch('auth', '/user/get-by-token')
-	const [user, setUser] = useState<IUserInfo>(NotLoggedInUser)
+	const { data, isLoading } = useFetch('auth', '/user/get-by-token') as IData
+	const [user, setUser] = useState<IUserInfo | null>()
 	const navigate = useNavigate()
 	const location = useLocation()
 
 	useEffect(() => {
 		if (data === undefined) return
-		if (Object.keys(data).length === 0) {
+		if (data === null) {
 			removeLoginState()
 			navigate('/login')
+			changeUserInfo(null)
 			return
 		}
 		const isInNotLoggedInPage =
@@ -78,7 +67,10 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
 		changeUserInfo(data)
 	}, [data])
 
-	function changeUserInfo(newUser: INewUserInfo) {
+	if (isLoading) return <Loading />
+	if (user === undefined) return null
+
+	function changeUserInfo(newUser: INewUserInfo | null) {
 		setUser({ ...(user as IUserInfo), ...newUser })
 	}
 	function login(newUser: INewUserInfo) {
@@ -90,16 +82,22 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
 		changeUserInfo(newUser)
 	}
 	async function logout() {
-		const res = (await getFetch('/user/logout')) as Response
-		if (!res || !res.ok) return
+		const res = await getFetch('/user/logout')
+		if (res === null) return
 		removeLoginState()
-		changeUserInfo(NotLoggedInUser)
+		changeUserInfo(null)
 		navigate('/login')
 	}
 
 	return (
 		<AuthContext.Provider
-			value={{ user, login, register, logout, changeInfo: changeUserInfo }}
+			value={{
+				user: user as IUserInfo,
+				login,
+				register,
+				logout,
+				changeInfo: changeUserInfo,
+			}}
 		>
 			{children}
 		</AuthContext.Provider>

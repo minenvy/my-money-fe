@@ -5,7 +5,7 @@ import useFetch from '@/hooks/use-fetch'
 import { icons, moneyInTypes, valueToLabel } from '@/constants/money-type'
 import formatMoney from '@/utilities/money-format'
 import { useNavigate } from 'react-router-dom'
-import { Avatar, Modal, Typography, Image } from 'antd'
+import { Avatar, Modal, Typography } from 'antd'
 import Loading from '@/components/loading'
 import styled from 'styled-components'
 import { imagesDir } from '@/constants/env'
@@ -39,7 +39,7 @@ function RecentTransaction() {
 	) as IData
 
 	if (isLoading) return <Loading />
-	if (data === undefined) return null
+	if (data === undefined || data === null) return null
 	const hasData = data && data.length > 0
 	if (!hasData) return null
 

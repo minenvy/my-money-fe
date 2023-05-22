@@ -17,6 +17,7 @@ interface IPerson {
 	nickname: string
 	image: string
 	bio: string
+	isFollowed: boolean
 }
 interface IData {
 	isLoading: boolean
@@ -35,7 +36,7 @@ function Follow(props: IProps) {
 	) as IData
 
 	if (isLoading) return <Loading />
-	if (data === undefined) return null
+	if (data === undefined || data === null) return null
 
 	return (
 		<Wrapper>

@@ -1,10 +1,18 @@
 import { postFetch } from '@/api/fetch'
+import Loading from '@/components/loading'
 import { useAuth } from '@/contexts/auth'
-import { Button, message } from 'antd'
+import useFetch from '@/hooks/use-fetch'
+import { Button } from 'antd'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
+interface IData {
+	isLoading: boolean
+	data: {
+		isBlocked: boolean
+	}
+}
 interface IProps {
 	close: Function
 }
@@ -12,32 +20,31 @@ interface IProps {
 function FriendDialog(props: IProps) {
 	const { close } = props
 	const { id } = useParams()
-	const { user, changeInfo } = useAuth()
-	const [isLoading, setIsLoading] = useState(false)
+	const { user } = useAuth()
+	const { data, isLoading } = useFetch(
+		`check block ${id}`,
+		`/user/check-block/${user.id}/${id}`
+	) as IData
+	const [isBlockedThisUser, setIsBlockedThisUser] = useState<boolean>()
+	const [isFetching, setIsFetching] = useState(false)
 
-	const isBlocked = user.blockers.includes(id || '')
+	if (isLoading) return <Loading />
+	if (data === undefined || data === null) return null
+	if (isBlockedThisUser === undefined) setIsBlockedThisUser(data.isBlocked)
 
 	const block = async () => {
-		const res = (await postFetch('/user/block', {
+		const res = await postFetch('/user/block', {
 			id,
-			isBlocked: !isBlocked,
-		})) as Response
-		if (!res) return
-		if (!res.ok) {
-			message.warning('Có lỗi xảy ra, block thất bại!')
-			return
-		}
-		changeInfo({
-			blockers: isBlocked
-				? user.blockers.filter((item) => item !== id)
-				: [...user.blockers, id],
+			isBlocked: !isBlockedThisUser,
 		})
+		if (res === null) return
+		setIsBlockedThisUser(!isBlockedThisUser)
 	}
 	const handleClickBlock = async () => {
-		if (isLoading) return
-		setIsLoading(true)
+		if (isFetching) return
+		setIsFetching(true)
 		await block()
-		setIsLoading(false)
+		setIsFetching(false)
 	}
 
 	return (
@@ -45,10 +52,10 @@ function FriendDialog(props: IProps) {
 			<CenterContent>
 				<StyledButton
 					block
-					loading={isLoading}
+					loading={isFetching}
 					onClick={() => handleClickBlock()}
 				>
-					{isBlocked ? 'Unblock' : 'Block'}
+					{isBlockedThisUser ? 'Unblock' : 'Block'}
 				</StyledButton>
 				<StyledButton block onClick={() => close()}>
 					Hủy

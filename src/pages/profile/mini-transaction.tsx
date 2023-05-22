@@ -31,7 +31,7 @@ interface IData {
 	isLoading: boolean
 	data: Array<ITransaction>
 }
-interface ICheckFollow {
+interface IFollowStatus {
 	isLoading: boolean
 	data: {
 		isFollowed: boolean
@@ -41,10 +41,17 @@ interface ICheckFollow {
 function MiniTransaction() {
 	const { id = '' } = useParams()
 	const { user } = useAuth()
-	const isFollowed = user.id === id || user.followings.includes(id)
 
-	if (!isFollowed)
-		return <StyledP>Bạn chưa follow người dùng này</StyledP>
+	if (user.id === id) return <MainContent />
+
+	const { data, isLoading } = useFetch(
+		`check follow ${id}`,
+		'/user/check-follow/' + id
+	) as IFollowStatus
+
+	if (isLoading) return <Loading />
+	if (data === undefined || data === null) return null
+	if (!data.isFollowed) return <StyledP>Bạn chưa follow người dùng này</StyledP>
 
 	return <MainContent />
 }
@@ -60,7 +67,7 @@ function MainContent() {
 	const offset = useRef(0)
 
 	if (isLoading) return <Loading />
-	if (data === undefined) return null
+	if (data === undefined || data === null) return null
 	if (data.length === 0)
 		return (
 			<Wrapper>
@@ -77,13 +84,12 @@ function MainContent() {
 			ContainerHeight
 		) {
 			setIsFetching(true)
-			const res = (await getFetch(
+			const res = await getFetch(
 				'/transaction/get-infinite/' + id + '/' + (offset.current + Offset)
-			)) as Response
-			if (!res || !res.ok) return
+			)
+			if (res === null) return
 			offset.current += Offset
-			const resData = await res.json()
-			setTransactions([...(transactions as Array<ITransaction>), ...resData])
+			setTransactions([...(transactions as Array<ITransaction>), ...res])
 			setIsFetching(false)
 		}
 	}

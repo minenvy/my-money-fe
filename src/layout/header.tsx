@@ -7,7 +7,6 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import default_avatar from '@/assets/default_avatar.jpg'
-import { NOT_LOGGED_IN } from '@/constants/env'
 import socket from '@/utilities/socket'
 import Notification from '@/components/notification'
 
@@ -17,7 +16,6 @@ function Header() {
 	const { isUploading } = useImagesUpload()
 
 	useEffect(() => {
-		if (user.id === NOT_LOGGED_IN) return
 		socket.emit('connect socket', { id: user.id })
 
 		return () => {

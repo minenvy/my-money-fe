@@ -2,55 +2,41 @@ import { postFetch } from '@/api/fetch'
 import ListItem from '@/components/list-item'
 import { imagesDir } from '@/constants/env'
 import { useAuth } from '@/contexts/auth'
-import { Avatar, Button, Typography, message } from 'antd'
+import { Avatar, Button } from 'antd'
 import React from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
 import default_avatar from '@/assets/default_avatar.jpg'
 import { useNavigate } from 'react-router-dom'
 import socket from '@/utilities/socket'
-import { followMessages } from '@/constants/profile'
 
 interface IPerson {
 	id: string
 	nickname: string
 	image: string
 	bio: string
+	isFollowed: boolean
 }
 
-const Person = React.forwardRef((props: IPerson, ref) => {
-	const { id, nickname, image, bio } = props
+const Person = React.forwardRef((props: IPerson, _) => {
+	const { id, nickname, image, bio, isFollowed } = props
 	const navigate = useNavigate()
-	const { user, changeInfo } = useAuth()
+	const { user } = useAuth()
+	const [isFollowedThisUser, setIsFollowedThisUser] = useState(isFollowed)
 	const [isPosting, setIsPosting] = useState(false)
 
 	const isInOwnerProfile = user.id === id
-	const isFollowed = user.followings.includes(id || '')
 
 	const follow = async () => {
-		const res = (await postFetch('/user/follow', {
+		const res = await postFetch('/user/follow', {
 			id,
-			isFollowed: !isFollowed,
-		})) as Response
-		if (!res) return
-		if (!res.ok) {
-			const serverMessage = await res.json()
-			const isYourLimit = followMessages.indexOf(serverMessage) === 0
-			message.warning(
-				isYourLimit
-					? 'Bạn chỉ có thể follow tối đa 20 người!'
-					: `Số người có thể follow ${nickname} đã đạt tối đa!`
-			)
-			return
-		}
-
-		if (!isFollowed)
-			socket.emit('follow', { senderId: user.id, receiverId: id })
-		changeInfo({
-			followings: isFollowed
-				? user.followings.filter((item) => item !== id)
-				: [...user.followings, id],
+			isFollowed: !isFollowedThisUser,
 		})
+		if (res === null) return
+		setIsFollowedThisUser(!isFollowedThisUser)
+
+		if (!isFollowedThisUser)
+			socket.emit('follow', { senderId: user.id, receiverId: id })
 	}
 	const handleClickFollow = async (e: any) => {
 		e.stopPropagation()
@@ -75,7 +61,7 @@ const Person = React.forwardRef((props: IPerson, ref) => {
 				moreDetail={
 					!isInOwnerProfile && (
 						<Button loading={isPosting} onClick={handleClickFollow}>
-							{isFollowed ? 'Unfollow' : 'Follow'}
+							{isFollowedThisUser ? 'Unfollow' : 'Follow'}
 						</Button>
 					)
 				}

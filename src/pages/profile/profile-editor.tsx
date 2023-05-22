@@ -4,9 +4,9 @@ import { Avatar, Button, Form, Input, Typography, message } from 'antd'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import { postFetch, uploadImage } from '@/api/fetch'
+import { postFetch } from '@/api/fetch'
 import { imagesDir } from '@/constants/env'
-import { compressImage, uploadImageToServer } from '@/utilities/image'
+import { uploadImageToServer } from '@/utilities/image'
 
 const allowedImageType = ['png', 'jpg', 'jpeg', 'gif']
 
@@ -60,15 +60,11 @@ function ProfileEditor() {
 		nickname?: string
 		image?: string
 	}) => {
-		const res = (await postFetch('/user/change-profile', {
+		const res = await postFetch('/user/change-profile', {
 			...newUser,
-		})) as Response
-		if (!res) return
-		if (!res.ok) {
-			message.warning('Bạn chỉ có thể thay đổi Tên cách nhau ít nhất 20 ngày!')
-			return
-		}
-		message.success('Cập nhật thành công')
+		})
+		if (res === null) return
+
 		changeInfo({ ...newUser })
 		setTimeout(() => navigate('/profile/' + user.id), 1000)
 	}

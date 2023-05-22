@@ -1,8 +1,15 @@
 import { domain } from "@/constants/env"
 import { message } from "antd"
 
+const IGNORE_ERROR_MESSAGE_URLS = ['abc']
+// ['/user/get-by-token', '/notification/read']
+
+function checkIgnorePath(path: string) {
+  return IGNORE_ERROR_MESSAGE_URLS.some(url => path.includes(url))
+}
+
 async function getFetch(path: string, signal?: any) {
-  return fetch(domain + path, {
+  const res = await fetch(domain + path, {
     method: 'get',
     headers: {
       Accept: 'application/json',
@@ -12,15 +19,22 @@ async function getFetch(path: string, signal?: any) {
     signal
   }).catch((error) => {
     if (error.name === 'AbortError') return
-    if (path.includes('/user/get-by-token')) return
-    message.destroy()
-    message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
-    return null
   })
+  if (!res) return null
+  const data = await res.json()
+  if (res.status === 400) {
+    message.destroy()
+    if (!checkIgnorePath(path)) message.warning(data.message)
+    return null
+  }
+  if (res.status === 500) {
+    throw new Error('server error')
+  }
+  return data
 }
 
 async function postFetch(path: string, body: any, signal?: any) {
-  return fetch(domain + path, {
+  const res = await fetch(domain + path, {
     method: 'post',
     headers: {
       Accept: 'application/json',
@@ -31,27 +45,42 @@ async function postFetch(path: string, body: any, signal?: any) {
     signal
   }).catch((error) => {
     if (error.name === 'AbortError') return
-    message.destroy()
-    message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
-    return null
   })
+  if (!res) return null
+  const data = await res.json()
+  if (res.status !== 200) {
+    message.destroy()
+    message.warning(data.message)
+    return null
+  }
+
+  if (data.message) message.success(data.message)
+  return data
 }
 
 async function uploadImage(path: string, file: File, signal?: any) {
   const formData = new FormData()
   formData.append('file', file, file.name)
 
-  return fetch(domain + path, {
+  const res = await fetch(domain + path, {
     method: 'post',
     credentials: 'include',
     body: formData,
     signal
   }).catch((error) => {
     if (error.name === 'AbortError') return
-    message.destroy()
-    message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
-    return null
   })
+
+  if (!res) return null
+  const data = await res.json() as { message: string, image?: string }
+  if (res.status !== 200) {
+    message.destroy()
+    message.warning(data.message)
+    return null
+  }
+
+  message.success(data.message)
+  return data.image
 }
 
 export { getFetch, postFetch, uploadImage }

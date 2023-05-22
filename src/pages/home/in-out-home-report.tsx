@@ -80,7 +80,7 @@ function MainReport(props: IProps) {
 	) as IData
 
 	if (isLoading) return <Loading />
-	if (data === undefined) return <NoData hasButton />
+	if (data === undefined || data === null) return <NoData hasButton />
 
 	const hasData = data.length > 0
 	if (!hasData) return <NoData hasButton />

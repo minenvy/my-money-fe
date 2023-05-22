@@ -37,7 +37,7 @@ function OwnerHeaderProfile() {
 	const isInMobile = windowSize <= 768
 
 	if (isLoading) return <Loading />
-	if (data === undefined) return null
+	if (data === undefined || data === null) return null
 
 	const redirectToEdit = () => {
 		navigate('/profile/edit-profile')

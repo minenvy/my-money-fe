@@ -27,13 +27,13 @@ function Main() {
 	const { user } = useAuth()
 	const { data, isLoading } = useFetch(
 		`check block ${id}`,
-		'/user/check-block/' + id,
+		`/user/check-block/${id}/${user.id}`,
 		[id]
 	) as IData
 	const [activeKeyTab, setActiveKeyTab] = useState(profileTabs[0].key)
 
 	if (isLoading) return <Loading />
-	if (data === undefined) return null
+	if (data === undefined || data === null) return null
 	if (user.id !== id && data.isBlocked)
 		return (
 			<Wrapper>

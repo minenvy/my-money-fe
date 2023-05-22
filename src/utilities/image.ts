@@ -22,11 +22,10 @@ export async function uploadImageToServer(image: File) {
     return
   })) as File
   if (!compressedImage) return ''
-  const uploadResponse = (await uploadImage(
+  const uploadResponse = await uploadImage(
     '/image/upload',
     compressedImage
-  )) as Response
-  if (!uploadResponse || !uploadResponse.ok) return ''
-  const data = await uploadResponse.json() as { image: string }
-  return data.image
+  )
+  if (uploadResponse === null) return ''
+  return uploadResponse
 }

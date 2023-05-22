@@ -88,12 +88,7 @@ function NewBudgetModal(props: IProps) {
 			endDate: endDate.toDateString(),
 			options: moneyOptions === '' ? moneyOutTypes.toString() : moneyOptions,
 		})
-		if (!res) return
-		if (!res.ok) {
-			message.warning('Có lỗi xảy ra, thêm thất bại!')
-			return
-		}
-		message.success('Thêm ngân sách thành công!')
+		if (res === null) return
 		setTimeout(() => navigate(0), 1000)
 	}
 	const handleAdd = async () => {

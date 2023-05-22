@@ -1,5 +1,4 @@
 import { postFetch } from '@/api/fetch'
-import NoData from '@/components/empty'
 import Loading from '@/components/loading'
 import ShadowBox from '@/components/shadow-box'
 import { valueToLabel } from '@/constants/money-type'
@@ -111,13 +110,8 @@ function PopDeleteConfirm(props: { id: string }) {
 	const [isLoading, setIsLoading] = useState(false)
 
 	const onDelete = async () => {
-		const res = (await postFetch('/budget/delete', { id })) as Response
-		if (!res) return
-		if (!res.ok) {
-			message.warning('Có lỗi xảy ra, xóa thất bại!')
-			return
-		}
-		message.success('Xóa thành công!')
+		const res = await postFetch('/budget/delete', { id })
+		if (res === null) return
 		setTimeout(() => window.location.reload(), 1000)
 	}
 	const showPopConfirm = () => setOpen(true)
@@ -189,7 +183,7 @@ function MultipleDatasetLineChart(props: IMultipleDatasetLineChartProps) {
 	) as IData
 
 	if (isLoading) return <Loading />
-	if (data === undefined) return null
+	if (data === undefined || data === null) return null
 	if (data.length === 0)
 		return (
 			<Typography.Text>

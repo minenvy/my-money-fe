@@ -12,7 +12,7 @@ function TotalMoney() {
 	const toggleDisplayTotal = () => {
 		setIsShowedTotal((preState) => !preState)
 	}
-	
+
 	return (
 		<ShadowBox>
 			<Typography.Title level={5}>Tổng số dư</Typography.Title>

@@ -29,7 +29,7 @@ function ChartComponent(props: IChartProps) {
 				labels={labels}
 				moneyIn={moneyIn}
 				moneyOut={moneyOut}
-				unit='nghìn'
+				unit="nghìn"
 			/>
 		)
 	}
@@ -40,7 +40,7 @@ function ChartComponent(props: IChartProps) {
 			const money = type === 'in' ? item.moneyIn : item.moneyOut
 			return money ? round(money) : 0
 		})
-		const totalMoney = money.reduce((total, item) => total + item, 0) * 1e6
+		const totalMoney = money.reduce((total, item) => total + item, 0) * 1e3
 		return (
 			<Wrapper>
 				<LineChart labels={labels} money={money} type={type} unit="nghìn" />
@@ -77,7 +77,7 @@ const FlexBox = styled.div`
 `
 
 function round(money: number) {
-	return Math.round((money / 1e3) * 1000) / 1000
+	return Math.round(money / 1e3)
 }
 
 export default ChartComponent

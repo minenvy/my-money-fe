@@ -43,9 +43,12 @@ function ImagesUploadProvider({ children }: IImagesProps) {
 			.then(() => {
 				Promise.allSettled(processImagePromises).then((settledImages) => {
 					const haveSuccessImage = settledImages.find(
-						(item) => item.status === 'fulfilled'
+						(item) => item.status === 'fulfilled' && item.value !== null
 					)
-					if (haveSuccessImage) message.info('Bạn có 1 bản nháp giao dịch!')
+					if (haveSuccessImage) {
+						message.info('Bạn có 1 bản nháp giao dịch!')
+						setTimeout(() => window.location.reload(), 1000)
+					}
 				})
 			})
 			.catch((err) => console.log(err))

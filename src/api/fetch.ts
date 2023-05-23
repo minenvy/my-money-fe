@@ -47,13 +47,14 @@ async function postFetch(path: string, body: any, signal?: any) {
   })
   if (!res) return null
   const data = await res.json()
+  message.destroy()
   if (res.status !== 200) {
-    message.destroy()
     message.warning(data.message)
     return null
   }
-
-  if (data.message) message.success(data.message)
+  if (data.message) {
+    message.success(data.message)
+  }
   return data
 }
 
@@ -72,12 +73,11 @@ async function uploadImage(path: string, file: File, signal?: any) {
 
   if (!res) return null
   const data = await res.json() as { message: string, image?: string }
+  message.destroy()
   if (res.status !== 200) {
-    message.destroy()
     message.warning(data.message)
     return null
   }
-
   message.success(data.message)
   return data.image
 }

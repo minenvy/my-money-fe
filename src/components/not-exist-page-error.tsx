@@ -5,7 +5,8 @@ function NotExistPageError() {
 	const navigate = useNavigate()
 
 	const handleClick = () => {
-		navigate('/')
+		// navigate('/')
+		window.location.replace('/')
 	}
 
 	return (

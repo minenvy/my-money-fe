@@ -1,8 +1,7 @@
 import { domain } from "@/constants/env"
 import { message } from "antd"
 
-const IGNORE_ERROR_MESSAGE_URLS = ['abc']
-// ['/user/get-by-token', '/notification/read']
+const IGNORE_ERROR_MESSAGE_URLS = ['/user/get-by-token', '/notification/read']
 
 function checkIgnorePath(path: string) {
   return IGNORE_ERROR_MESSAGE_URLS.some(url => path.includes(url))

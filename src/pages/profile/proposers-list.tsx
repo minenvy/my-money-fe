@@ -20,6 +20,7 @@ interface IPerson {
 	nickname: string
 	image: string
 	bio: string
+	isFollowed: boolean
 }
 interface IData {
 	isLoading: boolean

@@ -15,7 +15,7 @@ function useFetch(
     [key: string]: Array<any> | any
   }>({})
   const [isLoading, setIsLoading] = useState(false)
-  const { showBoundary } = useErrorBoundary()
+  const errorBoundary = useErrorBoundary()
   const effectDependencies = dependencies || []
 
   useEffect(() => {
@@ -37,7 +37,7 @@ function useFetch(
           }
         } catch (err) {
           const knownError = err as IError
-          if (knownError.message === 'server error') showBoundary(knownError)
+          if (knownError.message === 'server error') errorBoundary.showBoundary(knownError)
         } finally {
           setIsLoading(false)
         }

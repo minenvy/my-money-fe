@@ -1,6 +1,7 @@
 import DoughnutChart from '@/components/doughnut-chart'
+import ListItem from '@/components/list-item'
 import Loading from '@/components/loading'
-import { moneyInTypes, valueToLabel } from '@/constants/money-type'
+import { icons, moneyInTypes, valueToLabel } from '@/constants/money-type'
 import useFetch from '@/hooks/use-fetch'
 import formatMoney from '@/utilities/money-format'
 import { Avatar, Divider, Empty, Modal, Typography } from 'antd'
@@ -141,6 +142,19 @@ function ModalContent(props: IModalContentProps) {
 		<CenterBox>
 			<Typography.Text>Tổng tiền: {formatMoney(total)}</Typography.Text>
 			<DoughnutChart detail={detail} />
+			{data.map((transaction) => {
+				const title = valueToLabel(transaction.type)
+				const icon = icons.find((icon) => icon.value === transaction.type)?.icon
+
+				return (
+					<ListItem
+						title={title}
+						subTitle=""
+						icon={icon}
+						moreDetail={formatMoney(transaction.money)}
+					/>
+				)
+			})}
 		</CenterBox>
 	)
 }

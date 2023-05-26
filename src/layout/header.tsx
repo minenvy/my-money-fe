@@ -17,11 +17,6 @@ function Header() {
 
 	useEffect(() => {
 		socket.emit('connect socket', { id: user.id })
-
-		return () => {
-			socket.emit('disconnect socket', { id: user.id })
-			socket.disconnect()
-		}
 	}, [user.id])
 
 	return (

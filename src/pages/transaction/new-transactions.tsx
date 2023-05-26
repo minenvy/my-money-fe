@@ -33,14 +33,17 @@ function NewTransactions() {
 	const { user, changeInfo } = useAuth()
 	const { uploadImages, isUploading } = useImagesUpload()
 	const { data, isLoading } = useFetch('draft', '/transaction/draft') as IData
-	const [transactions, setTransactions] = useState<Array<ITransaction>>([])
+	const [transactions, setTransactions] = useState<Array<ITransaction>>()
 	const [isPosting, setIsPosting] = useState(false)
 	const imagesRef = useRef<HTMLInputElement>(null)
 
 	if (isLoading) return <Loading />
 	if (data === undefined || data === null) return null
-	if (data.length > 0 && transactions.length === 0) setTransactions(data)
-	if (data.length === 0 && transactions.length === 0)
+	if (data.length > 0 && transactions === undefined) setTransactions(data)
+	if (
+		(data.length === 0 && transactions === undefined) ||
+		transactions?.length === 0
+	)
 		setTransactions([
 			{
 				id: uuid(),
@@ -52,6 +55,7 @@ function NewTransactions() {
 				accessPermission: 'public',
 			},
 		])
+	if (transactions === undefined) return null
 
 	const addDraft = (draft?: ITransaction) => {
 		const nullDraft: ITransaction = {
@@ -166,7 +170,7 @@ function NewTransactions() {
 					/>
 				)
 			})}
-			<Button onClick={() => addDraft()}>Thêm giao dịch nhỏ</Button>
+			<Button onClick={() => addDraft()}>Thêm giao dịch</Button>
 			<StyledButton
 				type="primary"
 				block

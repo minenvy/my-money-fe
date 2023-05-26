@@ -10,9 +10,7 @@ import {
 	message,
 } from 'antd'
 import styled from 'styled-components'
-import coinImage from '@/assets/coin.png'
-import publicImage from '@/assets/earth.png'
-import privateImage from '@/assets/lock.png'
+import coinImage from '@/assets/coin.jpg'
 import { icons, typeSelectOptions, valueToLabel } from '@/constants/money-type'
 import {
 	CalendarOutlined,

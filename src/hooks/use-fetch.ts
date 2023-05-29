@@ -2,6 +2,8 @@ import { getFetch } from "@/api/fetch"
 import { useErrorBoundary } from "@/contexts/error-fetch-boundary"
 import { useEffect, useState } from "react"
 
+const CACHE_TO_LOCAL_STORAGE_URLS = ['money types']
+
 interface IError {
   message: string
 }
@@ -12,13 +14,23 @@ function useFetch(
   dependencies?: Array<string | number | boolean>
 ) {
   const [cachedData, setCachedData] = useState<{
-    [key: string]: Array<any> | any
+    [key: string]: any
   }>({})
   const [isLoading, setIsLoading] = useState(false)
   const errorBoundary = useErrorBoundary()
   const effectDependencies = dependencies || []
 
   useEffect(() => {
+    if (CACHE_TO_LOCAL_STORAGE_URLS.includes(key)) {
+      const dataInLocalStorage = localStorage.getItem(key)
+      if (dataInLocalStorage) {
+        const data = JSON.parse(dataInLocalStorage)
+        setCachedData(preState => {
+          return { ...preState, [key]: data }
+        })
+        return
+      }
+    }
     if (cachedData[key] !== undefined && cachedData[key] !== null) return
     const controller = new AbortController()
     const signal = controller.signal
@@ -30,10 +42,10 @@ function useFetch(
           setIsLoading(true)
           const fetchData = await getFetch(path, signal)
           if (!didCancel) {
-            localStorage.setItem(key, fetchData)
             setCachedData(preState => {
               return { ...preState, [key]: fetchData }
             })
+            if (CACHE_TO_LOCAL_STORAGE_URLS.includes(key)) localStorage.setItem(key, JSON.stringify(fetchData))
           }
         } catch (err) {
           const knownError = err as IError
@@ -49,7 +61,23 @@ function useFetch(
     }
   }, effectDependencies)
 
-  return { data: cachedData[key], isLoading }
+  const refetch = async () => {
+    try {
+      if (isLoading) return
+      setIsLoading(true)
+      const fetchData = await getFetch(path)
+      setCachedData(preState => {
+        return { ...preState, [key]: fetchData }
+      })
+    } catch (err) {
+      const knownError = err as IError
+      if (knownError.message === 'server error') errorBoundary.showBoundary(knownError)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return { data: cachedData[key], isLoading, refetch }
 }
 
 export default useFetch

@@ -3,9 +3,9 @@ import { Avatar, Typography } from 'antd'
 import styled from 'styled-components'
 
 interface IInOutDetailProps {
-	icon?: React.ReactNode
 	title: string
-	subTitle: Date | string
+	subTitle?: Date | string
+	icon?: React.ReactNode
 	description?: string
 	moreDetail?: React.ReactNode
 	type?: 'in' | 'out'
@@ -20,14 +20,16 @@ function ListItem(props: IInOutDetailProps) {
 	return (
 		<Wrapper>
 			<Avatar src={icon} style={{ backgroundColor: '#1677ff' }}>
-				{title[0].toUpperCase()}
+				{title && title[0].toUpperCase()}
 			</Avatar>
 			<Meta>
 				<MetaContent>
 					<Typography.Text>{title}</Typography.Text>
-					<Typography.Text type="secondary">
-						{subTitle.toLocaleString()}
-					</Typography.Text>
+					{subTitle && (
+						<Typography.Text type="secondary">
+							{subTitle.toLocaleString()}
+						</Typography.Text>
+					)}
 					{description && !isInMobile && (
 						<Typography.Text>{description}</Typography.Text>
 					)}

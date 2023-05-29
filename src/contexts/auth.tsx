@@ -8,14 +8,12 @@ import Loading from '@/components/loading'
 interface IUserInfo {
 	id: string
 	nickname: string
-	money: number
 	image: string
 	bio: string
 }
 
 interface INewUserInfo {
 	nickname?: string
-	money?: number
 	image?: string
 	bio?: string
 }
@@ -45,7 +43,7 @@ interface IAuthProviderProps {
 
 export default function AuthProvider({ children }: IAuthProviderProps) {
 	const { data, isLoading } = useFetch('auth', '/user/get-by-token') as IData
-	const [user, setUser] = useState<IUserInfo | null>()
+	const [user, setUser] = useState<IUserInfo>()
 	const navigate = useNavigate()
 	const location = useLocation()
 
@@ -54,7 +52,7 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
 		if (data === null) {
 			removeLoginState()
 			navigate('/login')
-			changeUserInfo(null)
+			changeInfo(null)
 			return
 		}
 		const isInNotLoggedInPage =
@@ -64,39 +62,39 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
 			navigate('/')
 		}
 		setLoginState()
-		changeUserInfo(data)
+		changeInfo(data)
 	}, [data])
 
 	if (isLoading) return <Loading />
 	if (user === undefined) return null
 
-	function changeUserInfo(newUser: INewUserInfo | null) {
-		setUser({ ...(user as IUserInfo), ...newUser })
+	function changeInfo(newUser: INewUserInfo | null) {
+		setUser({ ...user, ...newUser } as IUserInfo)
 	}
 	function login(newUser: INewUserInfo) {
 		setLoginState()
-		changeUserInfo(newUser)
+		changeInfo(newUser)
 	}
 	function register(newUser: INewUserInfo) {
 		setLoginState()
-		changeUserInfo(newUser)
+		changeInfo(newUser)
 	}
 	async function logout() {
 		const res = await getFetch('/user/logout')
 		if (res === null) return
 		removeLoginState()
-		changeUserInfo(null)
+		changeInfo(null)
 		navigate('/login')
 	}
 
 	return (
 		<AuthContext.Provider
 			value={{
-				user: user as IUserInfo,
+				user,
 				login,
 				register,
 				logout,
-				changeInfo: changeUserInfo,
+				changeInfo,
 			}}
 		>
 			{children}

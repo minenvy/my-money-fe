@@ -1,19 +1,19 @@
 import ListItem from '@/components/list-item'
 import ShadowBox from '@/components/shadow-box'
-import TitleInOutDetail from '@/pages/wallet/title-in-out-detail'
+import TitleExpenseDetail from '@/pages/wallet/title-expense-detail'
 import formatMoney from '@/utilities/money-format'
-import { Avatar, DatePicker, Image, Modal, Typography } from 'antd'
+import { Avatar, DatePicker, Modal, Select, Typography } from 'antd'
 import dayjs from 'dayjs'
 import { useState } from 'react'
 import styled from 'styled-components'
 import QuickReport from './quick-report'
 import NoData from '@/components/empty'
 import useFetch from '@/hooks/use-fetch'
-import { icons, moneyInTypes, valueToLabel } from '@/constants/money-type'
+import useMoneyType from '@/hooks/use-money-type'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@/contexts/auth'
 import Loading from '@/components/loading'
 import { imagesDir } from '@/constants/env'
+import { useMoneyContext } from '@/contexts/money'
 
 const monthFormat = 'MM/YYYY'
 const today = new Date()
@@ -21,6 +21,7 @@ const today = new Date()
 interface ITransaction {
 	id: string
 	money: number
+	walletName: string
 	type: string
 	createdAt: string | Date
 	note?: string
@@ -28,12 +29,23 @@ interface ITransaction {
 }
 
 function Wallet() {
-	const { user } = useAuth()
+	const { money } = useMoneyContext()
+	const [wallet, setWallet] = useState(money[0])
 	const [time, setTime] = useState({
 		month: today.getMonth() + 1,
 		year: today.getFullYear(),
 	})
 
+	const walletOptions = money.map((money) => {
+		const name = money.name
+		return { value: name, label: name }
+	})
+
+	const changeWallet = (value: string) => {
+		const selectedWallet =
+			money.find((money) => money.name === value) || money[0]
+		setWallet(selectedWallet)
+	}
 	const changeMonth = (dateString: string) => {
 		const dateInfo = dateString.split('/')
 		setTime({
@@ -46,7 +58,13 @@ function Wallet() {
 		<>
 			<TotalMoney>
 				<StyledText type="secondary">Số dư</StyledText>
-				<StyledText strong>{formatMoney(user.money)}</StyledText>
+				<StyledText strong>{formatMoney(wallet.total)}</StyledText>
+				<Select
+					value={wallet.name}
+					onChange={changeWallet}
+					options={walletOptions}
+					style={{ width: 120 }}
+				/>
 			</TotalMoney>
 			<StyledDatePicker
 				defaultValue={dayjs(dayjs(today), monthFormat)}
@@ -54,7 +72,11 @@ function Wallet() {
 				picker="month"
 				onChange={(_, dateString) => changeMonth(dateString)}
 			/>
-			<MainContent month={time.month} year={time.year} />
+			<MainContent
+				month={time.month}
+				year={time.year}
+				walletName={wallet.name}
+			/>
 		</>
 	)
 }
@@ -66,6 +88,7 @@ interface IData {
 interface IMainContentProps {
 	month: number
 	year: number
+	walletName: string
 }
 interface IModal {
 	id: string
@@ -78,13 +101,14 @@ interface IModal {
 }
 
 function MainContent(props: IMainContentProps) {
-	const { month, year } = props
+	const { month, year, walletName } = props
 	const navigate = useNavigate()
 	const { data, isLoading } = useFetch(
-		`transactions in wallet ${month} ${year}`,
-		`/transaction/get-separate-in-month/${month}/${year}`,
-		[month, year]
+		`transactions in wallet ${month} ${year} ${walletName}`,
+		`/transaction/get-separate-in-month/${month}/${year}/${walletName}`,
+		[month, year, walletName]
 	) as IData
+	const { icons, moneyInTypes, valueToLabel } = useMoneyType()
 
 	if (isLoading) return <Loading />
 	if (data === undefined || data === null)
@@ -167,7 +191,7 @@ function MainContent(props: IMainContentProps) {
 					return (
 						<ShadowBox key={index}>
 							<FlexBox>
-								<TitleInOutDetail
+								<TitleExpenseDetail
 									time={new Date(year, month, dayInMonth[index])}
 									money={totalMoney}
 								/>
@@ -220,7 +244,7 @@ const StyledText = styled(Typography.Text)`
 const TotalMoney = styled.div`
 	display: flex;
 	flex-direction: column;
-	align-content: space-between;
+	align-items: center;
 `
 const StyledDatePicker = styled(DatePicker)`
 	margin: 1rem auto 0;

@@ -16,6 +16,9 @@ import {
 	Filler,
 } from 'chart.js'
 import ImagesUploadProvider from '@/contexts/images-uploader'
+import MoneyProvider from '@/contexts/money'
+import { useAuth } from '@/contexts/auth'
+import FirstLoginSteps from '@/components/first-login-steps'
 
 ChartJS.register(
 	CategoryScale,
@@ -31,13 +34,18 @@ ChartJS.register(
 )
 
 function MainLayout() {
+	const { user } = useAuth()
+
 	return (
 		<ImagesUploadProvider>
 			<Header />
 			<Main>
 				<Sidebar />
 				<Content>
-					<Outlet />
+					<MoneyProvider>
+						<Outlet />
+						{!user.nickname && <FirstLoginSteps />}
+					</MoneyProvider>
 				</Content>
 			</Main>
 		</ImagesUploadProvider>

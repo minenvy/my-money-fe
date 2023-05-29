@@ -1,5 +1,5 @@
 import { DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons'
-import { Button, Modal, Popconfirm } from 'antd'
+import { Button, Popconfirm } from 'antd'
 import { useState } from 'react'
 import styled from 'styled-components'
 

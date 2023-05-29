@@ -6,7 +6,7 @@ import VirtualList from 'rc-virtual-list'
 import useFetch from '@/hooks/use-fetch'
 import { useRef, useState } from 'react'
 import Loading from '@/components/loading'
-import { icons, valueToLabel } from '@/constants/money-type'
+import useMoneyType from '@/hooks/use-money-type'
 import { getFetch } from '@/api/fetch'
 import { Spin } from 'antd'
 import { useParams } from 'react-router-dom'
@@ -62,6 +62,7 @@ function MainContent() {
 		`transactions ${id}`,
 		`/transaction/get-infinite/${id}/0`
 	) as IData
+	const { icons, valueToLabel } = useMoneyType()
 	const [transactions, setTransactions] = useState<Array<ITransaction>>()
 	const [isFetching, setIsFetching] = useState(false)
 	const offset = useRef(0)

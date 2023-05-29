@@ -1,4 +1,4 @@
-import { Button, Modal, message } from 'antd'
+import { Button, Modal } from 'antd'
 import styled from 'styled-components'
 import { LeftOutlined, QuestionCircleOutlined } from '@ant-design/icons'
 import { useRef, useState } from 'react'
@@ -6,15 +6,16 @@ import Transaction from './transaction'
 import { useNavigate, useParams } from 'react-router-dom'
 import useFetch from '@/hooks/use-fetch'
 import { postFetch } from '@/api/fetch'
-import { useAuth } from '@/contexts/auth'
-import { moneyInTypes } from '@/constants/money-type'
+import useMoneyType from '@/hooks/use-money-type'
 import { uploadImageToServer } from '@/utilities/image'
+import { useMoneyContext } from '@/contexts/money'
 
 const { confirm } = Modal
 
 interface ITransaction {
 	id: string
 	money: number
+	walletName: string
 	type: string
 	createdAt: Date
 	note?: string
@@ -27,14 +28,16 @@ interface IData {
 
 function TransactionEditor() {
 	const { id } = useParams()
-	const { user, changeInfo } = useAuth()
+	const { money, changeMoney } = useMoneyContext()
 	const { data } = useFetch(
 		`transaction ${id}`,
 		'/transaction/get-by-id/' + id
 	) as IData
+	const { moneyInTypes } = useMoneyType()
 	const [transaction, setTransaction] = useState<ITransaction>({
 		id: '',
 		money: 0,
+		walletName: money[0].name,
 		type: 'anuong',
 		createdAt: new Date(),
 		note: '',
@@ -76,7 +79,10 @@ function TransactionEditor() {
 			})
 			if (res === null) return
 
-			changeInfo({ money: user.money + totalMoney })
+			changeMoney({
+				name: transaction.walletName,
+				total: totalMoney,
+			})
 			setTimeout(() => navigate('/wallet'), 1000)
 		})()
 		setIsLoading('')
@@ -90,7 +96,7 @@ function TransactionEditor() {
 			})
 			if (res === null) return
 
-			changeInfo({ money: user.money - beforeUpdateMoney.current })
+			// changeInfo({ money: user.money - beforeUpdateMoney.current })
 			setTimeout(() => navigate('/wallet'), 1000)
 		})()
 		setIsLoading('')
@@ -121,6 +127,7 @@ function TransactionEditor() {
 				{...transaction}
 				updateDraft={updateDraft}
 				allowEditImage={false}
+				allowEditWalletName={false}
 			/>
 
 			<EditButtons>

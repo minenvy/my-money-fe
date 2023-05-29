@@ -1,5 +1,5 @@
 import { postFetch } from '@/api/fetch'
-import { moneyOutTypes, typeCheckboxOptions } from '@/constants/money-type'
+import useMoneyType from '@/hooks/use-money-type'
 import { AppstoreAddOutlined } from '@ant-design/icons'
 import {
 	Button,
@@ -25,6 +25,7 @@ interface IProps {
 function NewBudgetModal(props: IProps) {
 	const { open, close } = props
 	const navigate = useNavigate()
+	const { moneyOutTypes, moneyTypeCheckboxOptions } = useMoneyType()
 	const [money, setMoney] = useState(0)
 	const [name, setName] = useState('')
 	const [options, setOptions] = useState<Array<Array<string>>>([['chitieu']])
@@ -138,7 +139,7 @@ function NewBudgetModal(props: IProps) {
 			</Picker>
 			<StyledCascader
 				multiple
-				options={typeCheckboxOptions}
+				options={moneyTypeCheckboxOptions}
 				defaultValue={options}
 				onChange={changeMoneyTypeOption}
 				maxTagCount="responsive"

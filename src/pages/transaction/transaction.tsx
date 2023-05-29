@@ -4,14 +4,17 @@ import {
 	Button,
 	DatePicker,
 	DatePickerProps,
+	Divider,
 	Input,
 	Select,
+	Space,
 	Typography,
 	message,
 } from 'antd'
 import styled from 'styled-components'
 import coinImage from '@/assets/coin.jpg'
-import { icons, typeSelectOptions, valueToLabel } from '@/constants/money-type'
+import walletImage from '@/assets/wallet.jpg'
+import useMoneyType from '@/hooks/use-money-type'
 import {
 	CalendarOutlined,
 	CloseOutlined,
@@ -21,6 +24,7 @@ import {
 	FileImageOutlined,
 	FileTextOutlined,
 	GlobalOutlined,
+	PlusOutlined,
 	UserOutlined,
 } from '@ant-design/icons'
 import dayjs from 'dayjs'
@@ -29,10 +33,13 @@ import allowedImageType from '@/constants/image-type'
 import { useRef, useState } from 'react'
 import { imagesDir } from '@/constants/env'
 import { permissionOptions } from '@/constants/transaction'
+import { useMoneyContext } from '@/contexts/money'
+import AddMoneyTypeModal from './add-money-type-modal'
 
 interface ITransaction {
 	id: string
 	money: number
+	walletName: string
 	type: string
 	createdAt: Date
 	note?: string
@@ -41,12 +48,14 @@ interface ITransaction {
 	updateDraft: Function
 	deleteDraft?: Function
 	allowEditImage?: boolean
+	allowEditWalletName?: boolean
 }
 
 function Transaction(props: ITransaction) {
 	const {
 		id,
 		money,
+		walletName,
 		type,
 		createdAt,
 		note,
@@ -55,9 +64,13 @@ function Transaction(props: ITransaction) {
 		updateDraft,
 		deleteDraft,
 		allowEditImage = true,
+		allowEditWalletName = true,
 	} = props
+	const wallets = useMoneyContext()
+	const { icons, moneyTypeSelectOptions, valueToLabel, addNewMoneyType } = useMoneyType()
 	const [isPreviewImage, setIsPreviewImage] = useState(false)
 	const imageRef = useRef<HTMLInputElement>(null)
+	const [isAddingMoneyType, setIsAddingMoneyType] = useState(false)
 
 	const imageSrc =
 		typeof image === 'string'
@@ -71,6 +84,11 @@ function Transaction(props: ITransaction) {
 		fontSize: '1.25rem',
 	}
 
+	const walletOptions = wallets.money.map((money) => {
+		const name = money.name
+		return { value: name, label: name }
+	})
+
 	const changeMoney = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const money = Number(e.target.value.replaceAll(',', '').replaceAll('.', ''))
 		if (!isNaN(money))
@@ -81,6 +99,11 @@ function Transaction(props: ITransaction) {
 	const changeType = (value: string) => {
 		updateDraft(id, {
 			type: value,
+		})
+	}
+	const changeWallet = (value: string) => {
+		updateDraft(id, {
+			walletName: value,
 		})
 	}
 	const changeDate: DatePickerProps['onChange'] = (_, dateString) => {
@@ -141,27 +164,6 @@ function Transaction(props: ITransaction) {
 					</Money>
 				</FlexBox>
 				<FlexBox>
-					<Avatar src={<FileImageOutlined style={iconStyle} />} />
-					{image ? (
-						<ImageBox>
-							<Image onClick={previewImage}>
-								<img src={imageSrc} width={100} height={100} loading="lazy" />
-							</Image>
-							{allowEditImage && (
-								<EditImgButtons>
-									<Button icon={<EditOutlined />} onClick={handleChooseImage} />
-									<Button icon={<DeleteOutlined />} onClick={deleteImage} />
-								</EditImgButtons>
-							)}
-							<PreviewIcon onClick={previewImage} />
-						</ImageBox>
-					) : (
-						<>
-							<Button onClick={handleChooseImage}>Chọn ảnh</Button>
-						</>
-					)}
-				</FlexBox>
-				<FlexBox>
 					<Avatar src={<CalendarOutlined style={iconStyle} />} />
 					<DatePicker
 						value={dayjs(dayjs(createdAt).format('YYYY-MM-DD'))}
@@ -170,16 +172,39 @@ function Transaction(props: ITransaction) {
 					/>
 				</FlexBox>
 				<FlexBox>
+					<Avatar src={walletImage} style={iconStyle} />
+					<Select
+						value={walletName}
+						onChange={changeWallet}
+						options={walletOptions}
+						disabled={!allowEditWalletName}
+						style={{ width: '100%' }}
+					/>
+				</FlexBox>
+				<FlexBox>
 					<Avatar src={typeImage} style={iconStyle} />
 					<Select
 						placeholder="Chọn nhóm"
 						value={valueToLabel(type)}
 						onChange={changeType}
-						options={typeSelectOptions}
+						options={moneyTypeSelectOptions}
 						style={{ width: '100%' }}
+						dropdownRender={(menu) => (
+							<>
+								{menu}
+								<Divider style={{ margin: '8px 0' }} />
+								<Button
+									type="text"
+									icon={<PlusOutlined />}
+									block
+									onClick={() => setIsAddingMoneyType(true)}
+								>
+									Thêm loại thu chi mới
+								</Button>
+							</>
+						)}
 					/>
 				</FlexBox>
-
 				<FlexBox>
 					<Avatar src={<FileTextOutlined style={iconStyle} />} />
 					<Input.TextArea
@@ -207,12 +232,38 @@ function Transaction(props: ITransaction) {
 						style={{ width: '100%' }}
 					/>
 				</FlexBox>
+				<FlexBox>
+					<Avatar src={<FileImageOutlined style={iconStyle} />} />
+					{image ? (
+						<ImageBox>
+							<Image onClick={previewImage}>
+								<img src={imageSrc} width={100} height={100} loading="lazy" />
+							</Image>
+							{allowEditImage && (
+								<EditImgButtons>
+									<Button icon={<EditOutlined />} onClick={handleChooseImage} />
+									<Button icon={<DeleteOutlined />} onClick={deleteImage} />
+								</EditImgButtons>
+							)}
+							<PreviewIcon onClick={previewImage} />
+						</ImageBox>
+					) : (
+						<>
+							<Button onClick={handleChooseImage}>Chọn ảnh mô tả</Button>
+						</>
+					)}
+				</FlexBox>
 			</ShadowBox>
 
 			<HiddenInput type="file" onChange={chooseImage} ref={imageRef} />
 			{isPreviewImage && (
 				<ImagePreview src={imageSrc} close={() => setIsPreviewImage(false)} />
 			)}
+			<AddMoneyTypeModal
+				open={isAddingMoneyType}
+				close={() => setIsAddingMoneyType(false)}
+				addNewMoneyType={addNewMoneyType}
+			/>
 		</MarginWrapper>
 	)
 }

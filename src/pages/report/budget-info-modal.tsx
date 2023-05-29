@@ -1,7 +1,7 @@
 import { postFetch } from '@/api/fetch'
 import Loading from '@/components/loading'
 import ShadowBox from '@/components/shadow-box'
-import { valueToLabel } from '@/constants/money-type'
+import useMoneyType from '@/hooks/use-money-type'
 import useFetch from '@/hooks/use-fetch'
 import getRemainingDays from '@/utilities/get-remaining-days-in-month'
 import formatMoney from '@/utilities/money-format'
@@ -22,6 +22,8 @@ interface IProps {
 
 function BudgetInfoModal(props: IProps) {
 	const { id, totalMoney, usedMoney, startDate, endDate, options } = props
+	const { valueToLabel } = useMoneyType()
+
 	const remainingMoney = totalMoney - usedMoney
 	const today = new Date()
 	const days = getRemainingDays(startDate, today)

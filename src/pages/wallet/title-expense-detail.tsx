@@ -7,7 +7,7 @@ interface IProps {
 	money: number
 }
 
-function TitleInOutDetail(props: IProps) {
+function TitleExpenseDetail(props: IProps) {
 	const { time, money } = props
 	const date = time.getDate()
 	const dayInWeek = time.toLocaleString('default', { weekday: 'long' })
@@ -49,4 +49,4 @@ const Money = styled.b`
 	font-size: 1rem;
 `
 
-export default TitleInOutDetail
+export default TitleExpenseDetail

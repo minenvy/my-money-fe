@@ -45,6 +45,7 @@ a:hover {
 }
 .ant-modal-confirm-content {
 	max-width: unset !important;
+	margin-left: 0 !important;
 }
 .ant-avatar {
 	width: 2.5rem;

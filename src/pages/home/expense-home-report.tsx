@@ -5,15 +5,10 @@ import DoughnutChart from '@/components/doughnut-chart'
 import ListItem from '@/components/list-item'
 import NoData from '@/components/empty'
 import useFetch from '@/hooks/use-fetch'
-import {
-	icons,
-	moneyInTypes,
-	moneyOutTypes,
-	valueToLabel,
-} from '@/constants/money-type'
+import useMoneyType from '@/hooks/use-money-type'
 import formatMoney from '@/utilities/money-format'
 import ShadowBox from '@/components/shadow-box'
-import TitleOfPartContent from './title-of-part-content'
+import TitleOfPartContent from './title-of-each-part-content'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import Loading from '@/components/loading'
@@ -78,6 +73,7 @@ function MainReport(props: IProps) {
 			: `/transaction/get-in-year/${year}`,
 		[selectedOption]
 	) as IData
+	const { icons, moneyInTypes, moneyOutTypes, valueToLabel } = useMoneyType()
 
 	if (isLoading) return <Loading />
 	if (data === undefined || data === null) return <NoData hasButton />

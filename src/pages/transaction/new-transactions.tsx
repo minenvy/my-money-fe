@@ -8,15 +8,17 @@ import { useNavigate } from 'react-router-dom'
 import useFetch from '@/hooks/use-fetch'
 import Loading from '@/components/loading'
 import { useImagesUpload } from '@/contexts/images-uploader'
-import { moneyInTypes } from '@/constants/money-type'
+import useMoneyType from '@/hooks/use-money-type'
 import { useAuth } from '@/contexts/auth'
 import allowedImageType from '@/constants/image-type'
 import { uploadImageToServer } from '@/utilities/image'
 import socket from '@/utilities/socket'
+import { useMoneyContext } from '@/contexts/money'
 
 interface ITransaction {
 	id: string
 	money: number
+	walletName: string
 	type: string
 	createdAt: Date
 	note?: string
@@ -25,21 +27,32 @@ interface ITransaction {
 }
 interface IData {
 	isLoading: boolean
+	refetch: Function
 	data: Array<ITransaction>
 }
 
 function NewTransactions() {
 	const navigate = useNavigate()
-	const { user, changeInfo } = useAuth()
+	const { user } = useAuth()
+	const { money, changeMoney } = useMoneyContext()
 	const { uploadImages, isUploading } = useImagesUpload()
-	const { data, isLoading } = useFetch('draft', '/transaction/draft') as IData
+	const { data, isLoading, refetch } = useFetch(
+		`draft`,
+		'/transaction/draft'
+	) as IData
+	const { moneyInTypes } = useMoneyType()
 	const [transactions, setTransactions] = useState<Array<ITransaction>>()
 	const [isPosting, setIsPosting] = useState(false)
 	const imagesRef = useRef<HTMLInputElement>(null)
+	const [isExtractedImages, setIsExtractedImages] = useState(isUploading)
 
 	if (isLoading) return <Loading />
 	if (data === undefined || data === null) return null
-	if (data.length > 0 && transactions === undefined) setTransactions(data)
+	if (
+		data.length > 0 &&
+		(transactions === undefined || data.length !== transactions.length)
+	)
+		setTransactions(data)
 	if (
 		(data.length === 0 && transactions === undefined) ||
 		transactions?.length === 0
@@ -48,24 +61,30 @@ function NewTransactions() {
 			{
 				id: uuid(),
 				money: 0,
+				walletName: money[0].name,
 				type: 'anuong',
 				createdAt: new Date(),
 				note: '',
 				image: '',
-				accessPermission: 'public',
+				accessPermission: 'private',
 			},
 		])
 	if (transactions === undefined) return null
+	if (isExtractedImages !== isUploading) {
+		if (isExtractedImages) refetch()
+		setIsExtractedImages(isUploading)
+	}
 
 	const addDraft = (draft?: ITransaction) => {
 		const nullDraft: ITransaction = {
 			id: uuid(),
 			money: 0,
+			walletName: money[0].name,
 			type: 'anuong',
 			createdAt: new Date(),
 			note: '',
 			image: '',
-			accessPermission: 'public',
+			accessPermission: 'private',
 		}
 		const newTransaction: ITransaction = draft || nullDraft
 		setTransactions([...transactions, newTransaction])
@@ -99,6 +118,7 @@ function NewTransactions() {
 		const urls = transactions.map((item, index) =>
 			postFetch('/transaction/add', {
 				...item,
+				walletId: money.find((money) => money.name === item.walletName)?.id,
 				image: images[index],
 			})
 		)
@@ -109,14 +129,16 @@ function NewTransactions() {
 			(transaction) => transaction.accessPermission === 'public'
 		)
 		if (havePublicTransaction) socket.emit('new transaction', { id: user.id })
-		const totalMoney = transactions.reduce(
-			(total, transaction) =>
-				moneyInTypes.includes(transaction.type)
-					? total + transaction.money
-					: total - transaction.money,
-			0
-		)
-		changeInfo({ money: user.money + totalMoney })
+		transactions.forEach((transaction) => {
+			const moneyChange = moneyInTypes.includes(transaction.type)
+				? transaction.money
+				: -transaction.money
+			const walletName = transaction.walletName
+			changeMoney({
+				name: walletName,
+				total: moneyChange,
+			})
+		})
 		setTimeout(() => navigate('/wallet'), 1000)
 	}
 	const handleSubmit = async () => {

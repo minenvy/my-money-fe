@@ -1,7 +1,7 @@
 import DoughnutChart from '@/components/doughnut-chart'
 import ListItem from '@/components/list-item'
 import Loading from '@/components/loading'
-import { icons, moneyInTypes, valueToLabel } from '@/constants/money-type'
+import useMoneyType from '@/hooks/use-money-type'
 import useFetch from '@/hooks/use-fetch'
 import formatMoney from '@/utilities/money-format'
 import { Avatar, Divider, Empty, Modal, Typography } from 'antd'
@@ -96,6 +96,7 @@ function ModalContent(props: IModalContentProps) {
 			? `/transaction/get-in-month/${month}/${year}`
 			: `/transaction/get-in-year/${year}`
 	) as IData
+	const { icons, moneyInTypes, valueToLabel } = useMoneyType()
 
 	if (isLoading) return <Loading />
 	if (data === undefined || data === null)
@@ -149,7 +150,6 @@ function ModalContent(props: IModalContentProps) {
 				return (
 					<ListItem
 						title={title}
-						subTitle=""
 						icon={icon}
 						moreDetail={formatMoney(transaction.money)}
 					/>

@@ -6,9 +6,11 @@ import welcome from '@/assets/welcome.png'
 import useWindowSize from '@/hooks/use-window-size'
 import { useAuth } from '@/contexts/auth'
 import { postFetch } from '@/api/fetch'
+import { useMoneyContext } from '@/contexts/money'
 
 function FirstLoginSteps() {
 	const { changeInfo } = useAuth()
+	const { changeMoney } = useMoneyContext()
 	const [current, setCurrent] = useState(0)
 	const [nickname, setNickname] = useState('')
 	const [money, setMoney] = useState(0)
@@ -17,7 +19,7 @@ function FirstLoginSteps() {
 	const changeNickname = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setNickname(e.target.value)
 	}
-	const changeMoney = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const changeCash = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const money = Number(e.target.value.replaceAll(',', '').replaceAll('.', ''))
 		if (!isNaN(money)) setMoney(money)
 	}
@@ -35,7 +37,7 @@ function FirstLoginSteps() {
 					nickname={nickname}
 					money={money}
 					changeNickname={changeNickname}
-					changeMoney={changeMoney}
+					changeMoney={changeCash}
 				/>
 			),
 			icon: <UserOutlined />,
@@ -52,14 +54,19 @@ function FirstLoginSteps() {
 			return
 		}
 		const urls = []
+		const newMoney = {
+			name: 'Tiền mặt',
+			total: money,
+		}
 		urls.push(
-			postFetch('/user/change-money', { money }),
-			postFetch('/user/change-profile', { nickname })
+			postFetch('/user/change-profile', { nickname }),
+			postFetch('/wallet/add', newMoney)
 		)
 		const res = await Promise.all(urls)
 		if (res.some((r) => r === null)) return
 
-		changeInfo({ nickname, money })
+		changeInfo({ nickname })
+		changeMoney(newMoney)
 	}
 	const handleToDone = async () => {
 		if (isLoading) return
@@ -123,7 +130,7 @@ function Information(props: IInfoProps) {
 				<Form.Item label="Tên của bạn">
 					<Input value={nickname} onChange={changeNickname} />
 				</Form.Item>
-				<Form.Item label="Số tiền">
+				<Form.Item label="Số tiền mặt">
 					<Input value={money.toLocaleString()} onChange={changeMoney} />
 				</Form.Item>
 			</Form>

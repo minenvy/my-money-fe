@@ -7,7 +7,7 @@ import QuickReport from './quick-report'
 import ChartComponent from './report-chart'
 import useFetch from '@/hooks/use-fetch'
 import NoData from '@/components/empty'
-import { moneyInTypes } from '@/constants/money-type'
+import useMoneyType from '@/hooks/use-money-type'
 import Loading from '@/components/loading'
 
 const filterOptions = [
@@ -86,6 +86,7 @@ function MainReport(props: IMainReportContentProps) {
 		(isSelectMonth ? '/report/month/' : '/report/year/') + year,
 		[isSelectMonth, year]
 	) as IData
+	const { moneyInTypes } = useMoneyType()
 
 	if (isLoading) return <Loading />
 	if (data === undefined || data === null)

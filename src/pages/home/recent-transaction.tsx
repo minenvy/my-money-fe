@@ -1,8 +1,8 @@
 import ListItem from '@/components/list-item'
-import TitleOfPartContent from './title-of-part-content'
+import TitleOfPartContent from './title-of-each-part-content'
 import ShadowBox from '@/components/shadow-box'
 import useFetch from '@/hooks/use-fetch'
-import { icons, moneyInTypes, valueToLabel } from '@/constants/money-type'
+import useMoneyType from '@/hooks/use-money-type'
 import formatMoney from '@/utilities/money-format'
 import { useNavigate } from 'react-router-dom'
 import { Avatar, Modal, Typography } from 'antd'
@@ -37,6 +37,7 @@ function RecentTransaction() {
 		'recent transaction',
 		'/transaction/recent'
 	) as IData
+	const { icons, moneyInTypes, valueToLabel } = useMoneyType()
 
 	if (isLoading) return <Loading />
 	if (data === undefined || data === null) return null
@@ -72,7 +73,7 @@ function RecentTransaction() {
 		<ShadowBox>
 			<TitleOfPartContent title="Giao dịch gần đây" onClick={handleClick} />
 			{data.map((item) => {
-				const icon = icons.find((ic) => ic.value === item.type)?.icon
+				const icon = icons.find((ic) => ic.value === item.type)?.icon || ''
 				const label = valueToLabel(item.type)
 				const date = new Date(item.createdAt).toLocaleDateString('en-GB')
 				const money = formatMoney(item.money)

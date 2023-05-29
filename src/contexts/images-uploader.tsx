@@ -47,7 +47,6 @@ function ImagesUploadProvider({ children }: IImagesProps) {
 					)
 					if (haveSuccessImage) {
 						message.info('Bạn có 1 bản nháp giao dịch!')
-						setTimeout(() => window.location.reload(), 1000)
 					}
 				})
 			})

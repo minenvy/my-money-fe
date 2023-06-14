@@ -5,6 +5,7 @@ import Loading from '@/components/loading'
 import Person from './person'
 import ProposersList from './proposers-list'
 import { useParams } from 'react-router-dom'
+import NoData from '@/components/empty'
 
 const shadowBoxStyles = {
 	margin: '0.25rem 0',
@@ -35,8 +36,14 @@ function Follow(props: IProps) {
 		`/user/get-${type}/` + id
 	) as IData
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return null
+	const hasNoData = data === undefined || data === null
+	if (hasNoData)
+		return (
+			<>
+				{isLoading && <Loading />}
+				<NoData />
+			</>
+		)
 
 	return (
 		<Wrapper>

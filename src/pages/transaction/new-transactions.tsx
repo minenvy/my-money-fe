@@ -1,6 +1,6 @@
 import { Button, message } from 'antd'
 import styled from 'styled-components'
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import Transaction from './transaction'
 import { postFetch } from '@/api/fetch'
@@ -41,42 +41,8 @@ function NewTransactions() {
 		'/transaction/draft'
 	) as IData
 	const { moneyInTypes } = useMoneyType()
-	const [transactions, setTransactions] = useState<Array<ITransaction>>()
-	const [isPosting, setIsPosting] = useState(false)
-	const imagesRef = useRef<HTMLInputElement>(null)
-	const [isExtractedImages, setIsExtractedImages] = useState(isUploading)
-
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return null
-	if (
-		data.length > 0 &&
-		(transactions === undefined || data.length !== transactions.length)
-	)
-		setTransactions(data)
-	if (
-		(data.length === 0 && transactions === undefined) ||
-		transactions?.length === 0
-	)
-		setTransactions([
-			{
-				id: uuid(),
-				money: 0,
-				walletName: money[0].name,
-				type: 'anuong',
-				createdAt: new Date(),
-				note: '',
-				image: '',
-				accessPermission: 'private',
-			},
-		])
-	if (transactions === undefined) return null
-	if (isExtractedImages !== isUploading) {
-		if (isExtractedImages) refetch()
-		setIsExtractedImages(isUploading)
-	}
-
-	const addDraft = (draft?: ITransaction) => {
-		const nullDraft: ITransaction = {
+	const defaultTransaction: ITransaction = useMemo(() => {
+		return {
 			id: uuid(),
 			money: 0,
 			walletName: money[0].name,
@@ -86,7 +52,39 @@ function NewTransactions() {
 			image: '',
 			accessPermission: 'private',
 		}
-		const newTransaction: ITransaction = draft || nullDraft
+	}, [])
+	const [transactions, setTransactions] = useState<Array<ITransaction>>([
+		defaultTransaction,
+	])
+	const [isPosting, setIsPosting] = useState(false)
+	const imagesRef = useRef<HTMLInputElement>(null)
+	const [isExtractedImages, setIsExtractedImages] = useState(isUploading)
+
+	if (transactions.length === 0) setTransactions([defaultTransaction])
+	if (isExtractedImages !== isUploading) {
+		setIsExtractedImages(isUploading)
+		refetch()
+	}
+	if (
+		data &&
+		data.length > 0 &&
+		(transactions[0].id === defaultTransaction.id ||
+			transactions[transactions.length - 1].id !== data[data.length - 1].id)
+	)
+		setTransactions(data)
+
+	const addDraft = (draft?: ITransaction) => {
+		const defaultAddedTransaction: ITransaction = {
+			id: uuid(),
+			money: 0,
+			walletName: money[0].name,
+			type: 'anuong',
+			createdAt: new Date(),
+			note: '',
+			image: '',
+			accessPermission: 'private',
+		}
+		const newTransaction: ITransaction = draft || defaultAddedTransaction
 		setTransactions([...transactions, newTransaction])
 	}
 	const updateDraft = (id: string, draft: ITransaction) => {
@@ -112,7 +110,9 @@ function NewTransactions() {
 		}
 		const images = await Promise.all(
 			transactions.map((item) =>
-				item?.image ? uploadImageToServer(item.image as File) : ''
+				typeof item?.image === 'string'
+					? item.image
+					: uploadImageToServer(item.image as File)
 			)
 		).then((image) => image || '')
 		const urls = transactions.map((item, index) =>
@@ -172,6 +172,7 @@ function NewTransactions() {
 
 	return (
 		<Wrapper>
+			{isLoading && <Loading />}
 			<HeaderWrapper>
 				<HeaderTitle>Thêm giao dịch</HeaderTitle>
 			</HeaderWrapper>

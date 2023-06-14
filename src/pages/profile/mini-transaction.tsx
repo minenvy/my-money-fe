@@ -44,16 +44,26 @@ function MiniTransaction() {
 
 	if (user.id === id) return <MainContent />
 
-	const { data, isLoading } = useFetch(
+	const {
+		data = {
+			isFollowed: false,
+		},
+		isLoading,
+	} = useFetch(
 		`check follow ${id}`,
 		'/user/check-follow/' + id
 	) as IFollowStatus
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return null
-	if (!data.isFollowed) return <StyledP>Bạn chưa follow người dùng này</StyledP>
-
-	return <MainContent />
+	return (
+		<>
+			{isLoading && <Loading />}
+			{data.isFollowed ? (
+				<MainContent />
+			) : (
+				<StyledP>Bạn chưa follow người dùng này</StyledP>
+			)}
+		</>
+	)
 }
 
 function MainContent() {
@@ -67,12 +77,12 @@ function MainContent() {
 	const [isFetching, setIsFetching] = useState(false)
 	const offset = useRef(0)
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return null
-	if (data.length === 0)
+	const hasNoData = data === undefined || data === null || data.length === 0
+	if (hasNoData)
 		return (
 			<Wrapper>
 				<ShadowBox style={shadowBoxStyles}>
+					{isLoading && <Loading />}
 					<NoData />
 				</ShadowBox>
 			</Wrapper>

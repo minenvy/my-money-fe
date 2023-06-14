@@ -1,7 +1,7 @@
 import { domain } from "@/constants/env"
 import { message } from "antd"
 
-const IGNORE_ERROR_MESSAGE_URLS = ['/user/get-by-token', '/notification/read']
+const IGNORE_ERROR_MESSAGE_URLS = ['/user/get-by-token', '/notification/read', '/image/extract', '/image/upload']
 
 function checkIgnorePath(path: string) {
   return IGNORE_ERROR_MESSAGE_URLS.some(url => path.includes(url))
@@ -52,7 +52,7 @@ async function postFetch(path: string, body: any, signal?: any) {
     message.warning(data.message)
     return null
   }
-  if (data.message) {
+  if (data.message && !checkIgnorePath(path)) {
     message.success(data.message)
   }
   return data
@@ -78,7 +78,7 @@ async function uploadImage(path: string, file: File, signal?: any) {
     message.warning(data.message)
     return null
   }
-  message.success(data.message)
+  if (!checkIgnorePath(path)) message.success(data.message)
   return data.image
 }
 

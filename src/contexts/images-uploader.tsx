@@ -32,6 +32,7 @@ function ImagesUploadProvider({ children }: IImagesProps) {
 			compressPromises.push(compressImage(file))
 		}
 
+		let haveSuccessImage = false
 		Promise.allSettled(compressPromises)
 			.then((settledFiles) => {
 				settledFiles.forEach((settledObject) => {
@@ -42,17 +43,20 @@ function ImagesUploadProvider({ children }: IImagesProps) {
 			})
 			.then(() => {
 				Promise.allSettled(processImagePromises).then((settledImages) => {
-					const haveSuccessImage = settledImages.find(
+					haveSuccessImage = settledImages.some(
 						(item) => item.status === 'fulfilled' && item.value !== null
 					)
-					if (haveSuccessImage) {
-						message.info('Bạn có 1 bản nháp giao dịch!')
-					}
 				})
 			})
 			.catch((err) => console.log(err))
 			.finally(() => {
-				setTimeout(() => setIsLoading(false), 3000)
+				setTimeout(() => {
+					if (haveSuccessImage) {
+						message.info('Bạn có 1 bản nháp giao dịch!')
+						haveSuccessImage = false
+					}
+					setIsLoading(false)
+				}, 3000)
 			})
 	}
 

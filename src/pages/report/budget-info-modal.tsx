@@ -184,13 +184,14 @@ function MultipleDatasetLineChart(props: IMultipleDatasetLineChartProps) {
 		'/budget/get-day-expense/' + id
 	) as IData
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return null
-	if (data.length === 0)
+	if (data === undefined || data === null || data.length === 0)
 		return (
-			<Typography.Text>
-				Hiện tại bạn chưa có tiêu dùng nào trong ngân sách này
-			</Typography.Text>
+			<>
+				{isLoading && <Loading />}
+				<Typography.Text>
+					Hiện tại bạn chưa có tiêu dùng nào trong ngân sách này
+				</Typography.Text>
+			</>
 		)
 
 	const dataLength = data.length

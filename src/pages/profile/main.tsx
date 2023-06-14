@@ -25,16 +25,19 @@ interface IData {
 function Main() {
 	const { id = '' } = useParams()
 	const { user } = useAuth()
-	const { data, isLoading } = useFetch(
-		`check block ${id}`,
-		`/user/check-block/${id}/${user.id}`,
-		[id]
-	) as IData
+	const {
+		data = {
+			isBlocked: false,
+		},
+		isLoading,
+	} = useFetch(`check block ${id}`, `/user/check-block/${id}/${user.id}`, [
+		id,
+		user.id,
+	]) as IData
 	const [activeKeyTab, setActiveKeyTab] = useState(profileTabs[0].key)
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return null
-	if (user.id !== id && data.isBlocked)
+	const isBlocked = data === null || (user.id !== id && data.isBlocked)
+	if (isBlocked)
 		return (
 			<Wrapper>
 				<StyledP>{`Bạn đã bị block bởi người dùng này!`}</StyledP>
@@ -51,6 +54,7 @@ function Main() {
 
 	return (
 		<Wrapper>
+			{isLoading && <Loading />}
 			<Tabs
 				centered
 				items={tabItems}

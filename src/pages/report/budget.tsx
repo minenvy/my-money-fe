@@ -3,8 +3,8 @@ import ListItem from '@/components/list-item'
 import ShadowBox from '@/components/shadow-box'
 import getRemainingDays from '@/utilities/get-remaining-days-in-month'
 import formatMoney from '@/utilities/money-format'
-import { PlusOutlined } from '@ant-design/icons'
-import { Avatar, FloatButton, Modal, Spin, Typography } from 'antd'
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
+import { Avatar, FloatButton, Input, Modal, Spin, Typography } from 'antd'
 import styled from 'styled-components'
 import BudgetInfoModal from './budget-info-modal'
 import useWindowSize from '@/hooks/use-window-size'
@@ -57,22 +57,28 @@ function Budgets() {
 	) as IData
 	const [budgets, setBudgets] = useState<Array<IBudget>>()
 	const [isFetching, setIsFetching] = useState(false)
+	const [searchKey, setSearchKey] = useState('')
 	const offset = useRef(0)
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return null
-	if (budgets === undefined) setBudgets(data)
-
-	const hasData = data.length > 0
-	if (!hasData)
+	const hasNoData = data === undefined || data === null || data.length === 0
+	if (hasNoData)
 		return (
 			<Wrapper>
 				<ShadowBox>
+					{isLoading && <Loading />}
 					<NoData />
 				</ShadowBox>
 			</Wrapper>
 		)
 
+	if (budgets === undefined) setBudgets(data)
+	const filteredBudgets = budgets?.filter((budget) =>
+		budget.name.includes(searchKey)
+	)
+
+	const changeSearchKey = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setSearchKey(e.target.value)
+	}
 	const onScroll = async (e: React.UIEvent<HTMLElement, UIEvent>) => {
 		if (
 			e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
@@ -91,8 +97,16 @@ function Budgets() {
 
 	return (
 		<Wrapper>
+			<Search>
+				<StyledSearch
+					prefix={<SearchOutlined />}
+					placeholder="Tìm kiếm theo tên ..."
+					value={searchKey}
+					onChange={changeSearchKey}
+				/>
+			</Search>
 			<VirtualList
-				data={budgets || []}
+				data={filteredBudgets || []}
 				height={ContainerHeight}
 				itemHeight={ItemHeight}
 				itemKey="id"
@@ -172,7 +186,7 @@ function BudgetDetail(props: IDetailProps) {
 	}
 
 	return (
-		<DetailWrapper onClick={handleClick}>
+		<div onClick={handleClick}>
 			<ShadowBox>
 				<ListItem
 					title={name}
@@ -198,7 +212,7 @@ function BudgetDetail(props: IDetailProps) {
 					</Typography.Text>
 				</DueDate>
 			</ShadowBox>
-		</DetailWrapper>
+		</div>
 	)
 }
 
@@ -225,6 +239,15 @@ const DueDate = styled.div`
 	justify-content: space-between;
 	margin-top: 0.25rem;
 `
-const DetailWrapper = styled.div``
+const Search = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+`
+const StyledSearch = styled(Input)`
+	margin: 0.5rem 0;
+	width: 100%;
+	max-width: 30rem;
+`
 
 export default Budget

@@ -36,6 +36,8 @@ function Wallet() {
 		year: today.getFullYear(),
 	})
 
+	if (!wallet.id && money[0].id) setWallet(money[0])
+
 	const walletOptions = money.map((money) => {
 		const name = money.name
 		return { value: name, label: name }
@@ -110,22 +112,13 @@ function MainContent(props: IMainContentProps) {
 	) as IData
 	const { icons, moneyInTypes, valueToLabel } = useMoneyType()
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null)
+	if (data === undefined || data === null || data.length === 0)
 		return (
 			<ShadowBox>
+				{isLoading && <Loading />}
 				<NoData />
 			</ShadowBox>
 		)
-
-	const hasData = data.length > 0
-	if (!hasData) {
-		return (
-			<ShadowBox>
-				<NoData />
-			</ShadowBox>
-		)
-	}
 
 	let totalMoneyIn = 0
 	let totalMoneyOut = 0
@@ -196,7 +189,8 @@ function MainContent(props: IMainContentProps) {
 									money={totalMoney}
 								/>
 								{dayStatis.map((item: ITransaction) => {
-									const icon = icons.find((ic) => ic.value === item.type)?.icon
+									const icon =
+										icons.find((ic) => ic.value === item.type)?.icon || ''
 									const title = valueToLabel(item.type)
 									const date = new Date(item.createdAt).toLocaleDateString(
 										'en-GB'

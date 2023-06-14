@@ -29,17 +29,20 @@ interface IMoneyProviderProps {
 }
 
 export default function MoneyProvider({ children }: IMoneyProviderProps) {
-	const { data } = useFetch(
-		'get all wallet',
-		'/wallet/get-all-wallet'
-	) as IData
-	const [money, setMoney] = useState<Array<IMoney>>([])
+	const { data } = useFetch('get all wallet', '/wallet/get-all-wallet') as IData
+	const [money, setMoney] = useState<Array<IMoney>>([
+		{
+			id: '',
+			name: '',
+			total: 0,
+		},
+	])
 	const { showBoundary } = useErrorBoundary()
 
 	useEffect(() => {
 		if (data === null)
 			showBoundary(new Error('Lỗi lấy thông tin tiền trong ví'))
-		if (data && money.length === 0) setMoney(data)
+		if (data) setMoney(data)
 	}, [data])
 
 	const changeMoney = (newMoney: IMoney) => {

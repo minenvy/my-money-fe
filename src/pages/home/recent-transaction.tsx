@@ -9,6 +9,7 @@ import { Avatar, Modal, Typography } from 'antd'
 import Loading from '@/components/loading'
 import styled from 'styled-components'
 import { imagesDir } from '@/constants/env'
+import NoData from '@/components/empty'
 
 interface IData {
 	isLoading: boolean
@@ -39,10 +40,14 @@ function RecentTransaction() {
 	) as IData
 	const { icons, moneyInTypes, valueToLabel } = useMoneyType()
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return null
-	const hasData = data && data.length > 0
-	if (!hasData) return null
+	const hasNoData = data === undefined || data === null || data.length === 0
+	if (hasNoData)
+		return (
+			<>
+				{isLoading && <Loading />}
+				<NoData />
+			</>
+		)
 
 	const handleClick = () => {
 		navigate('/wallet')

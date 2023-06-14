@@ -75,11 +75,14 @@ function MainReport(props: IProps) {
 	) as IData
 	const { icons, moneyInTypes, moneyOutTypes, valueToLabel } = useMoneyType()
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return <NoData hasButton />
-
-	const hasData = data.length > 0
-	if (!hasData) return <NoData hasButton />
+	const hasNoData = data === undefined || data === null || data.length === 0
+	if (hasNoData)
+		return (
+			<>
+				{isLoading && <Loading />}
+				<NoData hasButton />
+			</>
+		)
 
 	const barLabel =
 		filterOptions.find((option) => option.value === selectedOption)?.label || ''

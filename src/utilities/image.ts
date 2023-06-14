@@ -1,5 +1,4 @@
 import { uploadImage } from "@/api/fetch"
-import { message } from "antd"
 import Compressor from "compressorjs"
 
 export function compressImage(file: File): Promise<File> {
@@ -10,6 +9,7 @@ export function compressImage(file: File): Promise<File> {
         resolve(new File([result], file.name, { type: result.type }))
       },
       error(err) {
+        console.log(err)
         reject(err)
       },
     })
@@ -18,7 +18,7 @@ export function compressImage(file: File): Promise<File> {
 
 export async function uploadImageToServer(image: File) {
   const compressedImage = (await compressImage(image).catch(() => {
-    message.warning('Có lỗi xảy ra, vui lòng thử lại sau!')
+    console.log('Lỗi nén ảnh')
     return
   })) as File
   if (!compressedImage) return ''

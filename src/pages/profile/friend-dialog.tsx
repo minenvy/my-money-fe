@@ -28,9 +28,8 @@ function FriendDialog(props: IProps) {
 	const [isBlockedThisUser, setIsBlockedThisUser] = useState<boolean>()
 	const [isFetching, setIsFetching] = useState(false)
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return null
-	if (isBlockedThisUser === undefined) setIsBlockedThisUser(data.isBlocked)
+	if (data && isBlockedThisUser === undefined)
+		setIsBlockedThisUser(data.isBlocked)
 
 	const block = async () => {
 		const res = await postFetch('/user/block', {
@@ -49,6 +48,7 @@ function FriendDialog(props: IProps) {
 
 	return (
 		<Wrapper>
+			{isLoading && <Loading />}
 			<CenterContent>
 				<StyledButton
 					block

@@ -9,6 +9,7 @@ import { postFetch } from '@/api/fetch'
 import useMoneyType from '@/hooks/use-money-type'
 import { uploadImageToServer } from '@/utilities/image'
 import { useMoneyContext } from '@/contexts/money'
+import { v4 as uuid } from 'uuid'
 
 const { confirm } = Modal
 
@@ -35,7 +36,7 @@ function TransactionEditor() {
 	) as IData
 	const { moneyInTypes } = useMoneyType()
 	const [transaction, setTransaction] = useState<ITransaction>({
-		id: '',
+		id: uuid(),
 		money: 0,
 		walletName: money[0].name,
 		type: 'anuong',

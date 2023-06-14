@@ -23,21 +23,27 @@ interface IData {
 		followings: number
 	}
 }
+const defaultProfileData = {
+	username: '',
+	nickname: '',
+	bio: '',
+	image: '',
+	transactions: [],
+	followers: 0,
+	followings: 0,
+}
 
 function OwnerHeaderProfile() {
 	const navigate = useNavigate()
 	const { id } = useParams()
 	const windowSize = useWindowSize()
-	const { data, isLoading } = useFetch(
+	const { data = defaultProfileData, isLoading } = useFetch(
 		'my header profile',
 		'/user/get-by-id/' + id
 	) as IData
 	const [isShowedDialog, setIsShowedDialog] = useState(false)
 
 	const isInMobile = windowSize <= 768
-
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return null
 
 	const redirectToEdit = () => {
 		navigate('/profile/edit-profile')
@@ -49,6 +55,7 @@ function OwnerHeaderProfile() {
 
 	return (
 		<header>
+			{isLoading && <Loading />}
 			<Wrapper>
 				<AvatarBox>
 					<AvatarBoundary>

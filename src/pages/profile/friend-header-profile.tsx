@@ -33,6 +33,16 @@ interface IFollowStatus {
 	}
 }
 
+const defaultProfileData = {
+	username: '',
+	nickname: '',
+	bio: '',
+	image: '',
+	transactions: [],
+	followers: 0,
+	followings: 0,
+}
+
 function FriendHeaderProfile() {
 	const { id } = useParams()
 	const { user } = useAuth()
@@ -44,22 +54,15 @@ function FriendHeaderProfile() {
 		`check follow ${id}`,
 		'/user/check-follow/' + id
 	) as IFollowStatus
-	const { data, isLoading } = useFetch(
+	const { data = defaultProfileData, isLoading } = useFetch(
 		'friend header profile',
 		'/user/get-by-id/' + id
 	) as IData
 
 	const isInMobile = windowSize <= 768
 
-	if (isLoading || followStatus.isLoading) return <Loading />
-	if (
-		data === undefined ||
-		data === null ||
-		followStatus.data === undefined ||
-		followStatus.data === null
-	)
-		return null
-	if (isFollowed === undefined) setIsFollowed(followStatus.data.isFollowed)
+	if (followStatus.data && isFollowed === undefined)
+		setIsFollowed(followStatus.data.isFollowed)
 
 	const follow = async () => {
 		const res = await postFetch('/user/follow', {
@@ -85,6 +88,7 @@ function FriendHeaderProfile() {
 
 	return (
 		<header>
+			{(isLoading || followStatus.isLoading) && <Loading />}
 			<Wrapper>
 				<AvatarBox>
 					<AvatarBoundary>

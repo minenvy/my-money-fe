@@ -98,14 +98,16 @@ function ModalContent(props: IModalContentProps) {
 	) as IData
 	const { icons, moneyInTypes, valueToLabel } = useMoneyType()
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null)
+	if (data === undefined || data === null || data.length === 0)
 		return (
-			<Empty
-				image={Empty.PRESENTED_IMAGE_SIMPLE}
-				imageStyle={{ height: 60 }}
-				description="Chưa có dữ liệu"
-			/>
+			<>
+				{isLoading && <Loading />}
+				<Empty
+					image={Empty.PRESENTED_IMAGE_SIMPLE}
+					imageStyle={{ height: 60 }}
+					description="Chưa có dữ liệu"
+				/>
+			</>
 		)
 
 	const detail: Array<{
@@ -149,6 +151,7 @@ function ModalContent(props: IModalContentProps) {
 
 				return (
 					<ListItem
+						key={transaction.type}
 						title={title}
 						icon={icon}
 						moreDetail={formatMoney(transaction.money)}

@@ -88,10 +88,10 @@ function MainReport(props: IMainReportContentProps) {
 	) as IData
 	const { moneyInTypes } = useMoneyType()
 
-	if (isLoading) return <Loading />
 	if (data === undefined || data === null)
 		return (
 			<ShadowBox>
+				{isLoading && <Loading />}
 				<NoData />
 			</ShadowBox>
 		)
@@ -125,7 +125,7 @@ function MainReport(props: IMainReportContentProps) {
 		})
 		report.push(monthReport)
 	}
-
+	console.log(report)
 	return (
 		<ShadowBox>
 			<FlexBox>

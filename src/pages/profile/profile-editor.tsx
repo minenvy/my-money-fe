@@ -29,7 +29,7 @@ function ProfileEditor() {
 
 	if (user.nickname && nickname === undefined) {
 		setNickname(user.nickname)
-		setBio(user?.bio)
+		setBio(user?.bio || '')
 	}
 
 	const openImageLibrary = () => {

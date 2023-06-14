@@ -10,10 +10,11 @@ function Loading() {
 }
 
 const Wrapper = styled.div`
+	position: absolute;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-  margin-top: 2rem;
+	margin-top: 2rem;
 	padding: 3rem;
 `
 

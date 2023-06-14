@@ -44,7 +44,7 @@ function MainLayout() {
 				<Content>
 					<MoneyProvider>
 						<Outlet />
-						{!user.nickname && <FirstLoginSteps />}
+						{user.nickname === 'Not Have Nickname' && <FirstLoginSteps />}
 					</MoneyProvider>
 				</Content>
 			</Main>

@@ -72,9 +72,14 @@ function MainContent(props: IProps) {
 		setProposers(data)
 	}
 
-	if (isLoading) return <Loading />
-	if (data === undefined || data === null) return null
-	if (data.length === 0) return <NoData />
+	const hasNoData = data === undefined || data === null || data.length === 0
+	if (hasNoData)
+		return (
+			<>
+				{isLoading && <Loading />}
+				<NoData />
+			</>
+		)
 	if (proposers === undefined) setProposers(data)
 
 	const onScroll = async (e: React.UIEvent<HTMLElement, UIEvent>) => {

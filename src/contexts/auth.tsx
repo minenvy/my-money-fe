@@ -8,8 +8,8 @@ import Loading from '@/components/loading'
 interface IUserInfo {
 	id: string
 	nickname: string
-	image: string
-	bio: string
+	image?: string
+	bio?: string
 }
 
 interface INewUserInfo {
@@ -43,7 +43,10 @@ interface IAuthProviderProps {
 
 export default function AuthProvider({ children }: IAuthProviderProps) {
 	const { data, isLoading } = useFetch('auth', '/user/get-by-token') as IData
-	const [user, setUser] = useState<IUserInfo>()
+	const [user, setUser] = useState<IUserInfo>({
+		id: '',
+		nickname: '',
+	})
 	const navigate = useNavigate()
 	const location = useLocation()
 
@@ -52,7 +55,6 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
 		if (data === null) {
 			removeLoginState()
 			navigate('/login')
-			changeInfo(null)
 			return
 		}
 		const isInNotLoggedInPage =
@@ -64,9 +66,6 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
 		setLoginState()
 		changeInfo(data)
 	}, [data])
-
-	if (isLoading) return <Loading />
-	if (user === undefined) return null
 
 	function changeInfo(newUser: INewUserInfo | null) {
 		setUser({ ...user, ...newUser } as IUserInfo)
@@ -97,6 +96,7 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
 				changeInfo,
 			}}
 		>
+			{isLoading && <Loading />}
 			{children}
 		</AuthContext.Provider>
 	)

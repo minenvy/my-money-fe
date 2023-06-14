@@ -43,7 +43,7 @@ function Register() {
 		})
 		if (res === null) return
 
-		register(res)
+		register({ ...res, nickname: 'Not Have Nickname' })
 		navigate('/')
 	}
 	const handleSubmit = async () => {

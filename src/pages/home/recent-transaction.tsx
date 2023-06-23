@@ -43,10 +43,11 @@ function RecentTransaction() {
 	const hasNoData = data === undefined || data === null || data.length === 0
 	if (hasNoData)
 		return (
-			<>
+			<ShadowBox>
 				{isLoading && <Loading />}
+				<Typography.Title level={5}>Giao dịch gần đây</Typography.Title>
 				<NoData />
-			</>
+			</ShadowBox>
 		)
 
 	const handleClick = () => {

@@ -157,7 +157,9 @@ function WalletModal(props: IWalletModalProps) {
 				open={isEditingWallet}
 				onCancel={() => setIsEditingWallet(false)}
 				footer={[
-					<PopDeleteConfirm onDelete={handleClickDeleteWallet} />,
+					editingWallet.name !== 'Tiền mặt' && (
+						<PopDeleteConfirm onDelete={handleClickDeleteWallet} />
+					),
 					<Button type="primary" onClick={() => setIsEditingWallet(false)}>
 						Ok
 					</Button>,

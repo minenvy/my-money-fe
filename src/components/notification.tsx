@@ -57,13 +57,7 @@ function Notification() {
 		})
 	}, [socket])
 
-	if (data === undefined || data === null || data.length === 0)
-		return (
-			<>
-				{isLoading && <Loading />}
-				<NoData />
-			</>
-		)
+	if (data === undefined || data === null) return
 	if (notifications.length === 0 && data.length > 0) setNotifications(data)
 
 	const numberOfNotification = notifications.reduce(

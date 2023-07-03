@@ -11,7 +11,7 @@ import styled from 'styled-components'
 import { imagesDir } from '@/constants/env'
 import NoData from '@/components/empty'
 
-interface IData {
+interface FetchData {
 	isLoading: boolean
 	data: Array<{
 		id: string
@@ -22,7 +22,7 @@ interface IData {
 		image?: string
 	}>
 }
-interface IModal {
+interface Modal {
 	id: string
 	icon: string
 	title: string
@@ -37,7 +37,7 @@ function RecentTransaction() {
 	const { data, isLoading } = useFetch(
 		'recent transaction',
 		'/transaction/recent'
-	) as IData
+	) as FetchData
 	const { icons, moneyInTypes, valueToLabel } = useMoneyType()
 
 	const hasNoData = data === undefined || data === null || data.length === 0
@@ -53,7 +53,7 @@ function RecentTransaction() {
 	const handleClick = () => {
 		navigate('/wallet')
 	}
-	const showMoreDetail = (detail: IModal) => {
+	const showMoreDetail = (detail: Modal) => {
 		const modal = Modal.info({
 			icon: <Avatar src={detail.icon} />,
 			title: detail.title,

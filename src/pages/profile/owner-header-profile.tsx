@@ -9,9 +9,9 @@ import OwnerDialog from './owner-dialog'
 import useFetch from '@/hooks/use-fetch'
 import Loading from '@/components/loading'
 import { profileMenuIcon } from '@/constants/profile'
-import default_avatar from '@/assets/default_avatar.jpg'
+import default_avatar from '@/assets/images/default_avatar.jpg'
 
-interface IData {
+interface FetchData {
 	isLoading: boolean
 	data: {
 		username: string
@@ -40,7 +40,7 @@ function OwnerHeaderProfile() {
 	const { data = defaultProfileData, isLoading } = useFetch(
 		'my header profile',
 		'/user/get-by-id/' + id
-	) as IData
+	) as FetchData
 	const [isShowedDialog, setIsShowedDialog] = useState(false)
 
 	const isInMobile = windowSize <= 768

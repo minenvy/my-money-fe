@@ -17,12 +17,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
-interface IProps {
+type Props = {
 	open: boolean
 	close: Function
 }
 
-function NewBudgetModal(props: IProps) {
+function NewBudgetModal(props: Props) {
 	const { open, close } = props
 	const navigate = useNavigate()
 	const { moneyOutTypes, moneyTypeCheckboxOptions } = useMoneyType()

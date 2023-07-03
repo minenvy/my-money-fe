@@ -1,36 +1,24 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import useFetch from '@/hooks/use-fetch'
 import { useErrorBoundary } from './error-fetch-boundary'
+import { FetchData, Money, MoneyContext } from '@/interfaces/money-context'
 
-interface IMoney {
-	id: string
-	name: string
-	total: number
-}
-
-interface IData {
-	data: Array<IMoney>
-}
-
-interface IMoneyContext {
-	money: Array<IMoney>
-	changeMoney: Function
-	deleteMoney: Function
-}
-
-const MoneyContext = createContext<IMoneyContext | null>(null)
+const MoneyContext = createContext<MoneyContext | null>(null)
 
 export function useMoneyContext() {
-	return useContext(MoneyContext) as IMoneyContext
+	return useContext(MoneyContext) as MoneyContext
 }
 
-interface IMoneyProviderProps {
+type MoneyProviderProps = {
 	children: React.ReactNode
 }
 
-export default function MoneyProvider({ children }: IMoneyProviderProps) {
-	const { data } = useFetch('get all wallet', '/wallet/get-all-wallet') as IData
-	const [money, setMoney] = useState<Array<IMoney>>([
+export default function MoneyProvider({ children }: MoneyProviderProps) {
+	const { data } = useFetch(
+		'get all wallet',
+		'/wallet/get-all-wallet'
+	) as FetchData
+	const [money, setMoney] = useState<Array<Money>>([
 		{
 			id: '',
 			name: '',
@@ -45,7 +33,7 @@ export default function MoneyProvider({ children }: IMoneyProviderProps) {
 		if (data) setMoney(data)
 	}, [data])
 
-	const changeMoney = (newMoney: IMoney) => {
+	const changeMoney = (newMoney: Money) => {
 		setMoney((preState) => {
 			if (preState.length === 0) return [newMoney]
 			const nowMoney = preState.find((money) => money.name === newMoney.name)

@@ -21,17 +21,17 @@ const shadowBoxStyles = {
 	width: '100%',
 	maxWidth: '33rem',
 }
-interface ITransaction {
+interface Transaction {
 	id: string
 	money: number
 	type: string
 	createdAt: string | Date
 }
-interface IData {
+interface FetchData {
 	isLoading: boolean
-	data: Array<ITransaction>
+	data: Array<Transaction>
 }
-interface IFollowStatus {
+interface FollowStatus {
 	isLoading: boolean
 	data: {
 		isFollowed: boolean
@@ -49,10 +49,7 @@ function MiniTransaction() {
 			isFollowed: false,
 		},
 		isLoading,
-	} = useFetch(
-		`check follow ${id}`,
-		'/user/check-follow/' + id
-	) as IFollowStatus
+	} = useFetch(`check follow ${id}`, '/user/check-follow/' + id) as FollowStatus
 
 	return (
 		<>
@@ -71,9 +68,9 @@ function MainContent() {
 	const { data, isLoading } = useFetch(
 		`transactions ${id}`,
 		`/transaction/get-infinite/${id}/0`
-	) as IData
+	) as FetchData
 	const { icons, valueToLabel } = useMoneyType()
-	const [transactions, setTransactions] = useState<Array<ITransaction>>()
+	const [transactions, setTransactions] = useState<Array<Transaction>>()
 	const [isFetching, setIsFetching] = useState(false)
 	const offset = useRef(0)
 
@@ -100,7 +97,7 @@ function MainContent() {
 			)
 			if (res === null) return
 			offset.current += Offset
-			setTransactions([...(transactions as Array<ITransaction>), ...res])
+			setTransactions([...(transactions as Array<Transaction>), ...res])
 			setIsFetching(false)
 		}
 	}

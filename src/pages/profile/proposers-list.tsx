@@ -15,16 +15,16 @@ const ContainerHeight = 350
 const ItemHeight = 72
 const Offset = 15
 
-interface IPerson {
+interface Friend {
 	id: string
 	nickname: string
 	image: string
 	bio: string
 	isFollowed: boolean
 }
-interface IData {
+interface FetchData {
 	isLoading: boolean
-	data: Array<IPerson>
+	data: Array<Friend>
 }
 
 function ProposersList() {
@@ -60,8 +60,8 @@ function MainContent(props: IProps) {
 		`proposers ${id} ${search}`,
 		`/user/get-proposers/${id}/0${search ? `/${search}` : ''}`,
 		[search]
-	) as IData
-	const [proposers, setProposers] = useState<Array<IPerson>>()
+	) as FetchData
+	const [proposers, setProposers] = useState<Array<Friend>>()
 	const [isFetching, setIsFetching] = useState(false)
 	const offset = useRef(0)
 	const [previousSearch, setPreviousSearch] = useState(search)
@@ -95,7 +95,7 @@ function MainContent(props: IProps) {
 			)
 			if (res === null) return
 			offset.current += Offset
-			setProposers([...(proposers as Array<IPerson>), ...res])
+			setProposers([...(proposers as Array<Friend>), ...res])
 			setIsFetching(false)
 		}
 	}

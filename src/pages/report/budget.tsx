@@ -36,7 +36,7 @@ function Budget() {
 	)
 }
 
-interface IBudget {
+interface Budget {
 	id: string
 	name: string
 	money: number
@@ -45,17 +45,17 @@ interface IBudget {
 	endDate: Date
 	options: string
 }
-interface IData {
+interface FetchData {
 	isLoading: boolean
-	data: Array<IBudget>
+	data: Array<Budget>
 }
 
 function Budgets() {
 	const { data, isLoading } = useFetch(
 		'budgets',
 		'/budget/get-infinite/0'
-	) as IData
-	const [budgets, setBudgets] = useState<Array<IBudget>>()
+	) as FetchData
+	const [budgets, setBudgets] = useState<Array<Budget>>()
 	const [isFetching, setIsFetching] = useState(false)
 	const [searchKey, setSearchKey] = useState('')
 	const offset = useRef(0)
@@ -90,7 +90,7 @@ function Budgets() {
 			)
 			if (res === null) return
 			offset.current += Offset
-			setBudgets([...(budgets as Array<IBudget>), ...res])
+			setBudgets([...(budgets as Array<Budget>), ...res])
 			setIsFetching(false)
 		}
 	}
@@ -112,7 +112,7 @@ function Budgets() {
 				itemKey="id"
 				onScroll={onScroll}
 			>
-				{(item: IBudget) => {
+				{(item: Budget) => {
 					const { id, name, money, usedMoney, startDate, endDate, options } =
 						item
 
@@ -136,7 +136,7 @@ function Budgets() {
 	)
 }
 
-interface IDetailProps {
+type DetailProps = {
 	id: string
 	icon?: React.ReactNode
 	name: string
@@ -147,7 +147,7 @@ interface IDetailProps {
 	options: string
 }
 
-function BudgetDetail(props: IDetailProps) {
+function BudgetDetail(props: DetailProps) {
 	const { id, icon, name, startDate, endDate, totalMoney, usedMoney, options } =
 		props
 	const windowSize = useWindowSize()

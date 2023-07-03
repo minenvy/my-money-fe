@@ -1,11 +1,11 @@
 import { Button, Empty } from 'antd'
 import { useNavigate } from 'react-router-dom'
 
-interface IProps {
+type Props = {
 	hasButton?: boolean
 }
 
-function NoData(props: IProps) {
+function NoData(props: Props) {
 	const { hasButton = false } = props
 	const navigate = useNavigate()
 

@@ -12,7 +12,7 @@ const chartOptions = {
 	},
 }
 
-interface IProps {
+type Props = {
 	labels: Array<string | number>
 	moneyIn: Array<number>
 	moneyOut: Array<number>
@@ -20,7 +20,7 @@ interface IProps {
 	unit?: string
 }
 
-function BarChart(props: IProps) {
+function BarChart(props: Props) {
 	const { labels, moneyIn, moneyOut, type = 'horizontal', unit } = props
 	const options =
 		type === 'horizontal'

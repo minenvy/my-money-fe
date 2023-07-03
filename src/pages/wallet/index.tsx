@@ -18,7 +18,7 @@ import { useMoneyContext } from '@/contexts/money'
 const monthFormat = 'MM/YYYY'
 const today = new Date()
 
-interface ITransaction {
+interface Transaction {
 	id: string
 	money: number
 	walletName: string
@@ -83,16 +83,16 @@ function Wallet() {
 	)
 }
 
-interface IData {
+interface FetchData {
 	isLoading: boolean
-	data: Array<ITransaction>
+	data: Array<Transaction>
 }
-interface IMainContentProps {
+type MainContentProps = {
 	month: number
 	year: number
 	walletName: string
 }
-interface IModal {
+interface Modal {
 	id: string
 	icon: string
 	title: string
@@ -102,14 +102,14 @@ interface IModal {
 	image?: string
 }
 
-function MainContent(props: IMainContentProps) {
+function MainContent(props: MainContentProps) {
 	const { month, year, walletName } = props
 	const navigate = useNavigate()
 	const { data, isLoading } = useFetch(
 		`transactions in wallet ${month} ${year} ${walletName}`,
 		`/transaction/get-separate-in-month/${month}/${year}/${walletName}`,
 		[month, year, walletName]
-	) as IData
+	) as FetchData
 	const { icons, moneyInTypes, valueToLabel } = useMoneyType()
 
 	if (data === undefined || data === null || data.length === 0)
@@ -122,7 +122,7 @@ function MainContent(props: IMainContentProps) {
 
 	let totalMoneyIn = 0
 	let totalMoneyOut = 0
-	const monthStatist: Array<Array<ITransaction>> = []
+	const monthStatist: Array<Array<Transaction>> = []
 	const dayInMonth: Array<number> = []
 	data.forEach((item) => {
 		if (moneyInTypes.includes(item.type)) totalMoneyIn += item.money
@@ -137,7 +137,7 @@ function MainContent(props: IMainContentProps) {
 	})
 
 	const redirectToTransaction = (id: string) => navigate('/transaction/' + id)
-	const showMoreDetail = (detail: IModal) => {
+	const showMoreDetail = (detail: Modal) => {
 		const modal = Modal.confirm({
 			icon: <Avatar src={detail.icon} />,
 			title: detail.title,
@@ -188,7 +188,7 @@ function MainContent(props: IMainContentProps) {
 									time={new Date(year, month, dayInMonth[index])}
 									money={totalMoney}
 								/>
-								{dayStatis.map((item: ITransaction) => {
+								{dayStatis.map((item: Transaction) => {
 									const icon =
 										icons.find((ic) => ic.value === item.type)?.icon || ''
 									const title = valueToLabel(item.type)

@@ -13,7 +13,7 @@ import { v4 as uuid } from 'uuid'
 
 const { confirm } = Modal
 
-interface ITransaction {
+interface Transaction {
 	id: string
 	money: number
 	walletName: string
@@ -23,8 +23,8 @@ interface ITransaction {
 	image?: string | File
 	accessPermission: 'public' | 'private'
 }
-interface IData {
-	data: ITransaction
+interface FetchData {
+	data: Transaction
 }
 
 function TransactionEditor() {
@@ -33,9 +33,9 @@ function TransactionEditor() {
 	const { data } = useFetch(
 		`transaction ${id}`,
 		'/transaction/get-by-id/' + id
-	) as IData
+	) as FetchData
 	const { moneyInTypes } = useMoneyType()
-	const [transaction, setTransaction] = useState<ITransaction>({
+	const [transaction, setTransaction] = useState<Transaction>({
 		id: uuid(),
 		money: 0,
 		walletName: money[0].name,
@@ -57,7 +57,7 @@ function TransactionEditor() {
 	}
 
 	const back = () => navigate('/wallet')
-	const updateDraft = (id: string, draft: ITransaction) => {
+	const updateDraft = (id: string, draft: Transaction) => {
 		if (id !== transaction.id) return
 		setTransaction({ ...transaction, ...draft })
 	}

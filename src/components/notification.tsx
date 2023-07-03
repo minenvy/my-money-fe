@@ -6,45 +6,37 @@ import VirtualList from 'rc-virtual-list'
 import { getFetch, postFetch } from '@/api/fetch'
 import { useAuth } from '@/contexts/auth'
 import useFetch from '@/hooks/use-fetch'
-import Loading from './loading'
 import NoData from './empty'
 import socket from '@/utilities/socket'
-import default_avatar from '@/assets/default_avatar.jpg'
+import default_avatar from '@/assets/images/default_avatar.jpg'
 import { imagesDir } from '@/constants/env'
 import { useNavigate } from 'react-router-dom'
+import {
+	Notification as NotificationType,
+	FetchData,
+} from '@/interfaces/notification'
 
 const ContainerHeight = 400
 const ItemHeight = 48
 const Offset = 15
 
-interface INotification {
-	id: string
-	userId: string
-	image: string
-	message: string
-	status: 'read' | 'unread'
-	createdAt: string
-}
-interface IData {
-	isLoading: boolean
-	data: Array<INotification>
-}
-
 function Notification() {
 	const navigate = useNavigate()
 	const { user } = useAuth()
-	const { data, isLoading } = useFetch(
+	const { data } = useFetch(
 		`notification ${user.id}`,
 		`/notification/get-infinite/${user.id}/0`,
 		[user.id]
-	) as IData
-	const [notifications, setNotifications] = useState<Array<INotification>>([])
+	) as FetchData
+	const [notifications, setNotifications] = useState<Array<NotificationType>>(
+		[]
+	)
 	const [isOpened, setIsOpened] = useState(false)
 	const [isFetching, setIsFetching] = useState(false)
 	const offset = useRef(0)
 
 	useEffect(() => {
-		socket.on('notification', (data: INotification) => {
+		socket.on('notification', (data: NotificationType) => {
 			if (notifications === undefined) return
 			setNotifications((preState) => {
 				const isHadThisNotification = notifications.find(
@@ -113,7 +105,7 @@ function Notification() {
 				<NotificationBox>
 					{notifications.length > 0 ? (
 						<VirtualList
-							data={notifications as Array<INotification>}
+							data={notifications as Array<NotificationType>}
 							height={ContainerHeight}
 							itemHeight={ItemHeight}
 							itemKey="id"

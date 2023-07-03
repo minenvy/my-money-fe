@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 
 const CACHE_TO_LOCAL_STORAGE_URLS = ['money types']
 
-interface IError {
+type Error = {
   message: string
 }
 
@@ -48,7 +48,7 @@ function useFetch(
             if (CACHE_TO_LOCAL_STORAGE_URLS.includes(key)) localStorage.setItem(key, JSON.stringify(fetchData))
           }
         } catch (err) {
-          const knownError = err as IError
+          const knownError = err as Error
           if (knownError.message === 'server error') errorBoundary.showBoundary(knownError)
         } finally {
           setIsLoading(false)
@@ -70,7 +70,7 @@ function useFetch(
         return { ...preState, [key]: fetchData }
       })
     } catch (err) {
-      const knownError = err as IError
+      const knownError = err as Error
       if (knownError.message === 'server error') errorBoundary.showBoundary(knownError)
     } finally {
       setIsLoading(false)

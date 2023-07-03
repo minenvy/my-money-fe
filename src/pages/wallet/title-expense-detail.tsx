@@ -2,12 +2,12 @@ import formatMoney from '@/utilities/money-format'
 import { Typography } from 'antd'
 import styled from 'styled-components'
 
-interface IProps {
+type Props = {
 	time: Date
 	money: number
 }
 
-function TitleExpenseDetail(props: IProps) {
+function TitleExpenseDetail(props: Props) {
 	const { time, money } = props
 	const date = time.getDate()
 	const dayInWeek = time.toLocaleString('default', { weekday: 'long' })

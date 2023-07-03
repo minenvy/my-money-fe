@@ -2,7 +2,7 @@ import useWindowSize from '@/hooks/use-window-size'
 import { Avatar, Typography } from 'antd'
 import styled from 'styled-components'
 
-interface IInOutDetailProps {
+type ExpenseDetailProps = {
 	title: string
 	subTitle?: Date | string
 	icon?: React.ReactNode
@@ -11,7 +11,7 @@ interface IInOutDetailProps {
 	type?: 'in' | 'out'
 }
 
-function ListItem(props: IInOutDetailProps) {
+function ListItem(props: ExpenseDetailProps) {
 	const { icon, title, subTitle, description, moreDetail, type } = props
 	const windowSize = useWindowSize()
 

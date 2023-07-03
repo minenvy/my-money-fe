@@ -2,23 +2,19 @@ import { createContext, useContext, useState } from 'react'
 import { uploadImage } from '@/api/fetch'
 import { message } from 'antd'
 import { compressImage } from '@/utilities/image'
+import { Context } from '@/interfaces/images-uploader'
 
-interface IContext {
-	isUploading: boolean
-	uploadImages: Function
-}
-
-const ImagesContext = createContext<IContext | null>(null)
+const ImagesContext = createContext<Context | null>(null)
 
 function useImagesUpload() {
-	return useContext(ImagesContext) as IContext
+	return useContext(ImagesContext) as Context
 }
 
-interface IImagesProps {
+type ImagesProps = {
 	children: React.ReactNode
 }
 
-function ImagesUploadProvider({ children }: IImagesProps) {
+function ImagesUploadProvider({ children }: ImagesProps) {
 	const [isLoading, setIsLoading] = useState(false)
 
 	const uploadImages = async (files: Array<File>) => {

@@ -3,11 +3,11 @@ import { Button, Popconfirm } from 'antd'
 import { useState } from 'react'
 import styled from 'styled-components'
 
-interface IProps {
+type Props = {
 	onDelete: Function
 }
 
-function PopDeleteConfirm(props: IProps) {
+function PopDeleteConfirm(props: Props) {
 	const { onDelete } = props
 	const [open, setOpen] = useState(false)
 	const [isLoading, setIsLoading] = useState(false)

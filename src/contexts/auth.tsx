@@ -4,46 +4,29 @@ import useFetch from '@/hooks/use-fetch'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { getFetch } from '@/api/fetch'
 import Loading from '@/components/loading'
+import {
+	AuthContext,
+	FetchData,
+	NewUserInfo,
+	UserInfo,
+} from '@/interfaces/auth'
 
-interface IUserInfo {
-	id: string
-	nickname: string
-	image?: string
-	bio?: string
-}
-
-interface INewUserInfo {
-	nickname?: string
-	image?: string
-	bio?: string
-}
-
-interface IData {
-	isLoading: boolean
-	data: INewUserInfo
-}
-
-interface IAuthContext {
-	user: IUserInfo
-	login: Function
-	register: Function
-	logout: Function
-	changeInfo: Function
-}
-
-const AuthContext = createContext<IAuthContext | null>(null)
+const AuthContext = createContext<AuthContext | null>(null)
 
 export function useAuth() {
-	return useContext(AuthContext) as IAuthContext
+	return useContext(AuthContext) as AuthContext
 }
 
-interface IAuthProviderProps {
+type AuthProviderProps = {
 	children: React.ReactNode
 }
 
-export default function AuthProvider({ children }: IAuthProviderProps) {
-	const { data, isLoading } = useFetch('auth', '/user/get-by-token') as IData
-	const [user, setUser] = useState<IUserInfo>({
+export default function AuthProvider({ children }: AuthProviderProps) {
+	const { data, isLoading } = useFetch(
+		'auth',
+		'/user/get-by-token'
+	) as FetchData
+	const [user, setUser] = useState<UserInfo>({
 		id: '',
 		nickname: '',
 	})
@@ -67,14 +50,14 @@ export default function AuthProvider({ children }: IAuthProviderProps) {
 		changeInfo(data)
 	}, [data])
 
-	function changeInfo(newUser: INewUserInfo | null) {
-		setUser({ ...user, ...newUser } as IUserInfo)
+	function changeInfo(newUser: NewUserInfo | null) {
+		setUser({ ...user, ...newUser } as UserInfo)
 	}
-	function login(newUser: INewUserInfo) {
+	function login(newUser: NewUserInfo) {
 		setLoginState()
 		changeInfo(newUser)
 	}
-	function register(newUser: INewUserInfo) {
+	function register(newUser: NewUserInfo) {
 		setLoginState()
 		changeInfo(newUser)
 	}

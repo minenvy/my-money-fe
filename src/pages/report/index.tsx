@@ -2,10 +2,14 @@ import reportTypes from '@/constants/report'
 import { Avatar, Button, Tabs } from 'antd'
 import MoneyReportLayout from './money-report-layout'
 import useWindowSize from '@/hooks/use-window-size'
-import ngansach from '@/assets/ngansach.jpg'
+import ngansach from '@/assets/images/ngansach.jpg'
 import ShadowBox from '@/components/shadow-box'
 import styled from 'styled-components'
-import { BarChartOutlined, LeftOutlined, LineChartOutlined } from '@ant-design/icons'
+import {
+	BarChartOutlined,
+	LeftOutlined,
+	LineChartOutlined,
+} from '@ant-design/icons'
 import Budget from './budget'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -92,7 +96,9 @@ function ReportInMobile() {
 									navigate('/report/all')
 								}}
 							>
-								<BarChartOutlined style={{color: '#1890ff', fontSize: '2rem'}} />
+								<BarChartOutlined
+									style={{ color: '#1890ff', fontSize: '2rem' }}
+								/>
 								<Label>{labels[0]}</Label>
 							</StyledButton>
 						</ShadowBox>
@@ -104,7 +110,7 @@ function ReportInMobile() {
 									navigate('/report/out')
 								}}
 							>
-								<LineChartOutlined style={{color: 'red', fontSize: '2rem'}} />
+								<LineChartOutlined style={{ color: 'red', fontSize: '2rem' }} />
 								<Label>{labels[1]}</Label>
 							</StyledButton>
 						</ShadowBox>
@@ -116,7 +122,9 @@ function ReportInMobile() {
 									navigate('/report/in')
 								}}
 							>
-								<LineChartOutlined style={{color: 'green', fontSize: '2rem'}} />
+								<LineChartOutlined
+									style={{ color: 'green', fontSize: '2rem' }}
+								/>
 								<Label>{labels[2]}</Label>
 							</StyledButton>
 						</ShadowBox>
@@ -136,7 +144,10 @@ function ReportInMobile() {
 				</FlexBox>
 			) : (
 				<>
-					<Title backToHome={() => navigate('/report')} title={labels[pageId]} />
+					<Title
+						backToHome={() => navigate('/report')}
+						title={labels[pageId]}
+					/>
 					{childrenTabs[pageId]}
 				</>
 			)}

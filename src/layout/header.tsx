@@ -6,7 +6,7 @@ import { Avatar, Tooltip } from 'antd'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import default_avatar from '@/assets/default_avatar.jpg'
+import default_avatar from '@/assets/images/default_avatar.jpg'
 import socket from '@/utilities/socket'
 import Notification from '@/components/notification'
 

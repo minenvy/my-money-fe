@@ -15,7 +15,7 @@ import { uploadImageToServer } from '@/utilities/image'
 import socket from '@/utilities/socket'
 import { useMoneyContext } from '@/contexts/money'
 
-interface ITransaction {
+interface Transaction {
 	id: string
 	money: number
 	walletName: string
@@ -25,10 +25,10 @@ interface ITransaction {
 	image?: string | File
 	accessPermission: 'public' | 'private'
 }
-interface IData {
+interface FetchData {
 	isLoading: boolean
 	refetch: Function
-	data: Array<ITransaction>
+	data: Array<Transaction>
 }
 
 function NewTransactions() {
@@ -39,9 +39,9 @@ function NewTransactions() {
 	const { data, isLoading, refetch } = useFetch(
 		`draft`,
 		'/transaction/draft'
-	) as IData
+	) as FetchData
 	const { moneyInTypes } = useMoneyType()
-	const defaultTransaction: ITransaction = useMemo(() => {
+	const defaultTransaction: Transaction = useMemo(() => {
 		return {
 			id: uuid(),
 			money: 0,
@@ -53,7 +53,7 @@ function NewTransactions() {
 			accessPermission: 'private',
 		}
 	}, [])
-	const [transactions, setTransactions] = useState<Array<ITransaction>>([
+	const [transactions, setTransactions] = useState<Array<Transaction>>([
 		defaultTransaction,
 	])
 	const [isPosting, setIsPosting] = useState(false)
@@ -73,8 +73,8 @@ function NewTransactions() {
 	)
 		setTransactions(data)
 
-	const addDraft = (draft?: ITransaction) => {
-		const defaultAddedTransaction: ITransaction = {
+	const addDraft = (draft?: Transaction) => {
+		const defaultAddedTransaction: Transaction = {
 			id: uuid(),
 			money: 0,
 			walletName: money[0].name,
@@ -84,10 +84,10 @@ function NewTransactions() {
 			image: '',
 			accessPermission: 'private',
 		}
-		const newTransaction: ITransaction = draft || defaultAddedTransaction
+		const newTransaction: Transaction = draft || defaultAddedTransaction
 		setTransactions([...transactions, newTransaction])
 	}
-	const updateDraft = (id: string, draft: ITransaction) => {
+	const updateDraft = (id: string, draft: Transaction) => {
 		setTransactions(
 			transactions.map((transaction) => {
 				if (transaction.id === id) return { ...transaction, ...draft }

@@ -15,7 +15,7 @@ const tabChildren = [
 	<Follow type="followings" />,
 ]
 
-interface IData {
+interface FetchData {
 	isLoading: boolean
 	data: {
 		isBlocked: boolean
@@ -33,7 +33,7 @@ function Main() {
 	} = useFetch(`check block ${id}`, `/user/check-block/${id}/${user.id}`, [
 		id,
 		user.id,
-	]) as IData
+	]) as FetchData
 	const [activeKeyTab, setActiveKeyTab] = useState(profileTabs[0].key)
 
 	const isBlocked = data === null || (user.id !== id && data.isBlocked)

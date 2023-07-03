@@ -21,18 +21,6 @@ const today = new Date()
 const month = today.getMonth() + 1
 const year = today.getFullYear()
 
-interface ITransaction {
-	type: string
-	money: number
-}
-interface IData {
-	isLoading: boolean
-	data: Array<ITransaction>
-}
-interface IProps {
-	selectedOption: string
-}
-
 function InOutHomeReport() {
 	const navigate = useNavigate()
 	const [selectedOption, setSelectedOption] = useState(filterOptions[0].value)
@@ -61,7 +49,19 @@ function InOutHomeReport() {
 	)
 }
 
-function MainReport(props: IProps) {
+interface Transaction {
+	type: string
+	money: number
+}
+interface FetchData {
+	isLoading: boolean
+	data: Array<Transaction>
+}
+type Props = {
+	selectedOption: string
+}
+
+function MainReport(props: Props) {
 	const { selectedOption } = props
 	const isSelectMonth = selectedOption === 'month'
 	const { data, isLoading } = useFetch(
@@ -72,7 +72,7 @@ function MainReport(props: IProps) {
 			? `/transaction/get-in-month/${month}/${year}`
 			: `/transaction/get-in-year/${year}`,
 		[selectedOption]
-	) as IData
+	) as FetchData
 	const { icons, moneyInTypes, moneyOutTypes, valueToLabel } = useMoneyType()
 
 	const hasNoData = data === undefined || data === null || data.length === 0
@@ -87,19 +87,19 @@ function MainReport(props: IProps) {
 	const barLabel =
 		filterOptions.find((option) => option.value === selectedOption)?.label || ''
 	const moneyInBar = data.reduce(
-		(total: number, item: ITransaction) =>
+		(total: number, item: Transaction) =>
 			total + (moneyInTypes.includes(item.type) ? round(item.money) : 0),
 		0
 	)
 	const moneyOutBar = data.reduce(
-		(total: number, item: ITransaction) =>
+		(total: number, item: Transaction) =>
 			total + (moneyOutTypes.includes(item.type) ? round(item.money) : 0),
 		0
 	)
 
 	const mostMoneyOut = data
-		.filter((item: ITransaction) => moneyOutTypes.includes(item.type))
-		.sort((a: ITransaction, b: ITransaction) => (a.money < b.money ? 1 : -1))
+		.filter((item: Transaction) => moneyOutTypes.includes(item.type))
+		.sort((a: Transaction, b: Transaction) => (a.money < b.money ? 1 : -1))
 		.slice(0, 3)
 
 	return (
@@ -117,7 +117,7 @@ function MainReport(props: IProps) {
 				</FlexBox>
 				<FlexBox>
 					<DoughnutChart
-						detail={data.map((item: ITransaction) => {
+						detail={data.map((item: Transaction) => {
 							return {
 								label: valueToLabel(item.type),
 								data: item.money,
@@ -127,7 +127,7 @@ function MainReport(props: IProps) {
 				</FlexBox>
 			</ChartWrapper>
 			<StyledTitle level={5}>Chi tiêu nhiều nhất</StyledTitle>
-			{mostMoneyOut.map((item: ITransaction) => {
+			{mostMoneyOut.map((item: Transaction) => {
 				const icon = icons.find((ic) => ic.value === item.type)?.icon
 				const title = valueToLabel(item.type)
 				const date = isSelectMonth

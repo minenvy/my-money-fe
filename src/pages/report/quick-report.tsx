@@ -7,7 +7,7 @@ import formatMoney from '@/utilities/money-format'
 import { Avatar, Divider, Empty, Modal, Typography } from 'antd'
 import styled from 'styled-components'
 
-interface IProps {
+type Props = {
 	type: 'tháng' | 'năm'
 	title: number
 	year: number
@@ -16,7 +16,7 @@ interface IProps {
 	moneyOut?: number
 }
 
-function QuickReport(props: IProps) {
+function QuickReport(props: Props) {
 	const { type, moneyType, title, year, moneyIn, moneyOut } = props
 	const isSelectMonth = type === 'tháng'
 	const titleWithText = isSelectMonth ? 'Tháng ' + title : 'Năm ' + title
@@ -71,21 +71,21 @@ function QuickReport(props: IProps) {
 	)
 }
 
-interface ITransaction {
+interface Transaction {
 	type: string
 	money: number
 }
-interface IModalContentProps {
+type ModalContentProps = {
 	type: 'tháng' | 'năm'
 	month: number
 	year: number
 	moneyType: 'in' | 'out' | 'in and out'
 }
-interface IData {
+interface FetchData {
 	isLoading: boolean
-	data: Array<ITransaction>
+	data: Array<Transaction>
 }
-function ModalContent(props: IModalContentProps) {
+function ModalContent(props: ModalContentProps) {
 	const { type, moneyType, month, year } = props
 	const isMonthReport = type === 'tháng'
 	const { data, isLoading } = useFetch(
@@ -95,7 +95,7 @@ function ModalContent(props: IModalContentProps) {
 		isMonthReport
 			? `/transaction/get-in-month/${month}/${year}`
 			: `/transaction/get-in-year/${year}`
-	) as IData
+	) as FetchData
 	const { icons, moneyInTypes, valueToLabel } = useMoneyType()
 
 	if (data === undefined || data === null || data.length === 0)
@@ -114,7 +114,7 @@ function ModalContent(props: IModalContentProps) {
 		label: string
 		data: number
 	}> = []
-	data.forEach((item: ITransaction) => {
+	data.forEach((item: Transaction) => {
 		if (moneyType === 'in and out') {
 			detail.push({
 				label: valueToLabel(item.type),

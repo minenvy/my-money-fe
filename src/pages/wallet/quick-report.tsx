@@ -2,11 +2,11 @@ import { formatMoneyWithSign } from '@/utilities/money-format'
 import { Typography } from 'antd'
 import styled from 'styled-components'
 
-interface IProps {
+type Props = {
 	quickMoneyReport: Array<number>
 }
 
-function QuickReport(props: IProps) {
+function QuickReport(props: Props) {
 	const { quickMoneyReport } = props
 	const items = ['Tổng tiền vào', 'Tổng tiền ra', 'Tổng kết']
 

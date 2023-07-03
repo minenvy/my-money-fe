@@ -1,8 +1,8 @@
 import { useMoneyContext } from '@/contexts/money'
 import TitleOfPartContent from './title-of-each-part-content'
 import ListItem from '@/components/list-item'
-import walletImage from '@/assets/wallet.jpg'
-import coinImage from '@/assets/coin.jpg'
+import walletImage from '@/assets/images/wallet.jpg'
+import coinImage from '@/assets/images/coin.jpg'
 import formatMoney from '@/utilities/money-format'
 import ShadowBox from '@/components/shadow-box'
 import { Avatar, Button, Input, Modal, Popconfirm, message } from 'antd'
@@ -52,16 +52,16 @@ function Wallet() {
 	)
 }
 
-interface IWallet {
+interface Wallet {
 	name: string
 	total: number
 }
-interface IWalletModalProps {
-	money: Array<IWallet>
+type WalletModalProps = {
+	money: Array<Wallet>
 	changeMoney: Function
 	deleteMoney: Function
 }
-function WalletModal(props: IWalletModalProps) {
+function WalletModal(props: WalletModalProps) {
 	const { money, changeMoney, deleteMoney } = props
 	const [isAddingWallet, setIsAddingWallet] = useState(false)
 	const [isEditingWallet, setIsEditingWallet] = useState(false)
@@ -96,7 +96,7 @@ function WalletModal(props: IWalletModalProps) {
 		setIsPosting(false)
 		setIsAddingWallet(false)
 	}
-	const openWalletEditor = (wallet: IWallet) => {
+	const openWalletEditor = (wallet: Wallet) => {
 		setIsEditingWallet(true)
 		setEditingWallet(wallet)
 	}

@@ -1,24 +1,23 @@
 import { Avatar, Button, Input, Modal, Typography } from 'antd'
 import styled from 'styled-components'
-import moneyTypeImage from '@/assets/custom_money_type.jpg'
+import moneyTypeImage from '@/assets/images/custom_money_type.jpg'
 import { useState } from 'react'
 import ButtonGroup from 'antd/es/button/button-group'
 import { postFetch } from '@/api/fetch'
-import useMoneyType from '@/hooks/use-money-type'
 
-interface IMoneyType {
+interface MoneyType {
 	name: string
 	type: 'in' | 'out'
 }
-interface IProps {
+type Props = {
 	open: boolean
 	close: Function
 	addNewMoneyType: Function
 }
 
-function AddMoneyTypeModal(props: IProps) {
+function AddMoneyTypeModal(props: Props) {
 	const { open, close, addNewMoneyType } = props
-	const [moneyType, setMoneyType] = useState<IMoneyType>({
+	const [moneyType, setMoneyType] = useState<MoneyType>({
 		name: '',
 		type: 'in',
 	})

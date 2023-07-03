@@ -1,16 +1,13 @@
 import { Button, Result } from 'antd'
 import { createContext, useContext, useState } from 'react'
+import { ErrorBoundaryContext } from '@/interfaces/error-boundary'
 
-interface IErrorBoundaryContext {
-	showBoundary: Function
-}
-
-const ErrorBoundaryContext = createContext<IErrorBoundaryContext | null>(null)
+const ErrorBoundaryContext = createContext<ErrorBoundaryContext | null>(null)
 function useErrorBoundary() {
-	return useContext(ErrorBoundaryContext) as IErrorBoundaryContext
+	return useContext(ErrorBoundaryContext) as ErrorBoundaryContext
 }
 
-interface IErrorBoundaryProp {
+type ErrorBoundaryProp = {
 	children: React.ReactNode
 }
 
@@ -27,7 +24,7 @@ const ErrorElement = (
 	/>
 )
 
-function ErrorBoundary({ children }: IErrorBoundaryProp) {
+function ErrorBoundary({ children }: ErrorBoundaryProp) {
 	const [error, setError] = useState<Error>()
 
 	const showBoundary = (err: Error) => {

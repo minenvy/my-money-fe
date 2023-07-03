@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Button, message, Steps, Image, Typography, Form, Input } from 'antd'
 import styled from 'styled-components'
 import { DollarOutlined, UserOutlined } from '@ant-design/icons'
-import welcome from '@/assets/welcome.png'
+import welcome from '@/assets/images/welcome.png'
 import useWindowSize from '@/hooks/use-window-size'
 import { useAuth } from '@/contexts/auth'
 import { postFetch } from '@/api/fetch'
@@ -106,13 +106,14 @@ function Welcome() {
 	)
 }
 
-interface IInfoProps {
+type InfoProps = {
 	nickname: string
 	money: number
 	changeNickname: React.ChangeEventHandler<HTMLInputElement>
 	changeMoney: React.ChangeEventHandler<HTMLInputElement>
 }
-function Information(props: IInfoProps) {
+
+function Information(props: InfoProps) {
 	const { nickname, money, changeNickname, changeMoney } = props
 	const windowSize = useWindowSize()
 

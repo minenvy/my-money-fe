@@ -3,11 +3,11 @@ import { Button } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
-interface IProps {
+type Props = {
 	close: Function
 }
 
-function OwnerDialog(props: IProps) {
+function OwnerDialog(props: Props) {
 	const { close } = props
 	const { logout } = useAuth()
 	const navigate = useNavigate()
@@ -15,7 +15,10 @@ function OwnerDialog(props: IProps) {
 	return (
 		<Wrapper>
 			<CenterContent>
-				<StyledButton block onClick={() => navigate('/profile/change-password')}>
+				<StyledButton
+					block
+					onClick={() => navigate('/profile/change-password')}
+				>
 					Thay đổi mật khẩu
 				</StyledButton>
 				<StyledButton block onClick={() => logout()}>

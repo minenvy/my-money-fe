@@ -11,7 +11,7 @@ import { useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import styled from 'styled-components'
 
-interface IProps {
+type Props = {
 	id: string
 	totalMoney: number
 	usedMoney: number
@@ -20,7 +20,7 @@ interface IProps {
 	options: string
 }
 
-function BudgetInfoModal(props: IProps) {
+function BudgetInfoModal(props: Props) {
 	const { id, totalMoney, usedMoney, startDate, endDate, options } = props
 	const { valueToLabel } = useMoneyType()
 

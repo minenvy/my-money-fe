@@ -11,10 +11,10 @@ import { profileMenuIcon } from '@/constants/profile'
 import { useAuth } from '@/contexts/auth'
 import FriendDialog from './friend-dialog'
 import { postFetch } from '@/api/fetch'
-import default_avatar from '@/assets/default_avatar.jpg'
+import default_avatar from '@/assets/images/default_avatar.jpg'
 import socket from '@/utilities/socket'
 
-interface IData {
+interface FetchData {
 	isLoading: boolean
 	data: {
 		username: string
@@ -26,7 +26,7 @@ interface IData {
 		followings: number
 	}
 }
-interface IFollowStatus {
+interface FollowStatus {
 	isLoading: boolean
 	data: {
 		isFollowed: boolean
@@ -53,11 +53,11 @@ function FriendHeaderProfile() {
 	const followStatus = useFetch(
 		`check follow ${id}`,
 		'/user/check-follow/' + id
-	) as IFollowStatus
+	) as FollowStatus
 	const { data = defaultProfileData, isLoading } = useFetch(
 		'friend header profile',
 		'/user/get-by-id/' + id
-	) as IData
+	) as FetchData
 
 	const isInMobile = windowSize <= 768
 

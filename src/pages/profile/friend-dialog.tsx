@@ -7,24 +7,24 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 
-interface IData {
+interface FetchData {
 	isLoading: boolean
 	data: {
 		isBlocked: boolean
 	}
 }
-interface IProps {
+type Props = {
 	close: Function
 }
 
-function FriendDialog(props: IProps) {
+function FriendDialog(props: Props) {
 	const { close } = props
 	const { id } = useParams()
 	const { user } = useAuth()
 	const { data, isLoading } = useFetch(
 		`check block ${id}`,
 		`/user/check-block/${user.id}/${id}`
-	) as IData
+	) as FetchData
 	const [isBlockedThisUser, setIsBlockedThisUser] = useState<boolean>()
 	const [isFetching, setIsFetching] = useState(false)
 

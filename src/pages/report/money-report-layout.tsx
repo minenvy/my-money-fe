@@ -16,16 +16,16 @@ const filterOptions = [
 ]
 const today = new Date()
 
-interface IQuickReport {
+interface QuickReport {
 	title: string
 	moneyIn?: number
 	moneyOut?: number
 }
-interface IProps {
+type Props = {
 	chartType: 'line-in' | 'line-out' | 'bar' | 'doughnut'
 }
 
-function MoneyReportLayout(props: IProps) {
+function MoneyReportLayout(props: Props) {
 	const { chartType } = props
 	const [selectedOption, setSelectedOption] = useState(filterOptions[0].value)
 	const [year, setYear] = useState(today.getFullYear())
@@ -64,12 +64,12 @@ function MoneyReportLayout(props: IProps) {
 	)
 }
 
-interface IMainReportContentProps {
+type MainReportContentProps = {
 	year: number
 	chartType: string
 	isSelectMonth: boolean
 }
-interface IData {
+interface FetchData {
 	isLoading: boolean
 	data: {
 		[key: string]: Array<{
@@ -79,13 +79,13 @@ interface IData {
 	}
 }
 
-function MainReport(props: IMainReportContentProps) {
+function MainReport(props: MainReportContentProps) {
 	const { year, chartType, isSelectMonth } = props
 	const { data, isLoading } = useFetch(
 		`chart report ${isSelectMonth} ${year}`,
 		(isSelectMonth ? '/report/month/' : '/report/year/') + year,
 		[isSelectMonth, year]
-	) as IData
+	) as FetchData
 	const { moneyInTypes } = useMoneyType()
 
 	if (data === undefined || data === null)
@@ -109,7 +109,7 @@ function MainReport(props: IMainReportContentProps) {
 			</ShadowBox>
 		)
 
-	const report: Array<IQuickReport> = []
+	const report: Array<QuickReport> = []
 	for (let i = 1; i <= maxLength; i++) {
 		const title = (isSelectMonth ? i : year + 1 - i).toString()
 		const monthReport = {
@@ -125,7 +125,7 @@ function MainReport(props: IMainReportContentProps) {
 		})
 		report.push(monthReport)
 	}
-	console.log(report)
+
 	return (
 		<ShadowBox>
 			<FlexBox>

@@ -13,28 +13,28 @@ const shadowBoxStyles = {
 	maxWidth: '33rem',
 }
 
-interface IPerson {
+interface Friend {
 	id: string
 	nickname: string
 	image: string
 	bio: string
 	isFollowed: boolean
 }
-interface IData {
+interface FetchData {
 	isLoading: boolean
-	data: Array<IPerson>
+	data: Array<Friend>
 }
-interface IProps {
+type Props = {
 	type: 'followers' | 'followings'
 }
 
-function Follow(props: IProps) {
+function Follow(props: Props) {
 	const { type } = props
 	const { id = '' } = useParams()
 	const { data, isLoading } = useFetch(
 		`${type} ${id}`,
 		`/user/get-${type}/` + id
-	) as IData
+	) as FetchData
 
 	const hasNoData = data === undefined || data === null
 	if (hasNoData)

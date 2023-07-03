@@ -1,14 +1,14 @@
 import generateBackgroundColor from '@/utilities/generate-color'
 import { Doughnut } from 'react-chartjs-2'
 
-interface IProps {
+type Props = {
 	detail: Array<{
 		label: string
 		data: number
 	}>
 }
 
-function DoughnutChart(props: IProps) {
+function DoughnutChart(props: Props) {
 	const { detail } = props
 	const labels = detail.map((item) => item.label)
 	const dataOfDataset = detail.map((item) => item.data)

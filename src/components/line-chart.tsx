@@ -12,14 +12,14 @@ const options = {
 	},
 }
 
-interface IProps {
+type Props = {
 	labels: Array<string | number>
 	money: Array<number>
 	type: 'in' | 'out'
 	unit: string
 }
 
-function LineChart(props: IProps) {
+function LineChart(props: Props) {
 	const { labels, money, type, unit } = props
 
 	const dataset =

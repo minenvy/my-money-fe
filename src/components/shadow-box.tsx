@@ -1,11 +1,11 @@
 import styled from 'styled-components'
 
-interface IProps {
+type Props = {
 	children: React.ReactNode
 	style?: Object
 }
 
-function ShadowBox(props: IProps) {
+function ShadowBox(props: Props) {
 	const { children, style } = props
 
 	return <Wrapper style={style}>{children}</Wrapper>

@@ -1,12 +1,12 @@
 import { Typography } from 'antd'
 import styled from 'styled-components'
 
-interface IProps {
+type Props = {
 	title: string
 	onClick: Function
 }
 
-function TitleOfPartContent(props: IProps) {
+function TitleOfPartContent(props: Props) {
 	const { title, onClick } = props
 
 	return (

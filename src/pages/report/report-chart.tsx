@@ -4,17 +4,17 @@ import formatMoney from '@/utilities/money-format'
 import { Typography } from 'antd'
 import styled from 'styled-components'
 
-interface IQuickReport {
+interface QuickReport {
 	title: string
 	moneyIn?: number
 	moneyOut?: number
 }
-interface IChartProps {
+type ChartProps = {
 	chartType: string
-	report: Array<IQuickReport>
+	report: Array<QuickReport>
 }
 
-function ChartComponent(props: IChartProps) {
+function ChartComponent(props: ChartProps) {
 	const { chartType, report } = props
 	if (chartType.includes('bar')) {
 		const labels = report.map((item) => item.title)

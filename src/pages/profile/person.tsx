@@ -6,11 +6,11 @@ import { Avatar, Button } from 'antd'
 import React from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
-import default_avatar from '@/assets/default_avatar.jpg'
+import default_avatar from '@/assets/images/default_avatar.jpg'
 import { useNavigate } from 'react-router-dom'
 import socket from '@/utilities/socket'
 
-interface IPerson {
+interface Person {
 	id: string
 	nickname: string
 	image: string
@@ -18,7 +18,7 @@ interface IPerson {
 	isFollowed: boolean
 }
 
-const Person = React.forwardRef((props: IPerson, _) => {
+const Person = React.forwardRef((props: Person, _) => {
 	const { id, nickname, image, bio, isFollowed } = props
 	const navigate = useNavigate()
 	const { user } = useAuth()

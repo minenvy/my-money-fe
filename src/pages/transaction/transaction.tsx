@@ -12,8 +12,8 @@ import {
 	message,
 } from 'antd'
 import styled from 'styled-components'
-import coinImage from '@/assets/coin.jpg'
-import walletImage from '@/assets/wallet.jpg'
+import coinImage from '@/assets/images/coin.jpg'
+import walletImage from '@/assets/images/wallet.jpg'
 import useMoneyType from '@/hooks/use-money-type'
 import {
 	CalendarOutlined,
@@ -36,7 +36,7 @@ import { permissionOptions } from '@/constants/transaction'
 import { useMoneyContext } from '@/contexts/money'
 import AddMoneyTypeModal from './add-money-type-modal'
 
-interface ITransaction {
+type TransactionProps = {
 	id: string
 	money: number
 	walletName: string
@@ -51,7 +51,7 @@ interface ITransaction {
 	allowEditWalletName?: boolean
 }
 
-function Transaction(props: ITransaction) {
+function Transaction(props: TransactionProps) {
 	const {
 		id,
 		money,
@@ -67,7 +67,8 @@ function Transaction(props: ITransaction) {
 		allowEditWalletName = true,
 	} = props
 	const wallets = useMoneyContext()
-	const { icons, moneyTypeSelectOptions, valueToLabel, addNewMoneyType } = useMoneyType()
+	const { icons, moneyTypeSelectOptions, valueToLabel, addNewMoneyType } =
+		useMoneyType()
 	const [isPreviewImage, setIsPreviewImage] = useState(false)
 	const imageRef = useRef<HTMLInputElement>(null)
 	const [isAddingMoneyType, setIsAddingMoneyType] = useState(false)

@@ -1,6 +1,6 @@
 import { Button, message } from 'antd'
 import styled from 'styled-components'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { v4 as uuid } from 'uuid'
 import Transaction from './transaction'
 import { postFetch } from '@/api/fetch'
@@ -65,13 +65,10 @@ function NewTransactions() {
 		setIsExtractedImages(isUploading)
 		refetch()
 	}
-	if (
-		data &&
-		data.length > 0 &&
-		(transactions[0].id === defaultTransaction.id ||
-			transactions[transactions.length - 1].id !== data[data.length - 1].id)
-	)
-		setTransactions(data)
+
+	useEffect(() => {
+		if (data && data.length > 0) setTransactions(data)
+	}, [data])
 
 	const addDraft = (draft?: Transaction) => {
 		const defaultAddedTransaction: Transaction = {
@@ -172,7 +169,7 @@ function NewTransactions() {
 
 	return (
 		<Wrapper>
-			{isLoading && <Loading />}
+			{isLoading && !isUploading && <Loading />}
 			<HeaderWrapper>
 				<HeaderTitle>Thêm giao dịch</HeaderTitle>
 			</HeaderWrapper>

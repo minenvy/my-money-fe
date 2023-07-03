@@ -36,7 +36,7 @@ function TransactionEditor() {
 	) as FetchData
 	const { moneyInTypes } = useMoneyType()
 	const [transaction, setTransaction] = useState<Transaction>({
-		id: uuid(),
+		id: '',
 		money: 0,
 		walletName: money[0].name,
 		type: 'anuong',

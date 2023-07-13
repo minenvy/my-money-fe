@@ -1,6 +1,3 @@
-export interface FetchData {
-	data: Array<NewMoneyType>
-}
 export interface MoneyType {
 	icon: string
 	value: string

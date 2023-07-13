@@ -44,7 +44,7 @@ function MainLayout() {
 				<Content>
 					<MoneyProvider>
 						<Outlet />
-						{user.nickname === 'Not Have Nickname' && <FirstLoginSteps />}
+						{!user.nickname && <FirstLoginSteps />}
 					</MoneyProvider>
 				</Content>
 			</Main>
@@ -61,7 +61,7 @@ const Main = styled.main`
 `
 const Content = styled.div`
 	flex: 1;
-	padding: 0.5rem 2rem;
+	padding: 0.75rem 2rem;
 	overflow: auto;
 	margin-bottom: 0.5rem;
 	max-width: 70rem;

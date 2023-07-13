@@ -1,83 +1,68 @@
-import { getFetch } from "@/api/fetch"
-import { useErrorBoundary } from "@/contexts/error-fetch-boundary"
-import { useEffect, useState } from "react"
+import { useErrorBoundary } from '@/contexts/error-boundary'
+import { useEffect, useState } from 'react'
 
 const CACHE_TO_LOCAL_STORAGE_URLS = ['money types']
 
-type Error = {
+interface FetchError {
   message: string
 }
 
-function useFetch(
+function useFetch<T>(
   key: string,
-  path: string,
-  dependencies?: Array<string | number | boolean>
-) {
-  const [cachedData, setCachedData] = useState<{
-    [key: string]: any
-  }>({})
+  fn: Function
+): {
+  data: T | null
+  isLoading: boolean
+  refetch: Function
+} {
+  const [data, setData] = useState<T | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<FetchError | null>(null)
   const errorBoundary = useErrorBoundary()
-  const effectDependencies = dependencies || []
 
-  useEffect(() => {
-    if (CACHE_TO_LOCAL_STORAGE_URLS.includes(key)) {
-      const dataInLocalStorage = localStorage.getItem(key)
-      if (dataInLocalStorage) {
-        const data = JSON.parse(dataInLocalStorage)
-        setCachedData(preState => {
-          return { ...preState, [key]: data }
-        })
-        return
-      }
+  function getDataFromLocalStorageAndSave(key: string) {
+    const dataInLocalStorage = localStorage.getItem(key)
+    if (dataInLocalStorage !== 'undefined') {
+      const newData = JSON.parse(dataInLocalStorage as string)
+      setData(newData)
+      return true
     }
-    if (cachedData[key] !== undefined && cachedData[key] !== null) return
-    const controller = new AbortController()
-    const signal = controller.signal
-    let didCancel = false
+    return false
+  }
 
-      ; (async () => {
-        try {
-          if (isLoading) return
-          setIsLoading(true)
-          const fetchData = await getFetch(path, signal)
-          if (!didCancel) {
-            setCachedData(preState => {
-              return { ...preState, [key]: fetchData }
-            })
-            if (CACHE_TO_LOCAL_STORAGE_URLS.includes(key)) localStorage.setItem(key, JSON.stringify(fetchData))
-          }
-        } catch (err) {
-          const knownError = err as Error
-          if (knownError.message === 'server error') errorBoundary.showBoundary(knownError)
-        } finally {
-          setIsLoading(false)
-        }
-      })()
+  // function checkHavingCachedData() {
+  // 	return cachedData[key] !== null
+  // }
 
-    return () => {
-      controller.abort()
-      didCancel = true
-    }
-  }, effectDependencies)
-
-  const refetch = async () => {
+  async function fetchData() {
     try {
       if (isLoading) return
       setIsLoading(true)
-      const fetchData = await getFetch(path)
-      setCachedData(preState => {
-        return { ...preState, [key]: fetchData }
-      })
-    } catch (err) {
-      const knownError = err as Error
-      if (knownError.message === 'server error') errorBoundary.showBoundary(knownError)
+      const fetchedData = await fn() as T
+      setData(fetchedData)
+      // setCachedData((preState) => {
+      // 	return { ...preState, [key]: fetchedData }
+      // })
+      if (CACHE_TO_LOCAL_STORAGE_URLS.includes(key))
+        localStorage.setItem(key, JSON.stringify(fetchData))
+    } catch (error) {
+      setError(error as Error)
     } finally {
       setIsLoading(false)
     }
   }
 
-  return { data: cachedData[key], isLoading, refetch }
+  useEffect(() => {
+    if (CACHE_TO_LOCAL_STORAGE_URLS.includes(key)) {
+      const havingDataInLocalStorage = getDataFromLocalStorageAndSave(key)
+      if (havingDataInLocalStorage) return
+    }
+    // if (checkHavingCachedData()) return
+
+    fetchData()
+  }, [])
+
+  return { data, isLoading, refetch: fetchData }
 }
 
 export default useFetch

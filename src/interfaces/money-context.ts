@@ -4,10 +4,6 @@ export interface Money {
   total: number
 }
 
-export interface FetchData {
-  data: Array<Money>
-}
-
 export interface MoneyContext {
   money: Array<Money>
   changeMoney: Function

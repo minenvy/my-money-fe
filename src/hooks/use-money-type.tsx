@@ -3,18 +3,17 @@ import customMoneyTypeImage from '@/assets/images/custom_money_type.jpg'
 import useFetch from '@/hooks/use-fetch'
 import { default as moneyTypesDefault } from '@/constants/money-type'
 import {
-	FetchData,
 	MoneyType,
 	NewMoneyType,
 	MoneyTypeSelectOptions,
 } from '@/interfaces/money-type'
+import { getAllMoneyTypes } from '@/api/money-type'
 
 function useMoneyType() {
-	const { data } = useFetch(
+	const { data } = useFetch<Array<NewMoneyType>>(
 		'money types',
-		'/custom-money-type/get-all'
-	) as FetchData
-
+		getAllMoneyTypes
+	)
 	const [moneyTypes, setMoneyTypes] = useState<Array<MoneyType>>([])
 
 	if (moneyTypes.length === 0)
@@ -22,15 +21,13 @@ function useMoneyType() {
 
 	useEffect(() => {
 		if (data === undefined || data === null) return
-		const newMoneyTypes: Array<MoneyType> = []
-		data.forEach((customMoneyType) => {
-			const newMoneyType = {
+		const newMoneyTypes: Array<MoneyType> = data.map((customMoneyType) => {
+			return {
 				icon: customMoneyTypeImage,
 				label: customMoneyType.name,
 				value: customMoneyType.name,
 				type: customMoneyType.type,
 			}
-			newMoneyTypes.push(newMoneyType)
 		})
 		setMoneyTypes((preState) => [...preState, ...newMoneyTypes])
 	}, [data])

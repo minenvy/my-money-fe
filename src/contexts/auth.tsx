@@ -2,14 +2,14 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { removeLoginState, setLoginState } from '@/utilities/check-login'
 import useFetch from '@/hooks/use-fetch'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { getFetch } from '@/api/fetch'
 import Loading from '@/components/loading'
-import {
-	AuthContext,
-	FetchData,
-	NewUserInfo,
-	UserInfo,
-} from '@/interfaces/auth'
+import { AuthContext, NewUserInfo, UserInfo } from '@/interfaces/auth'
+import { getByToken, logoutInServer } from '@/api/user'
+
+const defaultUser = {
+	id: '',
+	nickname: '',
+}
 
 const AuthContext = createContext<AuthContext | null>(null)
 
@@ -22,24 +22,19 @@ type AuthProviderProps = {
 }
 
 export default function AuthProvider({ children }: AuthProviderProps) {
-	const { data, isLoading } = useFetch(
-		'auth',
-		'/user/get-by-token'
-	) as FetchData
-	const [user, setUser] = useState<UserInfo>({
-		id: '',
-		nickname: '',
-	})
+	const { data, isLoading } = useFetch<UserInfo>('auth', getByToken)
+	const [user, setUser] = useState<UserInfo>()
 	const navigate = useNavigate()
 	const location = useLocation()
 
 	useEffect(() => {
-		if (data === undefined) return
-		if (data === null) {
+		if (data === null || !data.id) {
 			removeLoginState()
 			navigate('/login')
+			changeInfo(defaultUser)
 			return
 		}
+
 		const isInNotLoggedInPage =
 			location.pathname.includes('login') ||
 			location.pathname.includes('register')
@@ -49,6 +44,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 		setLoginState()
 		changeInfo(data)
 	}, [data])
+
+	if (isLoading || user === undefined) return <Loading />
 
 	function changeInfo(newUser: NewUserInfo | null) {
 		setUser({ ...user, ...newUser } as UserInfo)
@@ -62,10 +59,9 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 		changeInfo(newUser)
 	}
 	async function logout() {
-		const res = await getFetch('/user/logout')
-		if (res === null) return
+		logoutInServer()
 		removeLoginState()
-		changeInfo(null)
+		changeInfo(defaultUser)
 		navigate('/login')
 	}
 
@@ -79,7 +75,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 				changeInfo,
 			}}
 		>
-			{isLoading && <Loading />}
 			{children}
 		</AuthContext.Provider>
 	)

@@ -17,76 +17,35 @@ function toast(type: 'warning' | 'success', content: string) {
   message[type](content)
 }
 
-async function doFetch(path: string, method: string, body?: any, signal?: any) {
-  const options: RequestInit = {
-    method,
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    signal,
-  }
-  if (body) options.body = JSON.stringify(body)
+const fetchOptions: RequestInit = {
+  headers: {
+    Accept: 'application/json',
+    'Content-Type': 'application/json',
+  },
+  credentials: 'include',
+}
 
-  const res = await fetch(domain + path, options).catch((error) => {
-    if (error.name === 'AbortError') return
-  })
-  if (!res) return null
-  const data = await res.json()
-  if (res.status === 400) {
-    if (!checkIgnorePath(path)) {
-      toast('warning', data.message)
-    }
-    return null
+async function getFetch(path: string) {
+  const options = {
+    ...fetchOptions,
+    method: 'get'
   }
-
-  if (res.status === 500) {
-    throw new Error('server error')
-  }
-
-  if (method === 'post') {
-    if (res.status !== 200) {
-      toast('warning', data.message)
-      return null
-    }
-    if (data.message && !checkIgnorePath(path)) {
-      toast('success', data.message)
-    }
-  }
-
+  const response = await fetch(domain + path, options)
+  if (response.status !== 200) return null
+  const data = await response.json()
   return data
 }
 
-async function getFetch(path: string, signal?: any) {
-  return doFetch(path, 'get', undefined, signal)
-}
-
-async function postFetch(path: string, body: any, signal?: any) {
-  return doFetch(path, 'post', body, signal)
-}
-
-async function uploadImage(path: string, file: File, signal?: any) {
-  const formData = new FormData()
-  formData.append('file', file, file.name)
-
-  const options: RequestInit = {
+async function postFetch(path: string, body: any) {
+  const options = {
+    ...fetchOptions,
     method: 'post',
-    credentials: 'include',
-    body: formData,
-    signal,
+    body: JSON.stringify(body)
   }
-  const res = await fetch(domain + path, options).catch((error) => {
-    if (error.name === 'AbortError') return
-  })
-  if (!res) return null
-  const data = (await res.json()) as { message: string; image?: string }
-  if (res.status !== 200) {
-    toast('warning', data.message)
-    return null
-  }
-  if (!checkIgnorePath(path)) toast('success', data.message)
-  return data.image
+  const response = await fetch(domain + path, options)
+  if (response.status !== 200) return null
+  const data = await response.json()
+  return data
 }
 
-export { getFetch, postFetch, uploadImage }
+export { getFetch, postFetch }

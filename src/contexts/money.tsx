@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import useFetch from '@/hooks/use-fetch'
-import { useErrorBoundary } from './error-fetch-boundary'
-import { FetchData, Money, MoneyContext } from '@/interfaces/money-context'
+import { useErrorBoundary } from './error-boundary'
+import { Money, MoneyContext } from '@/interfaces/money-context'
+import { getLoginState } from '@/utilities/check-login'
+import { getAllWallet } from '@/api/money'
 
 const MoneyContext = createContext<MoneyContext | null>(null)
 
@@ -14,22 +16,13 @@ type MoneyProviderProps = {
 }
 
 export default function MoneyProvider({ children }: MoneyProviderProps) {
-	const { data } = useFetch(
-		'get all wallet',
-		'/wallet/get-all-wallet'
-	) as FetchData
-	const [money, setMoney] = useState<Array<Money>>([
-		{
-			id: '',
-			name: '',
-			total: 0,
-		},
-	])
+	const { data } = useFetch<Array<Money>>('wallets', getAllWallet)
+	const [money, setMoney] = useState<Array<Money>>([])
 	const { showBoundary } = useErrorBoundary()
 
 	useEffect(() => {
-		if (data === null)
-			showBoundary(new Error('Lỗi lấy thông tin tiền trong ví'))
+		// if (getLoginState() && data === null)
+			// showBoundary(new Error('Lỗi lấy thông tin tiền trong ví'))
 		if (data) setMoney(data)
 	}, [data])
 

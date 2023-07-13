@@ -1,8 +1,8 @@
 import { createContext, useContext, useState } from 'react'
-import { uploadImage } from '@/api/fetch'
 import { message } from 'antd'
 import { compressImage } from '@/utilities/image'
 import { Context } from '@/interfaces/images-uploader'
+import { extractImage } from '@/api/image'
 
 const ImagesContext = createContext<Context | null>(null)
 
@@ -28,13 +28,14 @@ function ImagesUploadProvider({ children }: ImagesProps) {
 			compressPromises.push(compressImage(file))
 		}
 
+    // Compress Images then upload
 		let haveSuccessImage = false
 		Promise.allSettled(compressPromises)
 			.then((settledFiles) => {
 				settledFiles.forEach((settledObject) => {
 					if (settledObject.status !== 'fulfilled') return
 					const file = settledObject.value
-					processImagePromises.push(uploadImage('/image/extract', file))
+					processImagePromises.push(extractImage(file))
 				})
 			})
 			.then(() => {

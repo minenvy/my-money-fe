@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import { postFetch } from '@/api/fetch'
 import { imagesDir } from '@/constants/env'
 import { uploadImageToServer } from '@/utilities/image'
+import { changeProfileInServer } from '@/api/user'
 
 const allowedImageType = ['png', 'jpg', 'jpeg', 'gif']
 
@@ -60,11 +61,7 @@ function ProfileEditor() {
 		nickname?: string
 		image?: string
 	}) => {
-		const res = await postFetch('/user/change-profile', {
-			...newUser,
-		})
-		if (res === null) return
-
+		await changeProfileInServer(newUser)
 		changeInfo({ ...newUser })
 		setTimeout(() => navigate('/profile/' + user.id), 1000)
 	}

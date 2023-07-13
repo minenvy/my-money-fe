@@ -1,4 +1,4 @@
-import { postFetch } from '@/api/fetch'
+import { changePasswordInServer } from '@/api/user'
 import { useAuth } from '@/contexts/auth'
 import useWindowSize from '@/hooks/use-window-size'
 import { Button, Form, Input, message } from 'antd'
@@ -34,20 +34,20 @@ function PasswordEditor() {
 		setPassword({ ...password, confirm: e.target.value })
 	}
 	const cancel = () => navigate('/profile/' + user.id)
-	const changePassword = async () => {
+	const checkValid = () => {
 		if (!password.now || !password.new || !password.confirm) {
 			message.warning('Cần nhập đủ các thông tin!')
-			return
+			return false
 		}
 		if (password.new !== password.confirm) {
 			message.warning('Mật khẩu mới không trùng nhau!')
-			return
+			return false
 		}
-		const res = await postFetch('/user/change-password', {
-			...password,
-		})
-		if (res === null) return
-
+		return true
+	}
+	const changePassword = async () => {
+		if (!checkValid()) return
+		await changePasswordInServer({ ...password })
 		setTimeout(() => navigate('/profile/' + user.id), 1000)
 	}
 	const handleSubmit = async () => {

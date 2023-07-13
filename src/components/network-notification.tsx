@@ -7,7 +7,7 @@ function NetWorkNotification() {
 	const isOnline = useNetworkState()
 	const [previousNetworkState, setPreviousNetworkState] = useState(isOnline)
 
-	useEffect(() => {
+	function triggerNotification() {
 		if (!isOnline || isOnline !== previousNetworkState) {
 			notification.destroy()
 			isOnline
@@ -27,6 +27,10 @@ function NetWorkNotification() {
 				  })
 			setPreviousNetworkState(isOnline)
 		}
+	}
+
+	useEffect(() => {
+		triggerNotification()
 	}, [isOnline])
 
 	return <></>

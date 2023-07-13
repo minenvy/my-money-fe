@@ -1,5 +1,5 @@
-import { uploadImage } from "@/api/fetch"
-import Compressor from "compressorjs"
+import { uploadImage } from '@/api/image'
+import Compressor from 'compressorjs'
 
 export function compressImage(file: File): Promise<File> {
   return new Promise<File>((resolve, reject) => {
@@ -22,10 +22,7 @@ export async function uploadImageToServer(image: File) {
     return
   })) as File
   if (!compressedImage) return ''
-  const uploadResponse = await uploadImage(
-    '/image/upload',
-    compressedImage
-  )
+  const uploadResponse = await uploadImage(compressedImage)
   if (uploadResponse === null) return ''
   return uploadResponse
 }

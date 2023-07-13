@@ -17,7 +17,7 @@ function NoData(props: Props) {
 			imageStyle={{ height: 60 }}
 			description="Chưa có dữ liệu"
 		>
-			{hasButton && <Button onClick={redirectToAddTransaction}>Thêm </Button>}
+			{hasButton && <Button onClick={redirectToAddTransaction}>Thêm</Button>}
 		</Empty>
 	)
 }

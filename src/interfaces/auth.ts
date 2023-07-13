@@ -11,11 +11,6 @@ export interface NewUserInfo {
   bio?: string
 }
 
-export interface FetchData {
-  isLoading: boolean
-  data: NewUserInfo
-}
-
 export interface AuthContext {
   user: UserInfo
   login: Function

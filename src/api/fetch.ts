@@ -17,6 +17,15 @@ function toast(type: 'warning' | 'success', content: string) {
   message[type](content)
 }
 
+function displayNotification(path: string, response: Response, data: any) {
+  if (response.status !== 200) {
+    toast('warning', data.message)
+    return
+  }
+  if (checkIgnorePath(path)) return
+  toast('success', data.message || 'Xử lý thành công!')
+}
+
 const fetchOptions: RequestInit = {
   headers: {
     Accept: 'application/json',
@@ -31,8 +40,11 @@ async function getFetch(path: string) {
     method: 'get'
   }
   const response = await fetch(domain + path, options)
-  if (response.status !== 200) return null
   const data = await response.json()
+  if (response.status !== 200) {
+    displayNotification(path, response, data)
+    return null
+  }
   return data
 }
 
@@ -43,8 +55,9 @@ async function postFetch(path: string, body: any) {
     body: JSON.stringify(body)
   }
   const response = await fetch(domain + path, options)
-  if (response.status !== 200) return null
   const data = await response.json()
+  displayNotification(path, response, data)
+  if (response.status !== 200) return null
   return data
 }
 

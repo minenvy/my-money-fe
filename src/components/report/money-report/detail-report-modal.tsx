@@ -1,13 +1,13 @@
-import { getInMonth, getInYear } from "@/api/transaction"
-import { Empty, Typography } from "antd"
-import Loading from "@/components/loading"
-import useFetch from "@/hooks/use-fetch"
-import useMoneyType from "@/hooks/use-money-type"
-import { TransactionReport } from "@/interfaces/report"
-import styled from "styled-components"
-import formatMoney from "@/utilities/money-format"
-import DoughnutChart from "@/components/doughnut-chart"
-import ListItem from "@/components/list-item"
+import { getInMonth, getInYear } from '@/api/transaction'
+import { Empty, Typography } from 'antd'
+import Loading from '@/components/loading'
+import useFetch from '@/hooks/use-fetch'
+import useMoneyType from '@/hooks/use-money-type'
+import { TransactionReport } from '@/interfaces/report'
+import styled from 'styled-components'
+import formatMoney from '@/utilities/money-format'
+import DoughnutChart from '@/components/doughnut-chart'
+import ListItem from '@/components/list-item'
 
 type ModalContentProps = {
 	type: 'tháng' | 'năm'
@@ -23,9 +23,7 @@ function DetailReportModal(props: ModalContentProps) {
 		isMonthReport
 			? `quick report month ${month} ${year}`
 			: `quick report year ${year}`,
-		isMonthReport
-			? () => getInMonth(month, year)
-			: () => getInYear(year)
+		isMonthReport ? () => getInMonth(month, year) : () => getInYear(year)
 	)
 	const { icons, moneyInTypes, valueToLabel } = useMoneyType()
 
@@ -41,6 +39,13 @@ function DetailReportModal(props: ModalContentProps) {
 			</>
 		)
 
+	const checkSameType = (type: string) => {
+		return (
+			(moneyType === 'in' && moneyInTypes.includes(type)) ||
+			(moneyType === 'out' && !moneyInTypes.includes(type))
+		)
+	}
+
 	const detail: Array<{
 		label: string
 		data: number
@@ -53,10 +58,7 @@ function DetailReportModal(props: ModalContentProps) {
 			})
 			return
 		}
-		if (
-			(moneyType === 'in' && moneyInTypes.includes(item.type)) ||
-			(moneyType === 'out' && !moneyInTypes.includes(item.type))
-		)
+		if (checkSameType(item.type))
 			detail.push({
 				label: valueToLabel(item.type),
 				data: item.money,
@@ -76,19 +78,23 @@ function DetailReportModal(props: ModalContentProps) {
 		<CenterBox>
 			<Typography.Text>Tổng tiền: {formatMoney(total)}</Typography.Text>
 			<DoughnutChart detail={detail} />
-			{data.map((transaction) => {
-				const title = valueToLabel(transaction.type)
-				const icon = icons.find((icon) => icon.value === transaction.type)?.icon
+			{data
+				.filter((transaction) => checkSameType(transaction.type))
+				.map((transaction) => {
+					const title = valueToLabel(transaction.type)
+					const icon = icons.find(
+						(icon) => icon.value === transaction.type
+					)?.icon
 
-				return (
-					<ListItem
-						key={transaction.type}
-						title={title}
-						icon={icon}
-						moreDetail={formatMoney(transaction.money)}
-					/>
-				)
-			})}
+					return (
+						<ListItem
+							key={transaction.type}
+							title={title}
+							icon={icon}
+							moreDetail={formatMoney(transaction.money)}
+						/>
+					)
+				})}
 		</CenterBox>
 	)
 }

@@ -9,7 +9,8 @@ interface FetchError {
 
 function useFetch<T>(
   key: string,
-  fn: Function
+  fn: Function,
+  dependencies?: Array<string | number | boolean>
 ): {
   data: T | null
   isLoading: boolean
@@ -19,6 +20,7 @@ function useFetch<T>(
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<FetchError | null>(null)
   const errorBoundary = useErrorBoundary()
+  const effectDependencies = dependencies || []
 
   function getDataFromLocalStorageAndSave(key: string) {
     const dataInLocalStorage = localStorage.getItem(key)
@@ -60,7 +62,7 @@ function useFetch<T>(
     // if (checkHavingCachedData()) return
 
     fetchData()
-  }, [])
+  }, effectDependencies)
 
   return { data, isLoading, refetch: fetchData }
 }

@@ -47,7 +47,8 @@ function MainContent(props: Props) {
 	const { id = '' } = useParams()
 	const { data, isLoading } = useFetch<Array<PersonInterface>>(
 		`proposers ${id} ${search}`,
-		() => getProposers(id, 0, search)
+		() => getProposers(id, 0, search),
+    [id, search]
 	)
 	const [proposers, setProposers] = useState<Array<PersonInterface>>()
 	const [isFetching, setIsFetching] = useState(false)

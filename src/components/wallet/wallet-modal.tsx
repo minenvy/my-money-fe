@@ -26,7 +26,8 @@ function WalletModal(props: Props) {
 	const navigate = useNavigate()
 	const { data, isLoading } = useFetch<Array<Transaction>>(
 		`transactions in wallet ${month} ${year} ${walletName}`,
-		() => getSeparateInMonth(month, year, walletName)
+		() => getSeparateInMonth(month, year, walletName),
+    [walletName, month, year]
 	)
 	const { icons, moneyInTypes, valueToLabel } = useMoneyType()
 

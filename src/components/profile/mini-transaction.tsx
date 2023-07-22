@@ -30,8 +30,6 @@ function MiniTransaction() {
 	const { id = '' } = useParams()
 	const { user } = useAuth()
 
-	if (user.id === id) return <MainContent />
-
 	const {
 		data = {
 			isFollowed: false,
@@ -42,7 +40,7 @@ function MiniTransaction() {
 	return (
 		<>
 			{isLoading && <Loading />}
-			{data && data.isFollowed ? (
+			{user.id === id || data && data.isFollowed ? (
 				<MainContent />
 			) : (
 				<StyledP>Bạn chưa follow người dùng này</StyledP>

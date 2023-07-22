@@ -1,6 +1,5 @@
 import { getFetch, postFetch } from '@/api/fetch'
 import routes from '@/api/route'
-import { domain } from '@/constants/env'
 import { NewUserInfo, UserInfo } from '@/interfaces/auth'
 import { Friend } from '@/interfaces/friend'
 import { CheckBlock, CheckFollow, ProfileHeader } from '@/interfaces/profile'
@@ -32,7 +31,7 @@ export async function getFollow(
   type: string,
   userId: string
 ): Promise<Array<Friend>> {
-  return await getFetch(`${domain}/user/get-${type}/${userId}`)
+  return await getFetch(`/user/get-${type}/${userId}`)
 }
 
 export async function checkBlock(blockedId: string, blockingId: string): Promise<CheckBlock> {
@@ -71,6 +70,6 @@ export async function getProposers(
   search?: string
 ) {
   return await getFetch(
-    `${routes.getProposers}/${userId}/${offset}` + search ? `/${search}` : ''
+    `${routes.getProposers}/${userId}/${offset}` + (search ? `/${search}` : '')
   )
 }

@@ -22,25 +22,22 @@ type Props = {
 function Follow(props: Props) {
 	const { type } = props
 	const { id = '' } = useParams()
-	const { data, isLoading } = useFetch<Array<Friend>>(`${type} ${id}`, () =>
-		getFollow(type, id)
+	const { data, isLoading } = useFetch<Array<Friend>>(
+		`${type} ${id}`,
+		() => getFollow(type, id),
+		[type, id]
 	)
 
-	const hasNoData = data === null
-	if (hasNoData)
-		return (
-			<>
-				{isLoading && <Loading />}
-				<NoData />
-			</>
-		)
+	if (isLoading) return <Loading />
 
 	return (
 		<Wrapper>
 			<ShadowBox style={shadowBoxStyles}>
-				{data.map((item) => (
-					<Person {...item} key={item.id} />
-				))}
+				{data ? (
+					data.map((item) => <Person {...item} key={item.id} />)
+				) : (
+					<NoData />
+				)}
 				<ProposersList />
 			</ShadowBox>
 		</Wrapper>

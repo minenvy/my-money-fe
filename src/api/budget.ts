@@ -3,7 +3,7 @@ import routes from "@/api/route";
 import { Budget, NewBudget } from "@/interfaces/budget";
 
 export async function getDayExpense(budgetId: string) {
-  await getFetch(`${routes.getDayExpense}/${budgetId}`)
+  return await getFetch(`${routes.getDayExpense}/${budgetId}`)
 }
 
 export async function getInfiniteBudgets(offset: number): Promise<Array<Budget>> {

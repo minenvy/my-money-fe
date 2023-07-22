@@ -62,7 +62,8 @@ function MainReport(props: Props) {
 		isSelectMonth
 			? `transaction month ${month} ${year}`
 			: `transaction year ${year}`,
-		isSelectMonth ? () => getInMonth(month, year) : () => getInYear(year)
+		isSelectMonth ? () => getInMonth(month, year) : () => getInYear(year),
+    [isSelectMonth, month, year]
 	)
 	const { icons, moneyInTypes, moneyOutTypes, valueToLabel } = useMoneyType()
 

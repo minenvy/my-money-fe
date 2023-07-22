@@ -20,7 +20,8 @@ function MoneyReportContent(props: MainReportContentProps) {
 	const { year, chartType, isSelectMonth } = props
 	const { data, isLoading } = useFetch<ReportMoney>(
 		`chart report ${isSelectMonth} ${year}`,
-		isSelectMonth ? () => getMonthReports(year) : () => getYearReports(year)
+		isSelectMonth ? () => getMonthReports(year) : () => getYearReports(year),
+    [isSelectMonth, year, chartType]
 	)
 	const { moneyInTypes } = useMoneyType()
 

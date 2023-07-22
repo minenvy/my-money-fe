@@ -61,7 +61,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 	async function logout() {
 		logoutInServer()
 		removeLoginState()
-		changeInfo(defaultUser)
+		setUser(defaultUser)
 		navigate('/login')
 	}
 

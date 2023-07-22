@@ -37,11 +37,13 @@ interface IData {
 
 function MultipleDatasetLineChart(props: MultipleDatasetLineChartProps) {
 	const { id, totalMoney, startDate, endDate } = props
-	const { data, isLoading } = useFetch(`chart budget ${id}`, () =>
-		getDayExpense(id)
+	const { data, isLoading } = useFetch(
+		`chart budget ${id}`,
+		() => getDayExpense(id),
+		[id]
 	) as IData
 
-	if (data === null || data.length === 0)
+	if (data === null || data === undefined || data.length === 0)
 		return (
 			<>
 				{isLoading && <Loading />}

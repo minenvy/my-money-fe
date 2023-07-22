@@ -18,12 +18,12 @@ function toast(type: 'warning' | 'success', content: string) {
 }
 
 function displayNotification(path: string, response: Response, data: any) {
+  if (checkIgnorePath(path)) return
   if (response.status !== 200) {
     toast('warning', data.message)
     return
   }
-  if (checkIgnorePath(path)) return
-  toast('success', data.message || 'Xử lý thành công!')
+  if (data.message) toast('success', data.message)
 }
 
 const fetchOptions: RequestInit = {

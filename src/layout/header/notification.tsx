@@ -20,10 +20,6 @@ const Offset = 15
 function Notification() {
 	const navigate = useNavigate()
 	const { user } = useAuth()
-	const { data } = useFetch<Array<NotificationType>>(
-		'notifications',
-		getNotifications
-	)
 	const [notifications, setNotifications] = useState<Array<NotificationType>>(
 		[]
 	)
@@ -45,14 +41,19 @@ function Notification() {
 		})
 	}, [socket])
 
-	if (data === null) return null
-	if (notifications.length === 0 && data.length > 0) setNotifications(data)
+	useEffect(() => {
+		fetchData()
+	}, [user.id])
 
 	const numberOfNotification = notifications.reduce(
 		(total, notification) => total + (notification.status === 'unread' ? 1 : 0),
 		0
 	)
 
+	async function fetchData() {
+		const data = await getNotifications(user.id, 0)
+		setNotifications(data)
+	}
 	const toggleShowNotification = () => {
 		setIsOpened((preState) => !preState)
 	}

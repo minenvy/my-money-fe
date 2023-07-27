@@ -1,11 +1,14 @@
 import { useErrorBoundary } from '@/contexts/error-boundary'
 import { useEffect, useState } from 'react'
 
-const CACHE_TO_LOCAL_STORAGE_URLS = ['money types']
-
 interface FetchError {
   message: string
 }
+type CacheData = {
+  [key: string]: any
+}
+
+const CACHE_TO_LOCAL_STORAGE_URLS = ['money types']
 
 function useFetch<T>(
   key: string,
@@ -17,6 +20,7 @@ function useFetch<T>(
   refetch: Function
 } {
   const [data, setData] = useState<T | null>(null)
+  const [cachedData, setCachedData] = useState<CacheData>({})
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<FetchError | null>(null)
   const errorBoundary = useErrorBoundary()
@@ -32,9 +36,9 @@ function useFetch<T>(
     return false
   }
 
-  // function checkHavingCachedData() {
-  // 	return cachedData[key] !== null
-  // }
+  function checkHavingCachedData() {
+    return cachedData[key] !== null && cachedData[key] !== undefined
+  }
 
   async function fetchData() {
     try {
@@ -42,9 +46,9 @@ function useFetch<T>(
       setIsLoading(true)
       const fetchedData = await fn() as T
       setData(fetchedData)
-      // setCachedData((preState) => {
-      // 	return { ...preState, [key]: fetchedData }
-      // })
+      setCachedData(preState => {
+        return { ...preState, [key]: fetchedData }
+      })
       if (CACHE_TO_LOCAL_STORAGE_URLS.includes(key))
         localStorage.setItem(key, JSON.stringify(fetchData))
     } catch (error) {
@@ -59,7 +63,10 @@ function useFetch<T>(
       const havingDataInLocalStorage = getDataFromLocalStorageAndSave(key)
       if (havingDataInLocalStorage) return
     }
-    // if (checkHavingCachedData()) return
+    if (checkHavingCachedData()) {
+      setData(cachedData[key])
+      return
+    }
 
     fetchData()
   }, effectDependencies)

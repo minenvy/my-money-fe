@@ -40,10 +40,9 @@ function DetailReportModal(props: ModalContentProps) {
 		)
 
 	const checkSameType = (type: string) => {
-		return (
-			(moneyType === 'in' && moneyInTypes.includes(type)) ||
-			(moneyType === 'out' && !moneyInTypes.includes(type))
-		)
+		if (moneyType === 'in') return moneyInTypes.includes(type)
+		if (moneyType === 'out') return !moneyInTypes.includes(type)
+		return true
 	}
 
 	const detail: Array<{

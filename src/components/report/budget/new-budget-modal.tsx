@@ -1,4 +1,3 @@
-import { postFetch } from '@/api/fetch'
 import useMoneyType from '@/hooks/use-money-type'
 import { AppstoreAddOutlined } from '@ant-design/icons'
 import {
@@ -14,18 +13,17 @@ import {
 } from 'antd'
 import { v4 as uuid } from 'uuid'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { addBudget } from '@/api/budget'
 
 type Props = {
 	open: boolean
 	close: Function
+	forceUpdate: Function
 }
 
 function NewBudgetModal(props: Props) {
-	const { open, close } = props
-	const navigate = useNavigate()
+	const { open, close, forceUpdate } = props
 	const { moneyOutTypes, moneyTypeCheckboxOptions } = useMoneyType()
 	const [money, setMoney] = useState(0)
 	const [name, setName] = useState('')
@@ -93,7 +91,10 @@ function NewBudgetModal(props: Props) {
 			endDate: endDate!.toDateString(),
 			options: moneyOptions === '' ? moneyOutTypes.toString() : moneyOptions,
 		})
-		setTimeout(() => navigate(0), 1000)
+		setTimeout(() => {
+			forceUpdate()
+			close()
+		}, 1000)
 	}
 	const handleAdd = async () => {
 		if (isLoading) return

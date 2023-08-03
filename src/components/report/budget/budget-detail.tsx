@@ -16,11 +16,21 @@ type DetailProps = {
 	totalMoney: number
 	usedMoney: number
 	options: string
+	forceUpdateFunction: Function
 }
 
 function BudgetDetail(props: DetailProps) {
-	const { id, icon, name, startDate, endDate, totalMoney, usedMoney, options } =
-		props
+	const {
+		id,
+		icon,
+		name,
+		startDate,
+		endDate,
+		totalMoney,
+		usedMoney,
+		options,
+		forceUpdateFunction,
+	} = props
 	const windowSize = useWindowSize()
 
 	const isInMobile = windowSize <= 768
@@ -47,6 +57,10 @@ function BudgetDetail(props: DetailProps) {
 					startDate={startDate}
 					endDate={endDate}
 					options={options}
+					forceUpdateFunction={() => {
+						forceUpdateFunction()
+						modal.destroy()
+					}}
 				/>
 			),
 			centered: true,

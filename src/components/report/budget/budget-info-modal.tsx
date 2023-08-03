@@ -14,10 +14,19 @@ type Props = {
 	startDate: Date
 	endDate: Date
 	options: string
+	forceUpdateFunction: Function
 }
 
 function BudgetInfoModal(props: Props) {
-	const { id, totalMoney, usedMoney, startDate, endDate, options } = props
+	const {
+		id,
+		totalMoney,
+		usedMoney,
+		startDate,
+		endDate,
+		options,
+		forceUpdateFunction,
+	} = props
 	const { valueToLabel } = useMoneyType()
 
 	const remainingMoney = totalMoney - usedMoney
@@ -29,7 +38,7 @@ function BudgetInfoModal(props: Props) {
 
 	return (
 		<Wrapper>
-			<PopDeleteConfirm id={id} />
+			<PopDeleteConfirm id={id} forceUpdateFunction={forceUpdateFunction} />
 			<CenterBox>
 				<Title level={4} type={isOverMoney ? 'danger' : 'success'}>
 					{formatMoney(totalMoney - usedMoney)}

@@ -4,7 +4,7 @@ import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
 import { FloatButton, Input, Spin } from 'antd'
 import styled from 'styled-components'
 import NewBudgetModal from './new-budget-modal'
-import { Fragment, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import useFetch from '@/hooks/use-fetch'
 import Loading from '@/components/loading'
 import VirtualList from 'rc-virtual-list'
@@ -18,29 +18,56 @@ const ItemHeight = 115
 
 function BudgetList() {
 	const [isModalOpen, setIsModalOpen] = useState(false)
+	const [forceUpdate, setForceUpdate] = useState(0)
+
+	const forceUpdateFunction = () => setForceUpdate((preState) => preState + 1)
 
 	return (
 		<Wrapper>
-			<Budgets />
+			<Budgets
+				forceUpdate={forceUpdate}
+				forceUpdateFunction={forceUpdateFunction}
+			/>
 			<FloatButton
 				type="primary"
 				icon={<PlusOutlined />}
 				style={{ bottom: 80 }}
 				onClick={() => setIsModalOpen(true)}
 			/>
-			<NewBudgetModal open={isModalOpen} close={() => setIsModalOpen(false)} />
+			<NewBudgetModal
+				open={isModalOpen}
+				close={() => setIsModalOpen(false)}
+				forceUpdate={forceUpdateFunction}
+			/>
 		</Wrapper>
 	)
 }
 
-function Budgets() {
-	const { data, isLoading } = useFetch<Array<Budget>>('budgets', () =>
+type Props = {
+	forceUpdate: number
+	forceUpdateFunction: Function
+}
+
+function Budgets(props: Props) {
+	const { forceUpdate, forceUpdateFunction } = props
+	const { data, isLoading, refetch } = useFetch<Array<Budget>>('budgets', () =>
 		getInfiniteBudgets(0)
 	)
-	const [budgets, setBudgets] = useState<Array<Budget>>()
+	const [budgets, setBudgets] = useState<Array<Budget> | null>()
 	const [isFetching, setIsFetching] = useState(false)
 	const [searchKey, setSearchKey] = useState('')
 	const offset = useRef(0)
+	const filteredBudgets = budgets?.filter((budget) =>
+		budget.name.includes(searchKey)
+	)
+
+	useEffect(() => {
+		setBudgets(data)
+	}, [data])
+
+	useEffect(() => {
+		refetch()
+	}, [forceUpdate])
 
 	const hasNoData = data === null || data.length === 0
 	if (hasNoData)
@@ -52,11 +79,6 @@ function Budgets() {
 				</ShadowBox>
 			</Wrapper>
 		)
-
-	if (budgets === undefined) setBudgets(data)
-	const filteredBudgets = budgets?.filter((budget) =>
-		budget.name.includes(searchKey)
-	)
 
 	const changeSearchKey = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchKey(e.target.value)
@@ -105,6 +127,7 @@ function Budgets() {
 								totalMoney={money}
 								usedMoney={usedMoney}
 								options={options}
+								forceUpdateFunction={forceUpdateFunction}
 							/>
 						</Fragment>
 					)

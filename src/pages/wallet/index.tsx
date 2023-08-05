@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { useState } from 'react'
 import styled from 'styled-components'
 import { useMoneyContext } from '@/contexts/money'
-import WalletModal from '@/components/wallet/wallet-modal'
+import WalletModal from '@/features/wallet/wallet-modal'
 
 const monthFormat = 'MM/YYYY'
 const today = new Date()

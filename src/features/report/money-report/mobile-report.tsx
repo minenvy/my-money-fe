@@ -8,7 +8,7 @@ import {
 	LeftOutlined,
 	LineChartOutlined,
 } from '@ant-design/icons'
-import Budget from '@/components/report/budget/budgets'
+import Budget from '@/features/report/budget/budgets'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const page = ['all', 'out', 'in', 'budget']

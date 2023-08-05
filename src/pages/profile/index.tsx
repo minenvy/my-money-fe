@@ -1,6 +1,6 @@
 import styled from 'styled-components'
-import Header from '@/components/profile/header'
-import Main from '@/components/profile/main'
+import Header from '@/features/profile/header'
+import Main from '@/features/profile/main'
 import { useParams } from 'react-router-dom'
 
 function Profile() {

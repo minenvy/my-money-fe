@@ -1,6 +1,6 @@
 import useWindowSize from '@/hooks/use-window-size'
-import MobileReport from '@/components/report/money-report/mobile-report'
-import DesktopReport from '@/components/report/money-report/desktop-report'
+import MobileReport from '@/features/report/money-report/mobile-report'
+import DesktopReport from '@/features/report/money-report/desktop-report'
 
 function Report() {
 	const windowSize = useWindowSize()

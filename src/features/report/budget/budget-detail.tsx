@@ -2,10 +2,11 @@ import ListItem from '@/components/list-item'
 import ShadowBox from '@/components/shadow-box'
 import getRemainingDays from '@/utilities/get-remaining-days-in-month'
 import formatMoney from '@/utilities/money-format'
-import { Avatar, Input, Modal, Typography } from 'antd'
+import { Avatar, Modal, Typography } from 'antd'
 import styled from 'styled-components'
 import BudgetInfoModal from './budget-info-modal'
 import useWindowSize from '@/hooks/use-window-size'
+import { useForceUpdate } from '@/contexts/force-update'
 
 type DetailProps = {
 	id: string
@@ -16,7 +17,6 @@ type DetailProps = {
 	totalMoney: number
 	usedMoney: number
 	options: string
-	forceUpdateFunction: Function
 }
 
 function BudgetDetail(props: DetailProps) {
@@ -29,9 +29,9 @@ function BudgetDetail(props: DetailProps) {
 		totalMoney,
 		usedMoney,
 		options,
-		forceUpdateFunction,
 	} = props
 	const windowSize = useWindowSize()
+  const { forceUpdate } = useForceUpdate()
 
 	const isInMobile = windowSize <= 768
 	const subTitle =
@@ -58,7 +58,7 @@ function BudgetDetail(props: DetailProps) {
 					endDate={endDate}
 					options={options}
 					forceUpdateFunction={() => {
-						forceUpdateFunction()
+						forceUpdate()
 						modal.destroy()
 					}}
 				/>

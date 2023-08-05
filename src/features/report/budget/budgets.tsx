@@ -11,6 +11,7 @@ import VirtualList from 'rc-virtual-list'
 import { Budget } from '@/interfaces/budget'
 import { getInfiniteBudgets } from '@/api/budget'
 import BudgetDetail from './budget-detail'
+import ForceUpdateProvider, { useForceUpdate } from '@/contexts/force-update'
 
 const Offset = 15
 const ContainerHeight = 576
@@ -18,16 +19,11 @@ const ItemHeight = 115
 
 function BudgetList() {
 	const [isModalOpen, setIsModalOpen] = useState(false)
-	const [forceUpdate, setForceUpdate] = useState(0)
-
-	const forceUpdateFunction = () => setForceUpdate((preState) => preState + 1)
 
 	return (
 		<Wrapper>
-			<Budgets
-				forceUpdate={forceUpdate}
-				forceUpdateFunction={forceUpdateFunction}
-			/>
+      <ForceUpdateProvider>
+			<Budgets />
 			<FloatButton
 				type="primary"
 				icon={<PlusOutlined />}
@@ -37,19 +33,14 @@ function BudgetList() {
 			<NewBudgetModal
 				open={isModalOpen}
 				close={() => setIsModalOpen(false)}
-				forceUpdate={forceUpdateFunction}
 			/>
+      </ForceUpdateProvider>
 		</Wrapper>
 	)
 }
 
-type Props = {
-	forceUpdate: number
-	forceUpdateFunction: Function
-}
-
-function Budgets(props: Props) {
-	const { forceUpdate, forceUpdateFunction } = props
+function Budgets() {
+  const { infiniteNumber } = useForceUpdate()
 	const { data, isLoading, refetch } = useFetch<Array<Budget>>('budgets', () =>
 		getInfiniteBudgets(0)
 	)
@@ -67,7 +58,7 @@ function Budgets(props: Props) {
 
 	useEffect(() => {
 		refetch()
-	}, [forceUpdate])
+	}, [infiniteNumber])
 
 	const hasNoData = data === null || data.length === 0
 	if (hasNoData)
@@ -127,7 +118,6 @@ function Budgets(props: Props) {
 								totalMoney={money}
 								usedMoney={usedMoney}
 								options={options}
-								forceUpdateFunction={forceUpdateFunction}
 							/>
 						</Fragment>
 					)

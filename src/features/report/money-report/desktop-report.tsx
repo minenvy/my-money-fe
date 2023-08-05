@@ -1,7 +1,7 @@
 import reportTypes from '@/constants/report'
 import { Tabs } from 'antd'
 import MoneyReportLayout from './money-report-layout'
-import Budget from '@/components/report/budget/budgets'
+import Budget from '@/features/report/budget/budgets'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 const childrenTabs: Array<React.ReactNode> = [

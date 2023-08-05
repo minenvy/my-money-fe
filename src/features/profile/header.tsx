@@ -1,7 +1,7 @@
 import { useAuth } from '@/contexts/auth'
 import { useParams } from 'react-router-dom'
-import OwnerHeaderProfile from '@/components/profile/owner/owner-header-profile'
-import FriendHeaderProfile from '@/components/profile/friend/friend-header-profile'
+import OwnerHeaderProfile from '@/features/profile/owner/owner-header-profile'
+import FriendHeaderProfile from '@/features/profile/friend/friend-header-profile'
 
 function Header() {
 	const { user } = useAuth()

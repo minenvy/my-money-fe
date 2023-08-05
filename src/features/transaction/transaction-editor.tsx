@@ -25,6 +25,7 @@ function TransactionEditor() {
 		id: '',
 		money: 0,
 		walletName: money[0].name,
+		walletId: money[0].id,
 		type: 'anuong',
 		createdAt: new Date(),
 		note: '',

@@ -1,5 +1,5 @@
 import { useMoneyContext } from '@/contexts/money'
-import TitleOfPartContent from '@/components/home/title-of-each-part-content'
+import TitleOfPartContent from '@/features/home/title-of-each-part-content'
 import ListItem from '@/components/list-item'
 import walletImage from '@/assets/images/wallet.jpg'
 import formatMoney from '@/utilities/money-format'

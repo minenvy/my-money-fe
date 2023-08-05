@@ -34,6 +34,10 @@ function Register() {
 			message.warning('Cần nhập đủ các thông tin!')
 			return false
 		}
+    if (registerInformation.password.length < 8) {
+      message.warning('Mật khẩu dài tối thiểu 8 kí tự!')
+			return false
+    }
 		if (registerInformation.password !== registerInformation.repassword) {
 			message.warning('Mật khẩu không trùng khớp!')
 			return false
@@ -46,7 +50,7 @@ function Register() {
 			...registerInformation,
 		})
 		if (userInfo) {
-			register({ ...userInfo, nickname: null })
+			register({ ...userInfo, nickname: '' })
 			navigate('/')
 		}
 	}

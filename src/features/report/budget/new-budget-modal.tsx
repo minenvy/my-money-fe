@@ -15,15 +15,16 @@ import { v4 as uuid } from 'uuid'
 import { useState } from 'react'
 import styled from 'styled-components'
 import { addBudget } from '@/api/budget'
+import { useForceUpdate } from '@/contexts/force-update'
 
 type Props = {
 	open: boolean
 	close: Function
-	forceUpdate: Function
 }
 
 function NewBudgetModal(props: Props) {
-	const { open, close, forceUpdate } = props
+	const { open, close } = props
+  const { forceUpdate } = useForceUpdate()
 	const { moneyOutTypes, moneyTypeCheckboxOptions } = useMoneyType()
 	const [money, setMoney] = useState(0)
 	const [name, setName] = useState('')

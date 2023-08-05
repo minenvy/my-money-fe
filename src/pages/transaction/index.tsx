@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
-import TransactionEditor from '@/components/transaction/transaction-editor'
-import NewTransactions from '@/components/transaction/new-transactions'
+import TransactionEditor from '@/features/transaction/transaction-editor'
+import NewTransactions from '@/features/transaction/new-transactions'
 
 function TransactionPage() {
 	const { id } = useParams()

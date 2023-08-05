@@ -40,7 +40,7 @@ function MiniTransaction() {
 	return (
 		<>
 			{isLoading && <Loading />}
-			{user.id === id || data && data.isFollowed ? (
+			{user.id === id || (data && data.isFollowed) ? (
 				<MainContent />
 			) : (
 				<StyledP>Bạn chưa follow người dùng này</StyledP>

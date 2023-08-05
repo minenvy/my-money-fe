@@ -18,7 +18,7 @@ import {
 import ImagesUploadProvider from '@/contexts/images-uploader'
 import MoneyProvider from '@/contexts/money'
 import { useAuth } from '@/contexts/auth'
-import FirstLoginSteps from '@/components/first-login-steps'
+import FirstLoginSteps from '@/features/first-login-steps'
 
 ChartJS.register(
 	CategoryScale,

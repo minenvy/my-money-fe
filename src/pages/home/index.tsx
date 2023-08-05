@@ -1,10 +1,10 @@
-import InOutHomeReport from '@/components/home/expense-home-report'
-import RecentTransaction from '@/components/home/recent-transaction'
-import TotalMoney from '@/components/home/total-money'
+import InOutHomeReport from '@/features/home/expense-home-report'
+import RecentTransaction from '@/features/home/recent-transaction'
+import TotalMoney from '@/features/home/total-money'
 import { useAuth } from '@/contexts/auth'
 import { Typography } from 'antd'
 import styled from 'styled-components'
-import Wallet from '@/components/home/wallet'
+import Wallet from '@/features/home/wallet'
 
 function Home() {
 	const { user } = useAuth()

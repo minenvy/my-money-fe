@@ -6,8 +6,8 @@ import formatMoney from '@/utilities/money-format'
 import { Button, Modal, message } from 'antd'
 import { InfoCircleOutlined, PlusCircleOutlined } from '@ant-design/icons'
 import { postFetch } from '@/api/fetch'
-import WalletsChanger from '@/components/home/wallet/wallet-changer'
-import PopDeleteConfirm from '@/components/home/wallet/pop-delete'
+import WalletsChanger from '@/features/home/wallet/wallet-changer'
+import PopDeleteConfirm from '@/features/home/wallet/pop-delete'
 
 type WalletModalProps = {
 	money: Array<Wallet>

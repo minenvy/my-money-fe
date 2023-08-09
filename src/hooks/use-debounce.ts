@@ -1,16 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 function useDebounce(initData: string | number) {
   const [previousValue, setPreviousValue] = useState(initData)
   const [value, setValue] = useState(previousValue)
+  const timer = useRef<NodeJS.Timeout>()
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    if (timer.current) clearTimeout(timer.current)
+
+    timer.current = setTimeout(() => {
       setValue(previousValue)
     }, 300)
 
     return () => {
-      clearTimeout(timer)
+      clearTimeout(timer.current)
     }
   }, [previousValue])
 

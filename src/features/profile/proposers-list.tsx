@@ -64,6 +64,7 @@ function MainContent(props: Props) {
 			</>
 		)
 	if (proposers === undefined) setProposers(data)
+  if (proposers?.length !== data.length) setProposers(data)
 	if (previousSearch !== search) {
 		offset.current = 0
 		setPreviousSearch(search)

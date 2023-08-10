@@ -74,6 +74,7 @@ function FirstLoginSteps() {
 		setIsLoading(true)
 		await changeInformation()
 		setIsLoading(false)
+    window.location.reload()    //reload user and wallet info
 	}
 
 	return (

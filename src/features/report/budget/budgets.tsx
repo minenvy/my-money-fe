@@ -49,7 +49,7 @@ function Budgets() {
 	const [searchKey, setSearchKey] = useState('')
 	const offset = useRef(0)
 	const filteredBudgets = budgets?.filter((budget) =>
-		budget.name.includes(searchKey)
+		budget.name.toLowerCase().includes(searchKey.toLowerCase())
 	)
 
 	useEffect(() => {
